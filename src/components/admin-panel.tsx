@@ -10,6 +10,7 @@ import { CommentsManagement } from "@/components/admin/comments-management"
 import { CategoriesTags } from "@/components/admin/categories-tags"
 import { Settings } from "@/components/admin/settings"
 import { AdminConfig } from "@/components/admin/admin-config"
+import { TestDataSetup } from "@/components/admin/test-data-setup"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
@@ -23,7 +24,8 @@ import {
   Tag,
   Settings as SettingsIcon,
   UserCheck,
-  FileText
+  FileText,
+  Database
 } from "lucide-react"
 
 export function AdminPanel() {
@@ -48,7 +50,8 @@ export function AdminPanel() {
     { id: "comments", label: "Comments", icon: MessageSquare },
     { id: "categories", label: "Categories", icon: Tag },
     { id: "settings", label: "Settings", icon: SettingsIcon },
-    { id: "admin-config", label: "Admin Config", icon: UserCheck }
+    { id: "admin-config", label: "Admin Config", icon: UserCheck },
+    { id: "test-data", label: "Test Data Setup", icon: Database }
   ]
 
   const renderPage = () => {
@@ -75,6 +78,8 @@ export function AdminPanel() {
         return <Settings onNavigate={handleNavigate} />
       case "admin-config":
         return <AdminConfig onNavigate={handleNavigate} />
+      case "test-data":
+        return <TestDataSetup />
       default:
         return <Dashboard onNavigate={handleNavigate} />
     }
