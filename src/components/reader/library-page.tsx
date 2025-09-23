@@ -47,7 +47,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
 
   const getReadingProgress = (storyId: string, chapterId?: string) => {
     if (chapterId) {
-      return reads.find(r => r.novel_id === storyId && r.chapter_id === chapterId)
+      return reads.find(r => r.story_id === storyId && r.chapter_id === chapterId)
     }
     const storyReads = reads.filter(r => r.story_id === storyId)
     return storyReads.length > 0 ? storyReads[0] : null
@@ -66,9 +66,9 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
 
   const getReadingStats = () => {
     const totalSaved = library.length
-    const currentlyReading = reads.filter(r => !r.completed).length
-    const completed = reads.filter(r => r.completed).length
-    const totalSlides = reads.reduce((sum, r) => sum + r.slide_number, 0)
+    const currentlyReading = reads.filter(r => (r.progress || 0) > 0 && (r.progress || 0) < 100).length
+    const completed = reads.filter(r => (r.progress || 0) >= 100).length
+    const totalSlides = reads.reduce((sum, r) => sum + (r.progress || 0), 0)
     
     return { totalSaved, currentlyReading, completed, totalSlides }
   }
@@ -240,11 +240,11 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
                       if (progress && !Array.isArray(progress)) {
                         return (
                           <div className="mt-1">
-                            <div className="text-xs">Progress: Slide {progress.slide_number}</div>
+                            <div className="text-xs">Progress: {Math.round(progress.progress || 0)}%</div>
                             <div className="w-full bg-secondary rounded-full h-2 mt-1">
                               <div 
                                 className="bg-primary h-2 rounded-full" 
-                                style={{ width: `${Math.min(100, (progress.slide_number / 10) * 100)}%` }}
+                                style={{ width: `${Math.min(100, progress.progress || 0)}%` }}
                               />
                             </div>
                           </div>
