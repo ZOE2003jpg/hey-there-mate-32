@@ -31,7 +31,17 @@ export function HomePage({ onPanelChange }: HomePageProps) {
 
   const handleGetStarted = () => {
     if (user) {
-      onPanelChange('reader')
+      // Redirect to appropriate panel based on user role
+      const userRole = user.profile?.role
+      if (userRole === "reader") {
+        onPanelChange('reader')
+      } else if (userRole === "writer") {
+        onPanelChange('writer')
+      } else if (userRole === "admin") {
+        onPanelChange('admin')
+      } else {
+        onPanelChange('reader') // default to reader
+      }
     } else {
       setShowLogin(true)
     }

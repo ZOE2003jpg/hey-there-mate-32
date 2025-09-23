@@ -17,12 +17,25 @@ const Index = () => {
     setShowSplash(false)
   }
 
-  // Redirect to home if user doesn't have access to current panel
+  // Redirect to appropriate panel based on user role after login
   useEffect(() => {
     if (loading) return
 
     if (!user && currentPanel !== "home") {
       setCurrentPanel("home")
+      return
+    }
+
+    if (user?.profile && currentPanel === "home") {
+      // Auto-redirect to appropriate panel based on role
+      const userRole = user.profile.role
+      if (userRole === "reader") {
+        setCurrentPanel("reader")
+      } else if (userRole === "writer") {
+        setCurrentPanel("writer")  
+      } else if (userRole === "admin") {
+        setCurrentPanel("admin")
+      }
       return
     }
 
@@ -34,7 +47,16 @@ const Index = () => {
         (currentPanel === "admin" && userRole === "admin")
       
       if (!hasAccess) {
-        setCurrentPanel("home")
+        // Redirect to appropriate panel based on role instead of home
+        if (userRole === "reader") {
+          setCurrentPanel("reader")
+        } else if (userRole === "writer") {
+          setCurrentPanel("writer")  
+        } else if (userRole === "admin") {
+          setCurrentPanel("admin")
+        } else {
+          setCurrentPanel("home")
+        }
       }
     }
   }, [user, currentPanel, loading])
@@ -64,7 +86,16 @@ const Index = () => {
         (currentPanel === "admin" && userRole === "admin")
       
       if (!hasAccess) {
-        return <HomePage onPanelChange={setCurrentPanel} />
+        // Redirect to appropriate panel based on role
+        if (userRole === "reader") {
+          return <ReaderPanel />
+        } else if (userRole === "writer") {
+          return <WriterPanel />
+        } else if (userRole === "admin") {
+          return <AdminPanel />
+        } else {
+          return <HomePage onPanelChange={setCurrentPanel} />
+        }
       }
     }
 
