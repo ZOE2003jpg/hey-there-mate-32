@@ -40,7 +40,7 @@ export function Profile({ onNavigate }: ProfileProps) {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { user } = useUser()
-  const { getProfile, updateProfile } = useProfiles()
+  const { getProfile, updateProfile, createProfile } = useProfiles()
   const { stats, loading: statsLoading } = useWriterStats(user?.id)
   const { achievements, userAchievements, loading: achievementsLoading } = useAchievements(user?.id)
   const { stories, loading: storiesLoading } = useStories()
@@ -61,18 +61,16 @@ export function Profile({ onNavigate }: ProfileProps) {
     const loadProfile = async () => {
       if (user?.id) {
         const profile = await getProfile(user.id)
-        if (profile) {
-          setProfileData({
-            displayName: profile.display_name || "",
-            username: profile.username || "",
-            bio: profile.bio || "",
-            location: "",
-            website: "",
-            twitter: "",
-            instagram: "",
-            avatarUrl: profile.avatar_url || ""
-          })
-        }
+        setProfileData({
+          displayName: profile?.display_name || "",
+          username: profile?.username || "",
+          bio: profile?.bio || "",
+          location: "",
+          website: "",
+          twitter: "",
+          instagram: "",
+          avatarUrl: profile?.avatar_url || ""
+        })
       }
     }
     loadProfile()
@@ -104,10 +102,20 @@ export function Profile({ onNavigate }: ProfileProps) {
 
       const avatarUrl = data.publicUrl
 
-      // Update profile with new avatar URL
-      await updateProfile(user.id, { avatar_url: avatarUrl })
-      setProfileData(prev => ({ ...prev, avatarUrl }))
+      // Check if profile exists and update or create
+      const existingProfile = await getProfile(user.id)
       
+      if (existingProfile) {
+        await updateProfile(user.id, { avatar_url: avatarUrl })
+      } else {
+        await createProfile({
+          user_id: user.id,
+          avatar_url: avatarUrl,
+          role: 'writer'
+        })
+      }
+      
+      setProfileData(prev => ({ ...prev, avatarUrl }))
       toast.success('Avatar updated successfully!')
     } catch (error) {
       console.error('Error uploading avatar:', error)
@@ -121,11 +129,26 @@ export function Profile({ onNavigate }: ProfileProps) {
     if (!user?.id) return
 
     try {
-      await updateProfile(user.id, {
-        display_name: profileData.displayName,
-        username: profileData.username,
-        bio: profileData.bio
-      })
+      // Check if profile exists first
+      const existingProfile = await getProfile(user.id)
+      
+      if (existingProfile) {
+        // Update existing profile
+        await updateProfile(user.id, {
+          display_name: profileData.displayName,
+          username: profileData.username,
+          bio: profileData.bio
+        })
+      } else {
+        // Create new profile
+        await createProfile({
+          user_id: user.id,
+          display_name: profileData.displayName,
+          username: profileData.username,
+          bio: profileData.bio,
+          role: 'writer'
+        })
+      }
       
       toast.success('Profile updated successfully!')
       setIsEditing(false)

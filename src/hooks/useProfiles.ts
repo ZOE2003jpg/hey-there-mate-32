@@ -42,9 +42,9 @@ export function useProfiles() {
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
-      if (error) throw error
+      if (error && error.code !== 'PGRST116') throw error
       return data
     } catch (err) {
       console.error('Failed to get profile:', err)
@@ -57,6 +57,7 @@ export function useProfiles() {
     username?: string
     display_name?: string
     bio?: string
+    avatar_url?: string
     role?: 'reader' | 'writer' | 'admin'
   }) => {
     try {
