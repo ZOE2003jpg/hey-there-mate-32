@@ -71,7 +71,7 @@ export function useProfiles() {
         .single()
 
       if (error) throw error
-      await fetchProfiles()
+      // Don't refetch all profiles - just return the created profile
       return data
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create profile')
@@ -87,7 +87,7 @@ export function useProfiles() {
         .eq('user_id', userId)
 
       if (error) throw error
-      await fetchProfiles()
+      // Don't refetch all profiles - just return success
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile')
       throw err

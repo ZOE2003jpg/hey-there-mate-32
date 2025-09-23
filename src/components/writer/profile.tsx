@@ -56,25 +56,22 @@ export function Profile({ onNavigate }: ProfileProps) {
     avatarUrl: ""
   })
 
-  // Get current user profile
+  // Get current user profile - only load once
   React.useEffect(() => {
     const loadProfile = async () => {
       if (user?.id) {
         const profile = await getProfile(user.id)
-        setProfileData({
-          displayName: profile?.display_name || "",
-          username: profile?.username || "",
-          bio: profile?.bio || "",
-          location: "",
-          website: "",
-          twitter: "",
-          instagram: "",
-          avatarUrl: profile?.avatar_url || ""
-        })
+        setProfileData(prev => ({
+          ...prev,
+          displayName: profile?.display_name || prev.displayName,
+          username: profile?.username || prev.username,
+          bio: profile?.bio || prev.bio,
+          avatarUrl: profile?.avatar_url || prev.avatarUrl
+        }))
       }
     }
     loadProfile()
-  }, [user?.id, getProfile])
+  }, [user?.id]) // Remove getProfile dependency to prevent infinite loops
 
   const userStories = stories.filter(story => story.author_id === user?.id)
 
@@ -85,15 +82,18 @@ export function Profile({ onNavigate }: ProfileProps) {
     try {
       setUploading(true)
       
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with better error handling
       const fileExt = file.name.split('.').pop()
-      const fileName = `${user.id}/avatar.${fileExt}`
+      const fileName = `${user.id}-${Date.now()}.${fileExt}` // Add timestamp to avoid caching issues
       
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, { upsert: true })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Upload error:', uploadError)
+        throw uploadError
+      }
 
       // Get public URL
       const { data } = supabase.storage
@@ -102,21 +102,30 @@ export function Profile({ onNavigate }: ProfileProps) {
 
       const avatarUrl = data.publicUrl
 
-      // Check if profile exists and update or create
-      const existingProfile = await getProfile(user.id)
-      
-      if (existingProfile) {
-        await updateProfile(user.id, { avatar_url: avatarUrl })
-      } else {
-        await createProfile({
-          user_id: user.id,
-          avatar_url: avatarUrl,
-          role: 'writer'
-        })
-      }
-      
+      // Update profile with optimistic update
       setProfileData(prev => ({ ...prev, avatarUrl }))
-      toast.success('Avatar updated successfully!')
+
+      // Update database
+      try {
+        const existingProfile = await getProfile(user.id)
+        
+        if (existingProfile) {
+          await updateProfile(user.id, { avatar_url: avatarUrl })
+        } else {
+          await createProfile({
+            user_id: user.id,
+            avatar_url: avatarUrl,
+            role: 'writer'
+          })
+        }
+        
+        toast.success('Avatar updated successfully!')
+      } catch (dbError) {
+        console.error('Database error:', dbError)
+        // Revert optimistic update on database error
+        setProfileData(prev => ({ ...prev, avatarUrl: prev.avatarUrl }))
+        toast.error('Failed to save avatar to profile')
+      }
     } catch (error) {
       console.error('Error uploading avatar:', error)
       toast.error('Failed to upload avatar')
@@ -129,32 +138,36 @@ export function Profile({ onNavigate }: ProfileProps) {
     if (!user?.id) return
 
     try {
+      // Optimistic update - disable editing immediately
+      setIsEditing(false)
+      
+      const profileUpdates = {
+        display_name: profileData.displayName,
+        username: profileData.username,
+        bio: profileData.bio
+      }
+
       // Check if profile exists first
       const existingProfile = await getProfile(user.id)
       
       if (existingProfile) {
         // Update existing profile
-        await updateProfile(user.id, {
-          display_name: profileData.displayName,
-          username: profileData.username,
-          bio: profileData.bio
-        })
+        await updateProfile(user.id, profileUpdates)
       } else {
         // Create new profile
         await createProfile({
           user_id: user.id,
-          display_name: profileData.displayName,
-          username: profileData.username,
-          bio: profileData.bio,
+          ...profileUpdates,
           role: 'writer'
         })
       }
       
       toast.success('Profile updated successfully!')
-      setIsEditing(false)
     } catch (error) {
       console.error('Error updating profile:', error)
       toast.error('Failed to update profile')
+      // Re-enable editing on error
+      setIsEditing(true)
     }
   }
 
