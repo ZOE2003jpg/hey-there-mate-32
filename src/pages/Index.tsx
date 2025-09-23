@@ -26,17 +26,19 @@ const Index = () => {
       return
     }
 
-    if (user?.profile && currentPanel === "home") {
+    if (user?.profile) {
       // Auto-redirect to appropriate panel based on role
       const userRole = user.profile.role
-      if (userRole === "reader") {
+      if (userRole === "reader" && currentPanel !== "reader") {
         setCurrentPanel("reader")
-      } else if (userRole === "writer") {
-        setCurrentPanel("writer")  
-      } else if (userRole === "admin") {
+        return
+      } else if (userRole === "writer" && currentPanel !== "writer") {
+        setCurrentPanel("writer")
+        return
+      } else if (userRole === "admin" && currentPanel === "home") {
         setCurrentPanel("admin")
+        return
       }
-      return
     }
 
     if (user?.profile && currentPanel !== "home") {

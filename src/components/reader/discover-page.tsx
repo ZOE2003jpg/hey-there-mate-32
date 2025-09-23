@@ -3,6 +3,7 @@ import { useStories } from "@/hooks/useStories"
 import { useLikes } from "@/hooks/useLikes"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useUser } from "@/components/user-context"
+import { useStatistics } from "@/hooks/useStatistics"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,6 +29,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
   const { user } = useUser()
   const { toggleLike, isLiked } = useLikes(user?.id)
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
+  const { statistics, loading: statsLoading } = useStatistics()
 
   const handleLike = async (storyId: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -243,10 +245,26 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
       {/* Quick Categories */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { name: "Most Liked", icon: Heart, count: "2.3K stories" },
-          { name: "Recently Updated", icon: Clock, count: "156 new chapters" },
-          { name: "Quick Reads", icon: BookOpen, count: "Under 10 slides" },
-          { name: "Completed", icon: Star, count: "Finished stories" }
+          { 
+            name: "Most Liked", 
+            icon: Heart, 
+            count: statsLoading ? "Loading..." : `${statistics.mostLikedCount} stories`
+          },
+          { 
+            name: "Recently Updated", 
+            icon: Clock, 
+            count: statsLoading ? "Loading..." : `${statistics.recentlyUpdatedCount} new chapters`
+          },
+          { 
+            name: "Quick Reads", 
+            icon: BookOpen, 
+            count: statsLoading ? "Loading..." : `${statistics.quickReadsCount} quick stories`
+          },
+          { 
+            name: "Completed", 
+            icon: Star, 
+            count: statsLoading ? "Loading..." : `${statistics.completedCount} finished stories`
+          }
         ].map((category) => (
           <Card key={category.name} className="vine-card hover-scale cursor-pointer">
             <CardContent className="pt-6 text-center">
