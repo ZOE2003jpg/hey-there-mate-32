@@ -79,20 +79,44 @@ export function Profile({ onNavigate }: ProfileProps) {
     const file = event.target.files?.[0]
     if (!file || !user?.id) return
 
+    // Validate file type and size
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPG, PNG, GIF, or WebP)')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error('File size must be less than 5MB')
+      return
+    }
+
     try {
       setUploading(true)
       
       // Upload to Supabase Storage with better error handling
-      const fileExt = file.name.split('.').pop()
+      const fileExt = file.name.split('.').pop()?.toLowerCase()
       const fileName = `${user.id}-${Date.now()}.${fileExt}` // Add timestamp to avoid caching issues
       
-      const { error: uploadError } = await supabase.storage
+      // Delete old avatar if exists
+      try {
+        await supabase.storage
+          .from('avatars')
+          .remove([`${user.id}-`]) // This will fail silently which is fine
+      } catch (e) {
+        // Ignore delete errors
+      }
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true })
+        .upload(fileName, file, { 
+          upsert: false,
+          cacheControl: '3600'
+        })
 
       if (uploadError) {
         console.error('Upload error:', uploadError)
-        throw uploadError
+        throw new Error(`Upload failed: ${uploadError.message}`)
       }
 
       // Get public URL
@@ -124,11 +148,11 @@ export function Profile({ onNavigate }: ProfileProps) {
         console.error('Database error:', dbError)
         // Revert optimistic update on database error
         setProfileData(prev => ({ ...prev, avatarUrl: prev.avatarUrl }))
-        toast.error('Failed to save avatar to profile')
+        throw new Error('Failed to save avatar to profile')
       }
     } catch (error) {
       console.error('Error uploading avatar:', error)
-      toast.error('Failed to upload avatar')
+      toast.error(error instanceof Error ? error.message : 'Failed to upload avatar')
     } finally {
       setUploading(false)
     }

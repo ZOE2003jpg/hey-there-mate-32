@@ -27,7 +27,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const { user } = useUser()
   const { stories, loading: storiesLoading } = useStories()
   const { analytics } = useAnalytics(user?.id)
-  const { totalEarnings, earnings } = useEarnings(user?.id)
+  const { stats: earningsStats } = useEarnings(user?.id)
 
   const userStories = stories.filter(story => story.author_id === user?.id)
   
@@ -36,7 +36,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     totalReads: userStories.reduce((sum, story) => sum + story.view_count, 0),
     totalLikes: userStories.reduce((sum, story) => sum + story.like_count, 0),
     totalComments: userStories.reduce((sum, story) => sum + story.comment_count, 0),
-    earnings: totalEarnings,
+    earnings: earningsStats.totalEarnings,
     followers: 0 // This would come from a followers table in a real app
   }
 
@@ -49,7 +49,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     },
     {
       id: 2,
-      message: `Total earnings: $${totalEarnings.toFixed(2)}`,
+      message: `Total earnings: $${earningsStats.totalEarnings.toFixed(2)}`,
       time: "1 day ago", 
       type: "earnings"
     },

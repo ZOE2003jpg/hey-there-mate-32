@@ -139,6 +139,54 @@ export type Database = {
           },
         ]
       }
+      earnings: {
+        Row: {
+          amount: number
+          chapter_id: string | null
+          created_at: string
+          earned_at: string
+          id: string
+          source: string
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          chapter_id?: string | null
+          created_at?: string
+          earned_at?: string
+          id?: string
+          source: string
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          chapter_id?: string | null
+          created_at?: string
+          earned_at?: string
+          id?: string
+          source?: string
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "earnings_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "earnings_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       library: {
         Row: {
           created_at: string | null
@@ -242,6 +290,39 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          processed_at: string | null
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method: string
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
           user_id?: string
         }
         Relationships: []
