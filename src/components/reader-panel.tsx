@@ -4,6 +4,7 @@ import { SlideReader } from "@/components/reader/slide-reader"
 import { LibraryPage } from "@/components/reader/library-page"
 import { SearchPage } from "@/components/reader/search-page"
 import { SettingsPage } from "@/components/reader/settings-page"
+import { StoryChapters } from "@/components/reader/story-chapters"
 import { Button } from "@/components/ui/button"
 import { 
   Compass, 
@@ -35,6 +36,8 @@ export function ReaderPanel() {
     switch (currentPage) {
       case "discover":
         return <DiscoverPage onNavigate={handleNavigate} />
+      case "story-chapters":
+        return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "reader":
         return <SlideReader story={currentStory} onNavigate={handleNavigate} />
       case "library":
@@ -51,6 +54,15 @@ export function ReaderPanel() {
   // If we're in reader mode, show full screen reader
   if (currentPage === "reader") {
     return <SlideReader story={currentStory} onNavigate={handleNavigate} />
+  }
+
+  // Also show story chapters page without sidebar
+  if (currentPage === "story-chapters") {
+    return (
+      <div className="min-h-screen p-8">
+        <StoryChapters story={currentStory} onNavigate={handleNavigate} />
+      </div>
+    )
   }
 
   return (

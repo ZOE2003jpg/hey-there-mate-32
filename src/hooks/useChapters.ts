@@ -9,6 +9,8 @@ export interface Chapter {
   chapter_number: number
   status: 'draft' | 'published'
   view_count: number
+  word_count?: number
+  slide_count?: number
   created_at: string
   updated_at: string
 }
@@ -103,6 +105,32 @@ export function useChapters(storyId?: string) {
 
   useEffect(() => {
     fetchChapters()
+    
+    // Set up real-time subscription for chapters
+    if (storyId) {
+      const channel = supabase
+        .channel('chapters-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'chapters',
+            filter: `story_id=eq.${storyId}`
+          },
+          () => {
+            // Refetch chapters when any change occurs
+            setTimeout(() => {
+              fetchChapters()
+            }, 100)
+          }
+        )
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(channel)
+      }
+    }
   }, [storyId])
 
   return {

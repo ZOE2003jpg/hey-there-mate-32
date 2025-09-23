@@ -19,6 +19,14 @@ export interface Story {
     username: string | null
   } | null
   story_tags?: { tag: string }[]
+  chapters?: Chapter[]
+}
+
+interface Chapter {
+  id: string
+  title: string
+  status: 'draft' | 'published'
+  chapter_number: number
 }
 
 export function useStories() {
