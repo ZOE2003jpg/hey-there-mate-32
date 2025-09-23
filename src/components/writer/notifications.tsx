@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useNotifications } from "@/hooks/useNotifications"
+import { useUser } from "@/components/user-context"
 import { 
   ArrowLeft,
   Bell,
@@ -22,99 +24,8 @@ interface NotificationsProps {
 
 export function Notifications({ onNavigate }: NotificationsProps) {
   const [filter, setFilter] = useState("all")
-
-  const notifications = [
-    {
-      id: 1,
-      type: "comment",
-      title: "New comment on \"The Digital Awakening\"",
-      message: "Sarah_Reader95 commented: \"This chapter was absolutely mind-blowing! Can't wait for the next one.\"",
-      time: "2 hours ago",
-      read: false,
-      story: "The Digital Awakening",
-      chapter: "Chapter 12"
-    },
-    {
-      id: 2,
-      type: "milestone",
-      title: "Story milestone reached!",
-      message: "\"The Last Algorithm\" has reached 10,000 reads! This is a significant achievement.",
-      time: "5 hours ago", 
-      read: false,
-      story: "The Last Algorithm"
-    },
-    {
-      id: 3,
-      type: "like",
-      title: "Your story received new likes",
-      message: "15 new likes on \"Memories in the Rain\" in the last 24 hours.",
-      time: "1 day ago",
-      read: true,
-      story: "Memories in the Rain"
-    },
-    {
-      id: 4,
-      type: "follower",
-      title: "New follower",
-      message: "BookWorm_Alex is now following you! They love sci-fi and fantasy stories.",
-      time: "1 day ago",
-      read: true
-    },
-    {
-      id: 5,
-      type: "admin",
-      title: "Story featured in trending",
-      message: "Congratulations! \"The Digital Awakening\" has been featured in this week's trending stories.",
-      time: "2 days ago",
-      read: true,
-      story: "The Digital Awakening"
-    },
-    {
-      id: 6,
-      type: "comment",
-      title: "New comment on \"The Last Algorithm\"",
-      message: "TechNinja commented: \"The technical details in this chapter are so well researched!\"",
-      time: "2 days ago",
-      read: true,
-      story: "The Last Algorithm",
-      chapter: "Chapter 8"
-    },
-    {
-      id: 7,
-      type: "milestone",
-      title: "Reading milestone achieved",
-      message: "\"Memories in the Rain\" has achieved a 85% completion rate - readers love finishing your story!",
-      time: "3 days ago",
-      read: true,
-      story: "Memories in the Rain"
-    },
-    {
-      id: 8,
-      type: "admin",
-      title: "Monthly analytics report ready",
-      message: "Your March analytics report is now available. Check out your performance insights and trends.",
-      time: "3 days ago",
-      read: true
-    },
-    {
-      id: 9,
-      type: "comment",
-      title: "Comment thread getting active",
-      message: "Multiple readers are discussing Chapter 10 of \"The Digital Awakening\". Join the conversation!",
-      time: "4 days ago",
-      read: true,
-      story: "The Digital Awakening",
-      chapter: "Chapter 10"
-    },
-    {
-      id: 10,
-      type: "follower",
-      title: "Reader milestone",
-      message: "You now have 200+ followers! Your growing audience loves your storytelling.",
-      time: "1 week ago",
-      read: true
-    }
-  ]
+  const { user } = useUser()
+  const { notifications, loading, markAsRead, markAllAsRead, getUnreadCount } = useNotifications(user?.id)
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -152,14 +63,34 @@ export function Notifications({ onNavigate }: NotificationsProps) {
     return notification.type === filter
   })
 
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = getUnreadCount()
 
-  const markAllAsRead = () => {
-    // Handle mark all as read logic here
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead()
+    } catch (error) {
+      console.error('Error marking all as read:', error)
+    }
   }
 
-  const toggleNotificationRead = (id: number) => {
-    // Handle toggle read status logic here
+  const handleToggleNotificationRead = async (id: string) => {
+    try {
+      await markAsRead(id)
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
+  }
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    
+    if (diffInHours < 1) return 'Just now'
+    if (diffInHours < 24) return `${diffInHours} hours ago`
+    if (diffInHours < 48) return '1 day ago'
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)} days ago`
+    return `${Math.floor(diffInHours / 168)} weeks ago`
   }
 
   return (
@@ -181,7 +112,7 @@ export function Notifications({ onNavigate }: NotificationsProps) {
           </div>
         </div>
         {unreadCount > 0 && (
-          <Button variant="outline" onClick={markAllAsRead}>
+          <Button variant="outline" onClick={handleMarkAllAsRead}>
             <CheckCircle className="h-4 w-4 mr-2" />
             Mark All Read
           </Button>
@@ -218,68 +149,74 @@ export function Notifications({ onNavigate }: NotificationsProps) {
 
       {/* Notifications List */}
       <div className="space-y-3">
-        {filteredNotifications.map((notification) => {
-          const IconComponent = getNotificationIcon(notification.type)
-          return (
-            <Card 
-              key={notification.id} 
-              className={`vine-card cursor-pointer transition-all hover:shadow-md ${
-                !notification.read ? "bg-primary/5 border-primary/20" : ""
-              }`}
-              onClick={() => toggleNotificationRead(notification.id)}
-            >
-              <CardContent className="p-4">
-                <div className="flex gap-4">
-                  {/* Icon */}
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    !notification.read ? "bg-primary/10" : "bg-secondary/30"
-                  }`}>
-                    <IconComponent className={`h-5 w-5 ${
-                      !notification.read ? "text-primary" : getNotificationColor(notification.type)
-                    }`} />
-                  </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="text-muted-foreground">Loading notifications...</div>
+          </div>
+        ) : (
+          filteredNotifications.map((notification) => {
+            const IconComponent = getNotificationIcon(notification.type)
+            return (
+              <Card 
+                key={notification.id} 
+                className={`vine-card cursor-pointer transition-all hover:shadow-md ${
+                  !notification.read ? "bg-primary/5 border-primary/20" : ""
+                }`}
+                onClick={() => handleToggleNotificationRead(notification.id)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    {/* Icon */}
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      !notification.read ? "bg-primary/10" : "bg-secondary/30"
+                    }`}>
+                      <IconComponent className={`h-5 w-5 ${
+                        !notification.read ? "text-primary" : getNotificationColor(notification.type)
+                      }`} />
+                    </div>
 
-                  {/* Content */}
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-start justify-between">
-                      <h3 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
-                        {notification.title}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        {!notification.read && (
-                          <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    {/* Content */}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-start justify-between">
+                        <h3 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
+                          {notification.title}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                          )}
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {formatTimeAgo(notification.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <p className="text-sm text-muted-foreground">
+                        {notification.message}
+                      </p>
+
+                      <div className="flex items-center gap-2 pt-1">
+                        <Badge variant={getBadgeVariant(notification.type)}>
+                          {notification.type}
+                        </Badge>
+                        {notification.story_id && (
+                          <Badge variant="outline">
+                            Story
+                          </Badge>
                         )}
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {notification.time}
-                        </span>
+                        {notification.chapter_id && (
+                          <Badge variant="outline">
+                            Chapter
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                    
-                    <p className="text-sm text-muted-foreground">
-                      {notification.message}
-                    </p>
-
-                    <div className="flex items-center gap-2 pt-1">
-                      <Badge variant={getBadgeVariant(notification.type)}>
-                        {notification.type}
-                      </Badge>
-                      {notification.story && (
-                        <Badge variant="outline">
-                          {notification.story}
-                        </Badge>
-                      )}
-                      {notification.chapter && (
-                        <Badge variant="outline">
-                          {notification.chapter}
-                        </Badge>
-                      )}
-                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+                </CardContent>
+              </Card>
+            )
+          })
+        )}
       </div>
 
       {/* Empty State */}

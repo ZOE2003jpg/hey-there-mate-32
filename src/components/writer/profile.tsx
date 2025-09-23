@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -6,6 +6,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUser } from "@/components/user-context"
+import { useProfiles } from "@/hooks/useProfiles"
+import { useWriterStats } from "@/hooks/useWriterStats"
+import { useAchievements } from "@/hooks/useAchievements"
+import { useStories } from "@/hooks/useStories"
+import { supabase } from "@/integrations/supabase/client"
+import { toast } from "sonner"
 import { 
   ArrowLeft,
   User,
@@ -18,7 +25,10 @@ import {
   Users,
   Award,
   Link as LinkIcon,
-  Save
+  Save,
+  Upload,
+  TrendingUp,
+  MessageCircle
 } from "lucide-react"
 
 interface ProfileProps {
@@ -27,101 +37,114 @@ interface ProfileProps {
 
 export function Profile({ onNavigate }: ProfileProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { user } = useUser()
+  const { getProfile, updateProfile } = useProfiles()
+  const { stats, loading: statsLoading } = useWriterStats(user?.id)
+  const { achievements, userAchievements, loading: achievementsLoading } = useAchievements(user?.id)
+  const { stories, loading: storiesLoading } = useStories()
+  
   const [profileData, setProfileData] = useState({
-    displayName: "Alex Morgan",
-    penName: "A.M. Storyteller", 
-    bio: "Passionate science fiction writer with a love for exploring the boundaries between technology and humanity. I believe in the power of stories to inspire and transform.",
-    location: "San Francisco, CA",
-    website: "alexmorgan.author",
-    twitter: "@alexmorgan_sf",
-    instagram: "@amstoryteller"
+    displayName: "",
+    username: "",
+    bio: "",
+    location: "",
+    website: "",
+    twitter: "",
+    instagram: "",
+    avatarUrl: ""
   })
 
-  const writerStats = {
-    totalStories: 12,
-    totalReads: 145230,
-    totalFollowers: 1420,
-    averageRating: 4.8,
-    joinedDate: "January 2023"
+  // Get current user profile
+  React.useEffect(() => {
+    const loadProfile = async () => {
+      if (user?.id) {
+        const profile = await getProfile(user.id)
+        if (profile) {
+          setProfileData({
+            displayName: profile.display_name || "",
+            username: profile.username || "",
+            bio: profile.bio || "",
+            location: "",
+            website: "",
+            twitter: "",
+            instagram: "",
+            avatarUrl: profile.avatar_url || ""
+          })
+        }
+      }
+    }
+    loadProfile()
+  }, [user?.id, getProfile])
+
+  const userStories = stories.filter(story => story.author_id === user?.id)
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !user?.id) return
+
+    try {
+      setUploading(true)
+      
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${user.id}/avatar.${fileExt}`
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true })
+
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      const avatarUrl = data.publicUrl
+
+      // Update profile with new avatar URL
+      await updateProfile(user.id, { avatar_url: avatarUrl })
+      setProfileData(prev => ({ ...prev, avatarUrl }))
+      
+      toast.success('Avatar updated successfully!')
+    } catch (error) {
+      console.error('Error uploading avatar:', error)
+      toast.error('Failed to upload avatar')
+    } finally {
+      setUploading(false)
+    }
   }
 
-  const publishedStories = [
-    {
-      id: 1,
-      title: "The Digital Awakening",
-      genre: "Sci-Fi",
-      status: "Completed",
-      chapters: 15,
-      reads: 45200,
-      likes: 2150,
-      rating: 4.9,
-      publishedDate: "March 2024"
-    },
-    {
-      id: 2,
-      title: "The Last Algorithm",
-      genre: "Thriller",
-      status: "Ongoing",
-      chapters: 12,
-      reads: 32100,
-      likes: 1680,
-      rating: 4.7,
-      publishedDate: "February 2024"
-    },
-    {
-      id: 3,
-      title: "Memories in the Rain",
-      genre: "Romance",
-      status: "Completed",
-      chapters: 8,
-      reads: 18950,
-      likes: 950,
-      rating: 4.8,
-      publishedDate: "January 2024"
-    },
-    {
-      id: 4,
-      title: "Echoes of Tomorrow", 
-      genre: "Fantasy",
-      status: "Completed",
-      chapters: 20,
-      reads: 28200,
-      likes: 1450,
-      rating: 4.6,
-      publishedDate: "December 2023"
-    }
-  ]
+  const handleSave = async () => {
+    if (!user?.id) return
 
-  const achievements = [
-    {
-      title: "Trending Writer",
-      description: "Featured in trending stories 5+ times",
-      icon: Award,
-      earned: true
-    },
-    {
-      title: "Reader's Choice",
-      description: "Story rated 4.5+ stars by 100+ readers",
-      icon: Heart,
-      earned: true
-    },
-    {
-      title: "Prolific Author",
-      description: "Published 10+ stories",
-      icon: BookOpen,
-      earned: true
-    },
-    {
-      title: "Community Favorite",
-      description: "Gained 1000+ followers",
-      icon: Users,
-      earned: true
+    try {
+      await updateProfile(user.id, {
+        display_name: profileData.displayName,
+        username: profileData.username,
+        bio: profileData.bio
+      })
+      
+      toast.success('Profile updated successfully!')
+      setIsEditing(false)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast.error('Failed to update profile')
     }
-  ]
+  }
 
-  const handleSave = () => {
-    // Handle save profile logic here
-    setIsEditing(false)
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'BookOpen': return BookOpen
+      case 'Heart': return Heart
+      case 'Users': return Users
+      case 'Award': return Award
+      case 'TrendingUp': return TrendingUp
+      case 'Eye': return Eye
+      default: return Award
+    }
   }
 
   return (
@@ -167,14 +190,18 @@ export function Profile({ onNavigate }: ProfileProps) {
               <div className="flex justify-center">
                 <div className="relative">
                   <Avatar className="w-24 h-24">
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="text-lg">AM</AvatarFallback>
+                    <AvatarImage src={profileData.avatarUrl || "/placeholder.svg"} />
+                    <AvatarFallback className="text-lg">
+                      {profileData.displayName?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                    </AvatarFallback>
                   </Avatar>
                   {isEditing && (
                     <Button 
                       size="icon"
                       variant="secondary" 
                       className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
                     >
                       <Camera className="h-4 w-4" />
                     </Button>
@@ -183,9 +210,21 @@ export function Profile({ onNavigate }: ProfileProps) {
               </div>
               {isEditing && (
                 <div className="text-center">
-                  <Button variant="outline" size="sm">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Upload New Photo
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Upload New Photo'}
                   </Button>
                 </div>
               )}
@@ -198,26 +237,32 @@ export function Profile({ onNavigate }: ProfileProps) {
               <CardTitle>Writer Stats</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Stories Published</span>
-                <span className="font-medium">{writerStats.totalStories}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Reads</span>
-                <span className="font-medium">{writerStats.totalReads.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Followers</span>
-                <span className="font-medium">{writerStats.totalFollowers.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Average Rating</span>
-                <span className="font-medium">{writerStats.averageRating} ⭐</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Member Since</span>
-                <span className="font-medium">{writerStats.joinedDate}</span>
-              </div>
+              {statsLoading ? (
+                <div className="text-center text-muted-foreground">Loading stats...</div>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Stories Published</span>
+                    <span className="font-medium">{stats.totalStories}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Reads</span>
+                    <span className="font-medium">{stats.totalReads.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Followers</span>
+                    <span className="font-medium">{stats.totalFollowers.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Average Rating</span>
+                    <span className="font-medium">{stats.averageRating} ⭐</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Member Since</span>
+                    <span className="font-medium">{stats.joinedDate}</span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -227,27 +272,41 @@ export function Profile({ onNavigate }: ProfileProps) {
               <CardTitle>Achievements</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className={`flex items-center gap-3 p-2 rounded-lg ${
-                    achievement.earned ? "bg-primary/10" : "bg-secondary/20"
-                  }`}>
-                    <achievement.icon className={`h-5 w-5 ${
-                      achievement.earned ? "text-primary" : "text-muted-foreground"
-                    }`} />
-                    <div className="flex-1">
-                      <p className={`text-sm font-medium ${
-                        achievement.earned ? "" : "text-muted-foreground"
+              {achievementsLoading ? (
+                <div className="text-center text-muted-foreground">Loading achievements...</div>
+              ) : (
+                <div className="space-y-3">
+                  {achievements.map((achievement) => {
+                    const isEarned = userAchievements.some(ua => ua.achievement_id === achievement.id)
+                    const IconComponent = getIconComponent(achievement.icon)
+                    
+                    return (
+                      <div key={achievement.id} className={`flex items-center gap-3 p-2 rounded-lg ${
+                        isEarned ? "bg-primary/10" : "bg-secondary/20"
                       }`}>
-                        {achievement.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {achievement.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                        <IconComponent className={`h-5 w-5 ${
+                          isEarned ? "text-primary" : "text-muted-foreground"
+                        }`} />
+                        <div className="flex-1">
+                          <p className={`text-sm font-medium ${
+                            isEarned ? "" : "text-muted-foreground"
+                          }`}>
+                            {achievement.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {achievement.description}
+                          </p>
+                        </div>
+                        {isEarned && (
+                          <Badge variant="secondary" className="text-xs">
+                            Earned
+                          </Badge>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -263,7 +322,7 @@ export function Profile({ onNavigate }: ProfileProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="display-name">Display Name</Label>
                   <Input
@@ -275,11 +334,11 @@ export function Profile({ onNavigate }: ProfileProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pen-name">Pen Name</Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input
-                    id="pen-name"
-                    value={profileData.penName}
-                    onChange={(e) => setProfileData({...profileData, penName: e.target.value})}
+                    id="username"
+                    value={profileData.username}
+                    onChange={(e) => setProfileData({...profileData, username: e.target.value})}
                     disabled={!isEditing}
                   />
                 </div>
@@ -348,37 +407,45 @@ export function Profile({ onNavigate }: ProfileProps) {
               <CardDescription>Stories visible on your public profile</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {publishedStories.map((story) => (
-                  <div key={story.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <h4 className="font-medium">{story.title}</h4>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <Badge variant="outline">{story.genre}</Badge>
-                        <span>{story.chapters} chapters</span>
-                        <span>{story.status}</span>
+              {storiesLoading ? (
+                <div className="text-center text-muted-foreground">Loading stories...</div>
+              ) : userStories.length === 0 ? (
+                <div className="text-center text-muted-foreground">
+                  No published stories yet. Start writing your first story!
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {userStories.map((story) => (
+                    <div key={story.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="space-y-1">
+                        <h4 className="font-medium">{story.title}</h4>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <Badge variant="outline">{story.genre || 'General'}</Badge>
+                          <span>{story.status}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            {story.view_count?.toLocaleString() || 0}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Heart className="h-3 w-3" />
+                            {story.like_count?.toLocaleString() || 0}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MessageCircle className="h-3 w-3" />
+                            {story.comment_count || 0}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          {story.reads.toLocaleString()}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Heart className="h-3 w-3" />
-                          {story.likes.toLocaleString()}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          ⭐ {story.rating}
-                        </div>
-                      </div>
+                      <Button size="sm" variant="outline" onClick={() => onNavigate("manage-chapters", { storyId: story.id })}>
+                        <BookOpen className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => onNavigate("manage-chapters")}>
-                      <BookOpen className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

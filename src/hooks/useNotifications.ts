@@ -1,41 +1,18 @@
 import { useState, useEffect } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 
 export interface Notification {
   id: string
   user_id: string
   type: string
+  title: string
   message: string
-  seen: boolean
+  read: boolean
+  story_id?: string
+  chapter_id?: string
   created_at: string
+  updated_at: string
 }
-
-// Mock notifications data since notifications table doesn't exist
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    user_id: '1',
-    type: 'like',
-    message: 'Someone liked your story "Sample Story"',
-    seen: false,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    user_id: '1',
-    type: 'comment',
-    message: 'New comment on your story "Sample Story"',
-    seen: false,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    user_id: '1',
-    type: 'follow',
-    message: 'You have a new follower',
-    seen: true,
-    created_at: new Date().toISOString()
-  }
-]
 
 export function useNotifications(userId?: string) {
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -51,22 +28,33 @@ export function useNotifications(userId?: string) {
 
     try {
       setLoading(true)
-      // Mock fetch with delay
-      setTimeout(() => {
-        const userNotifications = mockNotifications.filter(n => n.user_id === userId)
-        setNotifications(userNotifications)
-        setLoading(false)
-      }, 300)
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setNotifications(data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch notifications')
+    } finally {
       setLoading(false)
     }
   }
 
   const markAsRead = async (notificationId: string) => {
     try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId)
+        .eq('user_id', userId)
+
+      if (error) throw error
+      
       setNotifications(prev => prev.map(n => 
-        n.id === notificationId ? { ...n, seen: true } : n
+        n.id === notificationId ? { ...n, read: true } : n
       ))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to mark notification as read')
@@ -78,7 +66,15 @@ export function useNotifications(userId?: string) {
     if (!userId) return
 
     try {
-      setNotifications(prev => prev.map(n => ({ ...n, seen: true })))
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', userId)
+        .eq('read', false)
+
+      if (error) throw error
+      
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to mark all notifications as read')
       throw err
@@ -86,7 +82,7 @@ export function useNotifications(userId?: string) {
   }
 
   const getUnreadCount = () => {
-    return notifications.filter(n => !n.seen).length
+    return notifications.filter(n => !n.read).length
   }
 
   useEffect(() => {
