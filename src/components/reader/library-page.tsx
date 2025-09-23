@@ -49,7 +49,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
     if (chapterId) {
       return reads.find(r => r.novel_id === storyId && r.chapter_id === chapterId)
     }
-    const storyReads = reads.filter(r => r.novel_id === storyId)
+    const storyReads = reads.filter(r => r.story_id === storyId)
     return storyReads.length > 0 ? storyReads[0] : null
   }
 

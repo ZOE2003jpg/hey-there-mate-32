@@ -4,8 +4,9 @@ import { supabase } from '@/integrations/supabase/client'
 export interface Slide {
   id: string
   chapter_id: string
-  order_number: number
+  slide_number: number
   content: string
+  background_image_url: string | null
   created_at: string
 }
 
@@ -27,7 +28,7 @@ export function useSlides(chapterId?: string) {
         .from('slides')
         .select('*')
         .eq('chapter_id', chapterId)
-        .order('order_number', { ascending: true })
+        .order('slide_number', { ascending: true })
 
       if (error) throw error
       setSlides(data || [])

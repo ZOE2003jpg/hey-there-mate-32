@@ -36,7 +36,10 @@ export function useChapters(storyId?: string) {
         .order('chapter_number', { ascending: true })
 
       if (error) throw error
-      setChapters(data || [])
+      setChapters((data || []).map(chapter => ({
+        ...chapter,
+        status: chapter.status as 'draft' | 'published' || 'draft'
+      })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch chapters')
     } finally {

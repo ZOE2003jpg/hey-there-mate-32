@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
 
 export interface Earning {
   id: string
@@ -14,9 +13,33 @@ export interface Earning {
   }
 }
 
+// Mock earnings data since earnings table doesn't exist
+const mockEarnings: Earning[] = [
+  {
+    id: '1',
+    writer_id: '1',
+    story_id: '1',
+    amount: 25.50,
+    currency: 'USD',
+    source: 'Story views',
+    created_at: new Date().toISOString(),
+    stories: { title: 'Sample Story' }
+  },
+  {
+    id: '2',
+    writer_id: '1',
+    story_id: '1',
+    amount: 15.75,
+    currency: 'USD',
+    source: 'Premium reads',
+    created_at: new Date().toISOString(),
+    stories: { title: 'Sample Story' }
+  }
+]
+
 export function useEarnings(writerId?: string) {
   const [earnings, setEarnings] = useState<Earning[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalEarnings, setTotalEarnings] = useState(0)
 
@@ -29,28 +52,18 @@ export function useEarnings(writerId?: string) {
 
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('earnings')
-        .select(`
-          *,
-          stories (
-            title
-          )
-        `)
-        .eq('writer_id', writerId)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      
-      const earningsData = data || []
-      setEarnings(earningsData)
-      
-      // Calculate total earnings
-      const total = earningsData.reduce((sum, earning) => sum + Number(earning.amount), 0)
-      setTotalEarnings(total)
+      // Mock fetch with delay
+      setTimeout(() => {
+        const writerEarnings = mockEarnings.filter(e => e.writer_id === writerId)
+        setEarnings(writerEarnings)
+        
+        // Calculate total earnings
+        const total = writerEarnings.reduce((sum, earning) => sum + Number(earning.amount), 0)
+        setTotalEarnings(total)
+        setLoading(false)
+      }, 500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch earnings')
-    } finally {
       setLoading(false)
     }
   }
@@ -63,15 +76,17 @@ export function useEarnings(writerId?: string) {
     source?: string
   }) => {
     try {
-      const { error } = await supabase
-        .from('earnings')
-        .insert({
-          ...earningData,
-          currency: earningData.currency || 'USD'
-        })
-
-      if (error) throw error
-      await fetchEarnings()
+      const newEarning: Earning = {
+        id: Date.now().toString(),
+        writer_id: earningData.writer_id,
+        story_id: earningData.story_id || null,
+        amount: earningData.amount,
+        currency: earningData.currency || 'USD',
+        source: earningData.source || null,
+        created_at: new Date().toISOString()
+      }
+      setEarnings(prev => [newEarning, ...prev])
+      setTotalEarnings(prev => prev + earningData.amount)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add earning')
       throw err

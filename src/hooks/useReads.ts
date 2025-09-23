@@ -3,11 +3,12 @@ import { supabase } from '@/integrations/supabase/client'
 
 export interface Read {
   id: string
-  reader_id: string
-  novel_id: string
-  chapter_id: string
-  slide_number: number
-  completed: boolean
+  user_id: string
+  story_id: string
+  chapter_id: string | null
+  slide_id: string | null
+  progress: number | null
+  last_read_at: string | null
   created_at: string
 }
 
@@ -28,7 +29,7 @@ export function useReads(readerId?: string) {
       const { data, error } = await supabase
         .from('reads')
         .select('*')
-        .eq('reader_id', readerId)
+        .eq('user_id', readerId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -40,15 +41,15 @@ export function useReads(readerId?: string) {
     }
   }
 
-  const trackProgress = async (readerId: string, novelId: string, chapterId: string, slideNumber: number, completed = false) => {
+  const trackProgress = async (readerId: string, storyId: string, chapterId?: string, slideId?: string, progress = 0) => {
     try {
       const { data, error } = await supabase.functions.invoke('track-progress', {
         body: {
           readerId,
-          novelId,
+          storyId,
           chapterId,
-          slideNumber,
-          completed
+          slideId,
+          progress
         }
       })
       
@@ -63,9 +64,9 @@ export function useReads(readerId?: string) {
 
   const getReadingProgress = (storyId: string, chapterId?: string) => {
     if (chapterId) {
-      return reads.find(r => r.novel_id === storyId && r.chapter_id === chapterId)
+      return reads.find(r => r.story_id === storyId && r.chapter_id === chapterId)
     }
-    return reads.filter(r => r.novel_id === storyId)
+    return reads.filter(r => r.story_id === storyId)
   }
 
   useEffect(() => {
@@ -84,7 +85,7 @@ export function useReads(readerId?: string) {
           event: '*',
           schema: 'public',
           table: 'reads',
-          filter: `reader_id=eq.${readerId}`
+          filter: `user_id=eq.${readerId}`
         },
         () => {
           fetchReads()

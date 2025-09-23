@@ -45,7 +45,6 @@ export function NovelsManagement({ onNavigate }: NovelsManagementProps) {
   // Ensure we have the latest data
   useEffect(() => {
     fetchStories()
-    fetchProfiles()
   }, []);
 
   const filteredStories = stories.filter(story => {
@@ -89,7 +88,7 @@ export function NovelsManagement({ onNavigate }: NovelsManagementProps) {
 
   const handleBlockNovel = async (story) => {
     try {
-      await updateStory(story.id, { status: 'banned' });
+      await updateStory(story.id, { status: 'archived' }); // Use archived instead of banned
       toast({
         title: "Success",
         description: `"${story.title}" has been blocked`

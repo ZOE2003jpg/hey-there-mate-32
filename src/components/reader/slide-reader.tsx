@@ -73,7 +73,7 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
     const trackCurrentProgress = async () => {
       try {
         const isCompleted = currentSlide === totalSlides
-        await trackProgress(user.id, story.id, currentChapter, currentSlide, isCompleted)
+        await trackProgress(user.id, story.id, currentChapter, currentSlide.toString(), progress)
       } catch (error) {
         console.error('Failed to track progress:', error)
       }

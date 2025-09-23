@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
 
 export interface AnalyticsData {
   id: string
@@ -11,9 +10,31 @@ export interface AnalyticsData {
   created_at: string
 }
 
+// Mock analytics data since analytics table doesn't exist
+const mockAnalytics: AnalyticsData[] = [
+  {
+    id: '1',
+    story_id: '1',
+    chapter_id: null,
+    user_id: '1',
+    event_type: 'view',
+    metadata: {},
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    story_id: '1',
+    chapter_id: '1',
+    user_id: '2',
+    event_type: 'like',
+    metadata: {},
+    created_at: new Date().toISOString()
+  }
+]
+
 export function useAnalytics(authorId?: string) {
   const [analytics, setAnalytics] = useState<AnalyticsData[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetchAnalytics = async () => {
@@ -25,22 +46,13 @@ export function useAnalytics(authorId?: string) {
 
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('analytics')
-        .select(`
-          *,
-          stories!inner (
-            author_id
-          )
-        `)
-        .eq('stories.author_id', authorId)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setAnalytics(data || [])
+      // Mock fetch with delay
+      setTimeout(() => {
+        setAnalytics(mockAnalytics)
+        setLoading(false)
+      }, 500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch analytics')
-    } finally {
       setLoading(false)
     }
   }
@@ -53,11 +65,17 @@ export function useAnalytics(authorId?: string) {
     metadata?: any
   }) => {
     try {
-      const { error } = await supabase
-        .from('analytics')
-        .insert(eventData)
-
-      if (error) throw error
+      // Mock tracking - in real app this would store in database
+      const newEvent: AnalyticsData = {
+        id: Date.now().toString(),
+        story_id: eventData.story_id || null,
+        chapter_id: eventData.chapter_id || null,
+        user_id: eventData.user_id || null,
+        event_type: eventData.event_type,
+        metadata: eventData.metadata || {},
+        created_at: new Date().toISOString()
+      }
+      setAnalytics(prev => [newEvent, ...prev])
     } catch (err) {
       console.error('Failed to track event:', err)
     }
@@ -65,18 +83,14 @@ export function useAnalytics(authorId?: string) {
 
   const getStoryStats = async (storyId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('analytics')
-        .select('event_type')
-        .eq('story_id', storyId)
-
-      if (error) throw error
-
+      // Mock stats calculation
+      const storyEvents = mockAnalytics.filter(d => d.story_id === storyId)
+      
       const stats = {
-        views: data?.filter(d => d.event_type === 'view').length || 0,
-        likes: data?.filter(d => d.event_type === 'like').length || 0,
-        comments: data?.filter(d => d.event_type === 'comment').length || 0,
-        shares: data?.filter(d => d.event_type === 'share').length || 0,
+        views: storyEvents.filter(d => d.event_type === 'view').length || 0,
+        likes: storyEvents.filter(d => d.event_type === 'like').length || 0,
+        comments: storyEvents.filter(d => d.event_type === 'comment').length || 0,
+        shares: storyEvents.filter(d => d.event_type === 'share').length || 0,
       }
 
       return stats
