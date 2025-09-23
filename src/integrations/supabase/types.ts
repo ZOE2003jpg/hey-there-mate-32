@@ -14,7 +14,372 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chapters: {
+        Row: {
+          chapter_number: number
+          content: string
+          created_at: string | null
+          id: string
+          slide_count: number | null
+          status: string | null
+          story_id: string
+          title: string
+          updated_at: string | null
+          view_count: number | null
+          word_count: number | null
+        }
+        Insert: {
+          chapter_number: number
+          content: string
+          created_at?: string | null
+          id?: string
+          slide_count?: number | null
+          status?: string | null
+          story_id: string
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+          word_count?: number | null
+        }
+        Update: {
+          chapter_number?: number
+          content?: string
+          created_at?: string | null
+          id?: string
+          slide_count?: number | null
+          status?: string | null
+          story_id?: string
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapters_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          chapter_id: string | null
+          content: string
+          created_at: string | null
+          id: string
+          story_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      library: {
+        Row: {
+          created_at: string | null
+          id: string
+          story_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          story_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          story_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      likes: {
+        Row: {
+          chapter_id: string | null
+          created_at: string | null
+          id: string
+          story_id: string | null
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"] | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      reads: {
+        Row: {
+          chapter_id: string | null
+          created_at: string | null
+          id: string
+          last_read_at: string | null
+          progress: number | null
+          slide_id: string | null
+          story_id: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_read_at?: string | null
+          progress?: number | null
+          slide_id?: string | null
+          story_id: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_read_at?: string | null
+          progress?: number | null
+          slide_id?: string | null
+          story_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reads_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reads_slide_id_fkey"
+            columns: ["slide_id"]
+            isOneToOne: false
+            referencedRelation: "slides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reads_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      slides: {
+        Row: {
+          background_image_url: string | null
+          chapter_id: string
+          content: string
+          created_at: string | null
+          id: string
+          slide_number: number
+        }
+        Insert: {
+          background_image_url?: string | null
+          chapter_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          slide_number: number
+        }
+        Update: {
+          background_image_url?: string | null
+          chapter_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          slide_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slides_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stories: {
+        Row: {
+          author_id: string
+          comment_count: number | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          genre: string | null
+          id: string
+          like_count: number | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          author_id: string
+          comment_count?: number | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          genre?: string | null
+          id?: string
+          like_count?: number | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          comment_count?: number | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          genre?: string | null
+          id?: string
+          like_count?: number | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      story_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          story_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          story_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          story_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_tags_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +388,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "reader" | "writer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +515,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["reader", "writer", "admin"],
+    },
   },
 } as const
