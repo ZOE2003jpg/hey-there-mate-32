@@ -29,7 +29,7 @@ const Index = () => {
     if (user?.profile && currentPanel !== "home") {
       const userRole = user.profile.role
       const hasAccess = 
-        (currentPanel === "reader") ||
+        (currentPanel === "reader" && (userRole === "reader" || userRole === "admin")) ||
         (currentPanel === "writer" && (userRole === "writer" || userRole === "admin")) ||
         (currentPanel === "admin" && userRole === "admin")
       
@@ -59,7 +59,7 @@ const Index = () => {
     if (user?.profile && currentPanel !== "home") {
       const userRole = user.profile.role
       const hasAccess = 
-        (currentPanel === "reader") ||
+        (currentPanel === "reader" && (userRole === "reader" || userRole === "admin")) ||
         (currentPanel === "writer" && (userRole === "writer" || userRole === "admin")) ||
         (currentPanel === "admin" && userRole === "admin")
       

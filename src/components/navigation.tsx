@@ -15,7 +15,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
   // Filter nav items based on user role
   const allNavItems = [
-    { id: "reader" as const, label: "Reader Panel", icon: BookOpen, roles: ["reader", "writer", "admin"] },
+    { id: "reader" as const, label: "Reader Panel", icon: BookOpen, roles: ["reader", "admin"] },
     { id: "writer" as const, label: "Writer Panel", icon: PenTool, roles: ["writer", "admin"] },
     { id: "admin" as const, label: "Admin Panel", icon: Shield, roles: ["admin"] },
   ]
