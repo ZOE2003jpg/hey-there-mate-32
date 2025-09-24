@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useStories } from "@/hooks/useStories"
 import { useUser } from "@/components/user-context"
 import { toast } from "sonner"
+import { CreateStoryModal } from "./create-story-modal"
 import { 
   ArrowLeft, 
   Plus, 
@@ -107,10 +108,12 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
             <p className="text-muted-foreground">View and manage all your stories</p>
           </div>
         </div>
-        <Button className="vine-button-hero" onClick={() => onNavigate("create-story")}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Story
-        </Button>
+        <CreateStoryModal onStoryCreated={(story) => onNavigate("story-view", { story })}>
+          <Button className="vine-button-hero">
+            <Plus className="h-4 w-4 mr-2" />
+            New Story
+          </Button>
+        </CreateStoryModal>
       </div>
 
       {/* Filters */}
@@ -253,10 +256,12 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
               }
             </p>
             {!searchQuery && filterStatus === "all" && (
-              <Button className="vine-button-hero" onClick={() => onNavigate("create-story")}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Your First Story
-              </Button>
+              <CreateStoryModal onStoryCreated={(story) => onNavigate("story-view", { story })}>
+                <Button className="vine-button-hero">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Story
+                </Button>
+              </CreateStoryModal>
             )}
           </CardContent>
         </Card>
