@@ -6,7 +6,9 @@ import { SearchPage } from "@/components/reader/search-page"
 import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
 import { PreviewReader } from "@/components/reader/preview-reader"
+import { MobileNav } from "@/components/mobile-nav"
 import { Button } from "@/components/ui/button"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { 
   Compass, 
   BookOpen, 
@@ -18,6 +20,7 @@ import {
 export function ReaderPanel() {
   const [currentPage, setCurrentPage] = useState("discover")
   const [currentStory, setCurrentStory] = useState(null)
+  const isMobile = useIsMobile()
 
   const handleNavigate = (page: string, data?: any) => {
     if (data) {
@@ -76,64 +79,52 @@ export function ReaderPanel() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar Navigation */}
-      <div className="hidden lg:block w-64 bg-card border-r border-border p-6">
-        <div className="flex items-center gap-3 mb-8">
-          <BookOpen className="h-8 w-8 text-primary" />
-          <h1 className="text-xl font-bold">Reader Panel</h1>
-        </div>
-        
-        <nav className="space-y-2">
-          {navigationItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Button
-                key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                className="w-full justify-start"
-                onClick={() => handleNavigate(item.id)}
-              >
-                <Icon className="h-4 w-4 mr-3" />
-                {item.label}
-              </Button>
-            )
-          })}
-        </nav>
-      </div>
-
-      {/* Mobile Navigation */}
-      <div className="lg:hidden fixed top-16 left-0 right-0 bg-card border-b border-border z-30">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <h1 className="text-lg font-bold">Reader Panel</h1>
+    <div className="flex min-h-screen w-full">
+      {/* Desktop Sidebar Navigation */}
+      {!isMobile && (
+        <div className="w-64 bg-card border-r border-border p-6">
+          <div className="flex items-center gap-3 mb-8">
+            <BookOpen className="h-8 w-8 text-primary" />
+            <h1 className="text-xl font-bold">Reader Panel</h1>
           </div>
-        </div>
-        <div className="px-4 pb-4">
-          <div className="flex flex-wrap gap-2">
+          
+          <nav className="space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon
               return (
                 <Button
                   key={item.id}
-                  variant={currentPage === item.id ? "default" : "outline"}
-                  size="sm"
+                  variant={currentPage === item.id ? "default" : "ghost"}
+                  className="w-full justify-start"
                   onClick={() => handleNavigate(item.id)}
-                  className="flex items-center gap-2"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4 mr-3" />
                   {item.label}
                 </Button>
               )
             })}
+          </nav>
+        </div>
+      )}
+
+      {/* Mobile Header with Navigation */}
+      {isMobile && (
+        <div className="fixed top-0 left-0 right-0 bg-card border-b border-border z-50 h-16">
+          <div className="flex items-center justify-between p-4 h-full">
+            <div className="flex items-center gap-3">
+              <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
+              <BookOpen className="h-6 w-6 text-primary" />
+              <h1 className="text-lg font-bold">Reader Panel</h1>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
-      <div className="flex-1 p-4 lg:p-8 overflow-auto lg:mt-0 mt-32">
-        {renderPage()}
+      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-16' : ''}`}>
+        <div className="p-4 lg:p-8">
+          {renderPage()}
+        </div>
       </div>
     </div>
   )

@@ -24,7 +24,9 @@ import {
   LogOut,
   Trash2,
   Download,
-  BookOpen
+  BookOpen,
+  Flame,
+  Zap
 } from "lucide-react"
 
 interface SettingsPageProps {
@@ -222,23 +224,23 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
               <div className="space-y-1">
                 <div className="font-medium">Theme</div>
                 <div className="text-sm text-muted-foreground">
-                  Choose between light and dark mode
+                  Choose between Fire and Azure mode
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button
-                  variant={theme === "light" ? "default" : "outline"}
+                  variant={theme === "fire" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setTheme("light")}
+                  onClick={() => setTheme("fire")}
                 >
-                  <Sun className="h-4 w-4" />
+                  <Flame className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={theme === "dark" ? "default" : "outline"}
+                  variant={theme === "azure" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setTheme("dark")}
+                  onClick={() => setTheme("azure")}
                 >
-                  <Moon className="h-4 w-4" />
+                  <Zap className="h-4 w-4" />
                 </Button>
               </div>
             </div>

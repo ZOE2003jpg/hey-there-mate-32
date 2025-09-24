@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = "light" | "dark"
+type Theme = "fire" | "azure"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -14,7 +14,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: "light",
+  theme: "fire",
   setTheme: () => null,
 }
 
@@ -22,7 +22,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = "dark",
+  defaultTheme = "fire",
   storageKey = "vine-ui-theme",
   ...props
 }: ThemeProviderProps) {
@@ -33,12 +33,12 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
 
-    root.classList.remove("light", "dark")
+    root.classList.remove("fire", "azure")
 
-    if (theme === "dark") {
-      root.classList.add("dark")
+    if (theme === "azure") {
+      root.classList.add("azure")
     } else {
-      root.classList.add("light")
+      root.classList.add("fire")
     }
   }, [theme])
 

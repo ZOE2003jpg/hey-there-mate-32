@@ -116,21 +116,19 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
         onClick={handleSlideNavigation}
       >
         <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-8 bg-card/50 backdrop-blur-sm">
-            <div className="vine-slide-content">
-              <div className="prose max-w-none text-justify">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-8 text-primary text-center">
-                  {chapter?.title || 'Preview Chapter'}
-                </h2>
-                <p 
-                  className="leading-relaxed font-medium max-w-6xl mx-auto"
-                  style={{ 
-                    fontSize: `${fontSize}px`,
-                    fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
-                  }}
-                >
-                  {slides[currentSlide - 1] || 'Loading slide content...'}
-                </p>
+          <div className="border-2 border-primary/20 rounded-lg p-4 sm:p-6 lg:p-8 bg-card/50 backdrop-blur-sm min-h-[60vh] sm:min-h-[70vh]">
+            <div className="prose max-w-none text-justify">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-8 text-primary text-center">
+                {chapter?.title || 'Preview Chapter'}
+              </h2>
+              <div 
+                className="leading-relaxed font-medium w-full text-sm sm:text-base md:text-lg"
+                style={{ 
+                  fontSize: `${Math.max(12, Math.min(fontSize, 24))}px`,
+                  fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
+                }}
+              >
+                {slides[currentSlide - 1] || 'Loading slide content...'}
               </div>
             </div>
           </div>

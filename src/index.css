@@ -2,65 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* VineNovel Design System - Grey base with Orange accents */
+/* Fire and Azure Theme System - Custom brand themes */
 
 @layer base {
   :root {
-    /* VineNovel Light Theme - Clean Grey with Orange */
-    --background: 0 0% 98%;
-    --foreground: 220 13% 18%;
+    /* Fire Theme - Orange/Red based theme with warm tones */
+    --background: 15 8% 9%;
+    --foreground: 25 25% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card: 15 8% 12%;
+    --card-foreground: 25 25% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover: 15 8% 12%;
+    --popover-foreground: 25 25% 95%;
 
-    /* Orange primary for VineNovel branding */
+    /* Fire Orange primary */
     --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: 15 8% 9%;
 
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 220 13% 18%;
+    --secondary: 15 8% 18%;
+    --secondary-foreground: 25 25% 95%;
 
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 15 8% 18%;
+    --muted-foreground: 25 9% 46%;
 
     --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 15 8% 9%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 25 25% 95%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 15 8% 18%;
+    --input: 15 8% 18%;
     --ring: 25 95% 53%;
 
-    /* VineNovel specific design tokens */
-    --vine-grey-50: 220 13% 98%;
-    --vine-grey-100: 220 13% 95%;
-    --vine-grey-200: 220 13% 91%;
-    --vine-grey-300: 220 13% 82%;
-    --vine-grey-400: 220 9% 46%;
-    --vine-grey-500: 220 13% 35%;
-    --vine-grey-600: 220 13% 27%;
-    --vine-grey-700: 220 13% 18%;
-    --vine-grey-800: 220 13% 12%;
-    --vine-grey-900: 220 13% 9%;
-
-    --vine-orange: 25 95% 53%;
-    --vine-orange-light: 25 95% 60%;
-    --vine-orange-dark: 25 95% 47%;
+    /* Fire specific design tokens */
+    --fire-orange: 25 95% 53%;
+    --fire-orange-light: 25 95% 60%;
+    --fire-orange-dark: 25 95% 47%;
+    --fire-red: 5 85% 55%;
+    --fire-yellow: 45 90% 60%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--vine-orange)) 0%, hsl(var(--vine-orange-light)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--vine-grey-50)) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(var(--vine-grey-100)) 0%, hsl(var(--vine-grey-200)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--fire-orange)) 0%, hsl(var(--fire-red)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(15 8% 10%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(15 8% 11%) 0%, hsl(15 8% 8%) 100%);
 
     /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(var(--vine-grey-300) / 0.1), 0 2px 4px -1px hsl(var(--vine-grey-300) / 0.06);
-    --shadow-elevation: 0 10px 15px -3px hsl(var(--vine-grey-300) / 0.1), 0 4px 6px -2px hsl(var(--vine-grey-300) / 0.05);
-    --shadow-glow: 0 0 20px hsl(var(--vine-orange) / 0.15);
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+    --shadow-elevation: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.2);
+    --shadow-glow: 0 0 20px hsl(var(--fire-orange) / 0.3);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,63 +59,76 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 15 8% 9%;
+    --sidebar-foreground: 25 25% 95%;
+    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary-foreground: 15 8% 9%;
+    --sidebar-accent: 15 8% 18%;
+    --sidebar-accent-foreground: 25 25% 95%;
+    --sidebar-border: 15 8% 18%;
+    --sidebar-ring: 25 95% 53%;
   }
 
-  .dark {
-    /* VineNovel Dark Theme - Dark Grey with Orange */
-    --background: 220 13% 9%;
-    --foreground: 220 13% 95%;
+  .azure {
+    /* Azure Theme - Purple/Blue based theme with cool tones */
+    --background: 240 8% 9%;
+    --foreground: 260 25% 95%;
 
-    --card: 220 13% 12%;
-    --card-foreground: 220 13% 95%;
+    --card: 240 8% 12%;
+    --card-foreground: 260 25% 95%;
 
-    --popover: 220 13% 12%;
-    --popover-foreground: 220 13% 95%;
+    --popover: 240 8% 12%;
+    --popover-foreground: 260 25% 95%;
 
-    --primary: 25 95% 53%;
-    --primary-foreground: 220 13% 9%;
+    /* Azure Purple primary */
+    --primary: 260 85% 58%;
+    --primary-foreground: 240 8% 9%;
 
-    --secondary: 220 13% 18%;
-    --secondary-foreground: 220 13% 95%;
+    --secondary: 240 8% 18%;
+    --secondary-foreground: 260 25% 95%;
 
-    --muted: 220 13% 18%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 240 8% 18%;
+    --muted-foreground: 260 9% 46%;
 
-    --accent: 25 95% 53%;
-    --accent-foreground: 220 13% 9%;
+    --accent: 260 85% 58%;
+    --accent-foreground: 240 8% 9%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 220 13% 95%;
+    --destructive-foreground: 260 25% 95%;
 
-    --border: 220 13% 18%;
-    --input: 220 13% 18%;
-    --ring: 25 95% 53%;
+    --border: 240 8% 18%;
+    --input: 240 8% 18%;
+    --ring: 260 85% 58%;
 
-    /* Dark mode specific overrides */
-    --vine-grey-50: 220 13% 18%;
-    --vine-grey-100: 220 13% 12%;
-    --vine-grey-200: 220 13% 18%;
-    --vine-grey-300: 220 13% 27%;
+    /* Azure specific design tokens */
+    --azure-purple: 260 85% 58%;
+    --azure-purple-light: 260 85% 65%;
+    --azure-purple-dark: 260 85% 51%;
+    --azure-blue: 240 85% 58%;
+    --azure-cyan: 200 85% 58%;
 
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--vine-grey-100)) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(var(--vine-grey-800)) 0%, hsl(var(--vine-grey-900)) 100%);
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--azure-purple)) 0%, hsl(var(--azure-blue)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(240 8% 10%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(240 8% 11%) 0%, hsl(240 8% 8%) 100%);
+
+    /* Shadows */
     --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
     --shadow-elevation: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.2);
+    --shadow-glow: 0 0 20px hsl(var(--azure-purple) / 0.3);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slide: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 240 8% 9%;
+    --sidebar-foreground: 260 25% 95%;
+    --sidebar-primary: 260 85% 58%;
+    --sidebar-primary-foreground: 240 8% 9%;
+    --sidebar-accent: 240 8% 18%;
+    --sidebar-accent-foreground: 260 25% 95%;
+    --sidebar-border: 240 8% 18%;
+    --sidebar-ring: 260 85% 58%;
   }
 }
 
