@@ -268,7 +268,7 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40">
+    <div className="fixed inset-0 bg-background z-40 w-full h-full">
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 z-10">
         <Progress value={progress} className="h-1 rounded-none" />
@@ -277,7 +277,7 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
       {/* Menu Overlay */}
       {showMenu && (
         <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-20 flex items-center justify-center">
-          <div className="max-w-md w-full mx-4 space-y-6">
+          <div className="max-w-md w-full mx-4 px-2 space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-2">{story?.title || "The Digital Awakening"}</h2>
               <p className="text-muted-foreground">by {story?.author || "Sarah Chen"}</p>
@@ -338,14 +338,14 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 py-8"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="w-full max-w-7xl mx-auto px-8">
+        <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
-              <div className="prose prose-xl lg:prose-2xl max-w-none text-center">
-                <p className="text-2xl lg:text-3xl leading-relaxed font-medium">
+              <div className="prose prose-lg sm:prose-xl lg:prose-2xl max-w-none text-center">
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-medium">
                   {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
                 </p>
               </div>
@@ -355,7 +355,7 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
       </div>
 
       {/* Navigation Hints */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-muted-foreground">
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <ChevronLeft className="h-4 w-4" />
           <span>Tap left</span>
@@ -377,14 +377,14 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
         variant="ghost"
         size="sm"
         onClick={() => onNavigate("discover")}
-        className="absolute top-4 left-4 z-10"
+        className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10"
       >
-        <X className="h-4 w-4 mr-2" />
-        Exit
+        <X className="h-4 w-4 sm:mr-2" />
+        <span className="hidden sm:inline">Exit</span>
       </Button>
 
       {/* Slide Counter */}
-      <div className="absolute top-4 right-4 z-10 bg-background/80 rounded-full px-3 py-1 text-sm">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm">
         {currentSlide} / {totalSlides}
       </div>
     </div>

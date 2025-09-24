@@ -62,7 +62,7 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40">
+    <div className="fixed inset-0 bg-background z-40 w-full h-full">
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 z-10">
         <Progress value={progress} className="h-1 rounded-none" />
@@ -77,17 +77,17 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 py-8"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="w-full max-w-7xl mx-auto px-8">
+        <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
-              <div className="prose prose-xl lg:prose-2xl max-w-none text-center">
-                <h2 className="text-3xl font-bold mb-8 text-primary">
+              <div className="prose prose-lg sm:prose-xl lg:prose-2xl max-w-none text-center">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-8 text-primary">
                   {chapter?.title || 'Preview Chapter'}
                 </h2>
-                <p className="text-2xl lg:text-3xl leading-relaxed font-medium">
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-medium">
                   {slides[currentSlide - 1] || 'Loading slide content...'}
                 </p>
               </div>
@@ -97,7 +97,7 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
       </div>
 
       {/* Navigation Hints */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-sm text-muted-foreground">
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <ChevronLeft className="h-4 w-4" />
           <span>Tap left</span>
@@ -114,14 +114,14 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
         variant="ghost"
         size="sm"
         onClick={() => onNavigate("add-chapter")}
-        className="absolute top-4 left-4 z-10"
+        className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10"
       >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Editor
+        <ArrowLeft className="h-4 w-4 sm:mr-2" />
+        <span className="hidden sm:inline">Back to Editor</span>
       </Button>
 
       {/* Slide Counter */}
-      <div className="absolute top-4 right-4 z-10 bg-background/80 rounded-full px-3 py-1 text-sm">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm">
         {currentSlide} / {totalSlides}
       </div>
     </div>

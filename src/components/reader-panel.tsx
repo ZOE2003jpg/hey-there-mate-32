@@ -78,7 +78,7 @@ export function ReaderPanel() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar Navigation */}
-      <div className="w-64 bg-card border-r border-border p-6">
+      <div className="hidden lg:block w-64 bg-card border-r border-border p-6">
         <div className="flex items-center gap-3 mb-8">
           <BookOpen className="h-8 w-8 text-primary" />
           <h1 className="text-xl font-bold">Reader Panel</h1>
@@ -102,8 +102,37 @@ export function ReaderPanel() {
         </nav>
       </div>
 
+      {/* Mobile Navigation */}
+      <div className="lg:hidden fixed top-16 left-0 right-0 bg-card border-b border-border z-30">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-3">
+            <BookOpen className="h-6 w-6 text-primary" />
+            <h1 className="text-lg font-bold">Reader Panel</h1>
+          </div>
+        </div>
+        <div className="px-4 pb-4">
+          <div className="flex flex-wrap gap-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon
+              return (
+                <Button
+                  key={item.id}
+                  variant={currentPage === item.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleNavigate(item.id)}
+                  className="flex items-center gap-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-4 lg:p-8 overflow-auto lg:mt-0 mt-32">
         {renderPage()}
       </div>
     </div>
