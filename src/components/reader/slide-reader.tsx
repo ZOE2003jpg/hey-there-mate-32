@@ -40,6 +40,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [currentChapter, setCurrentChapter] = useState<string | null>(null)
   const [fontSize, setFontSize] = useState(16)
   const [fontFamily, setFontFamily] = useState('serif')
+  const [chaptersList, setChaptersList] = useState<any[]>([])
+  const [nextChapterId, setNextChapterId] = useState<string | null>(null)
   
   const { getSlidesWithAds } = useSlides()
   const { trackProgress, getReadingProgress } = useReads(user?.id)
@@ -49,18 +51,21 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const totalSlides = allSlides.length
   const progress = totalSlides > 0 ? Math.round((currentSlide / totalSlides) * 100) : 0
 
-  // Load slides with ads when story/chapter changes
+  // Load slides when story/chapter changes
   useEffect(() => {
-    const loadSlidesWithAds = async () => {
+    const loadSlides = async (targetChapter?: any) => {
       if (!story?.id) return
       
-      // Use the specific chapter passed in, or find the first available chapter
-      let selectedChapter = chapter
+      // Determine selected chapter and chapters list
+      let selectedChapter = targetChapter || chapter
+      let chaptersArr: any[] = []
+      
       if (!selectedChapter && story.chapters && story.chapters.length > 0) {
-        selectedChapter = story.chapters.find(ch => ch.content && ch.content.trim()) || story.chapters[0]
+        chaptersArr = story.chapters.filter((ch: any) => ch && typeof ch === 'object')
+        selectedChapter = chaptersArr.find((ch: any) => ch.content && ch.content.trim()) || chaptersArr[0]
       }
       
-      // If still no chapter, try to fetch chapters from the database
+      // If still no chapter, fetch from database
       if (!selectedChapter && story?.id) {
         console.log('No chapters in story data, fetching from database for story:', story.id)
         try {
@@ -71,8 +76,9 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
             .eq('status', 'published')
             .order('chapter_number', { ascending: true })
           
-          if (fetchedChapters && fetchedChapters.length > 0) {
-            selectedChapter = fetchedChapters[0]
+          chaptersArr = fetchedChapters || []
+          if (chaptersArr.length > 0) {
+            selectedChapter = chaptersArr[0]
             console.log('Found chapter from database:', selectedChapter)
           }
         } catch (error) {
@@ -82,80 +88,61 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       
       if (!selectedChapter) {
         // No chapters available - show error message
-        setAllSlides([{
-          content: 'No chapters available to read. Please check back later.',
-          type: 'content',
-          slide_number: 1
-        }])
+        setAllSlides([{ content: 'No chapters available to read. Please check back later.', type: 'content', slide_number: 1 }])
         return
       }
 
-      setCurrentChapter(selectedChapter.id)
-      
+      // Maintain chapters list and compute nextChapterId
       try {
-        const slidesData = await getSlidesWithAds(selectedChapter.id, user?.id)
-        console.log('Slides data received:', slidesData)
-        if (slidesData.slides && slidesData.slides.length > 0) {
-          setAllSlides(slidesData.slides)
-        } else {
-          // If no slides exist, create them from chapter content
-          if (selectedChapter.content) {
-            const words = selectedChapter.content.split(/\s+/)
-            const wordsPerSlide = 400
-            const slides = []
-            
-            for (let i = 0; i < words.length; i += wordsPerSlide) {
-              const slideWords = words.slice(i, i + wordsPerSlide)
-              slides.push({
-                content: slideWords.join(" "),
-                type: 'content',
-                slide_number: slides.length + 1
-              })
-            }
-            
-            console.log('Created slides from chapter content:', slides)
-            setAllSlides(slides)
-          } else {
-            console.log('No chapter content available')
-            setAllSlides([{
-              content: 'Chapter content is not available.',
-              type: 'content',
-              slide_number: 1
-            }])
-          }
+        if (!chaptersArr || chaptersArr.length === 0) {
+          chaptersArr = (story?.chapters || []) as any[]
         }
-      } catch (error) {
-        console.error('Failed to load slides:', error)
-        // Fallback: create slides from chapter content
-        if (selectedChapter?.content) {
+        if (chaptersArr && chaptersArr.length > 0) {
+          const ordered = [...chaptersArr].sort((a: any, b: any) => (a.chapter_number || 0) - (b.chapter_number || 0))
+          setChaptersList(ordered)
+          const idx = ordered.findIndex(c => c.id === selectedChapter.id)
+          setNextChapterId(idx >= 0 && idx < ordered.length - 1 ? ordered[idx + 1].id : null)
+        } else {
+          setChaptersList([])
+          setNextChapterId(null)
+        }
+      } catch (e) {
+        console.warn('Unable to compute next chapter:', e)
+      }
+
+      setCurrentChapter(selectedChapter.id)
+      setCurrentSlide(1)
+      
+      // Build slides locally from chapter content
+      try {
+        if (selectedChapter.content) {
           const words = selectedChapter.content.split(/\s+/)
           const wordsPerSlide = 400
-          const slides = []
+          const slides: any[] = []
           
           for (let i = 0; i < words.length; i += wordsPerSlide) {
             const slideWords = words.slice(i, i + wordsPerSlide)
             slides.push({
-              content: slideWords.join(" "),
+              content: slideWords.join(' '),
               type: 'content',
               slide_number: slides.length + 1
             })
           }
           
-          console.log('Fallback: Created slides from chapter content:', slides)
+          console.log('Created slides from chapter content:', slides)
           setAllSlides(slides)
         } else {
-          console.log('Fallback: No chapter content for fallback')
-          setAllSlides([{
-            content: 'Unable to load chapter content.',
-            type: 'content',
-            slide_number: 1
-          }])
+          console.log('No chapter content available')
+          setAllSlides([{ content: 'Chapter content is not available.', type: 'content', slide_number: 1 }])
         }
+      } catch (error) {
+        console.error('Failed to load slides:', error)
+        setAllSlides([{ content: 'Unable to load chapter content.', type: 'content', slide_number: 1 }])
       }
     }
 
-    loadSlidesWithAds()
-  }, [story, chapter, user?.id])
+    loadSlides()
+  }, [story, chapter])
 
   // Track reading progress
   useEffect(() => {
