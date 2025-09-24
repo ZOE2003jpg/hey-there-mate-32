@@ -77,7 +77,7 @@ export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
-                    <span>{chapter.word_count || 0} words</span>
+                    <span>{chapter.slide_count || 0} slides</span>
                   </div>
                 </div>
                 {chapter.content && (

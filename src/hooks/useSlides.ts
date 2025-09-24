@@ -55,13 +55,68 @@ export function useSlides(chapterId?: string) {
 
   const splitChapterToSlides = async (chapterId: string, text: string, wordLimit = 400) => {
     try {
-      const { data, error } = await supabase.functions.invoke('split-chapter', {
-        body: { chapterId, text, wordLimit }
-      })
-      
-      if (error) throw error
+      // Split text into sentences
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+      const slides = []
+      let currentSlide = ''
+      let slideOrder = 1
+
+      for (const sentence of sentences) {
+        const trimmedSentence = sentence.trim()
+        if (!trimmedSentence) continue
+
+        const testSlide = currentSlide + (currentSlide ? '. ' : '') + trimmedSentence + '.'
+        const wordCount = testSlide.split(/\s+/).length
+
+        if (wordCount <= wordLimit) {
+          currentSlide = testSlide
+        } else {
+          // Save current slide if it has content
+          if (currentSlide) {
+            slides.push({
+              chapter_id: chapterId,
+              order_number: slideOrder++,
+              content: currentSlide
+            })
+          }
+          // Start new slide with current sentence
+          currentSlide = trimmedSentence + '.'
+        }
+      }
+
+      // Add the last slide if it has content
+      if (currentSlide) {
+        slides.push({
+          chapter_id: chapterId,
+          order_number: slideOrder,
+          content: currentSlide
+        })
+      }
+
+      // Delete existing slides for this chapter
+      await supabase
+        .from('slides')
+        .delete()
+        .eq('chapter_id', chapterId)
+
+      // Insert new slides
+      const { error: insertError } = await supabase
+        .from('slides')
+        .insert(slides)
+
+      if (insertError) throw insertError
+
+      // Update chapter slide count
+      await supabase
+        .from('chapters')
+        .update({ 
+          slide_count: slides.length,
+          word_count: text.split(/\s+/).length
+        })
+        .eq('id', chapterId)
+
       await fetchSlides()
-      return data
+      return { success: true, slideCount: slides.length, slides }
     } catch (err) {
       console.error('Failed to split chapter:', err)
       throw err

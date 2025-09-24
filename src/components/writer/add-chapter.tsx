@@ -66,7 +66,7 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
     toast.success(`Chapter split into ${newSlides.length} slides`)
   }
 
-  const handleSaveChapter = async () => {
+  const handleSaveChapter = async (publish = false) => {
     if (!user) {
       toast.error("Please login to create chapters")
       return
@@ -95,7 +95,7 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
         ? existingChapters[0].chapter_number + 1 
         : 1
 
-      // Create the chapter directly instead of using the split-chapter function
+      // Create the chapter
       const chapter = await createChapter({
         title: chapterData.title,
         content: chapterData.content,
@@ -103,22 +103,56 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
         chapter_number: nextChapterNumber
       })
 
-      // Create slides using the useSlides hook method instead of edge function
+      // Create slides
       if (chapter) {
         try {
           await splitChapterToSlides(chapter.id, chapterData.content, wordsPerSlide)
+          
+          // If publishing, update status
+          if (publish) {
+            await supabase
+              .from('chapters')
+              .update({ status: 'published' })
+              .eq('id', chapter.id)
+          }
         } catch (slideError) {
           console.warn('Slide creation failed, but chapter was saved:', slideError)
-          // Don't fail the whole operation if slide creation fails
         }
       }
 
-      toast.success("Chapter created successfully!")
+      toast.success(publish ? "Chapter published successfully!" : "Chapter saved as draft!")
       onNavigate("manage-chapters", { storyId: chapterData.storyId })
     } catch (error) {
-      toast.error("Failed to create chapter")
+      if (error.code === '23505') {
+        toast.error("A chapter with this number already exists. Please try again.")
+      } else {
+        toast.error("Failed to create chapter")
+      }
       console.error('Chapter creation error:', error)
     }
+  }
+
+  const handlePreviewReader = () => {
+    if (!chapterData.content.trim()) {
+      toast.error("Please add chapter content first")
+      return
+    }
+    
+    // Create a temporary chapter object for preview
+    const previewChapter = {
+      id: 'preview',
+      title: chapterData.title || 'Untitled Chapter',
+      content: chapterData.content,
+      chapter_number: 1,
+      word_count: chapterData.content.split(/\s+/).length,
+      slide_count: Math.ceil(chapterData.content.split(/\s+/).length / wordsPerSlide)
+    }
+    
+    // Navigate to reader with preview data
+    onNavigate('slide-reader', { 
+      chapter: previewChapter, 
+      isPreview: true 
+    })
   }
 
   const handleReSplit = (newWordsPerSlide: number) => {
@@ -304,19 +338,23 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={handleSaveChapter}
+                onClick={() => handleSaveChapter(false)}
                 disabled={loading}
               >
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? "Saving..." : "Save Draft"}
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={handlePreviewReader}
+              >
                 <Eye className="h-4 w-4 mr-2" />
                 Preview Reader Mode
               </Button>
               <Button 
                 className="w-full vine-button-hero justify-start" 
-                onClick={handleSaveChapter}
+                onClick={() => handleSaveChapter(true)}
                 disabled={loading}
               >
                 <BookOpen className="h-4 w-4 mr-2" />
