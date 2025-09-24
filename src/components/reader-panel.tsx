@@ -5,6 +5,7 @@ import { LibraryPage } from "@/components/reader/library-page"
 import { SearchPage } from "@/components/reader/search-page"
 import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
+import { PreviewReader } from "@/components/reader/preview-reader"
 import { Button } from "@/components/ui/button"
 import { 
   Compass, 
@@ -40,6 +41,8 @@ export function ReaderPanel() {
         return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "reader":
         return <SlideReader story={currentStory} onNavigate={handleNavigate} />
+      case "preview":
+        return <PreviewReader chapter={currentStory} onNavigate={handleNavigate} />
       case "library":
         return <LibraryPage onNavigate={handleNavigate} />
       case "search":
@@ -54,6 +57,11 @@ export function ReaderPanel() {
   // If we're in reader mode, show full screen reader
   if (currentPage === "reader") {
     return <SlideReader story={currentStory} onNavigate={handleNavigate} />
+  }
+
+  // If we're in preview mode, show full screen preview
+  if (currentPage === "preview") {
+    return <PreviewReader chapter={currentStory} onNavigate={handleNavigate} />
   }
 
   // Also show story chapters page without sidebar

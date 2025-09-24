@@ -19,6 +19,10 @@ export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
     onNavigate('reader', { story, chapter })
   }
 
+  const handlePreviewChapter = (chapter: any) => {
+    onNavigate('preview', { chapter })
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -60,9 +64,15 @@ export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
                       </CardDescription>
                     </div>
                   </div>
-                  <Button onClick={() => handleReadChapter(chapter)}>
-                    Read Chapter
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handlePreviewChapter(chapter)}>
+                      <Eye className="h-4 w-4 mr-1" />
+                      Preview
+                    </Button>
+                    <Button onClick={() => handleReadChapter(chapter)}>
+                      Read Chapter
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
