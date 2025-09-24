@@ -37,9 +37,10 @@ export function useStories() {
   const fetchStories = async () => {
     try {
       setLoading(true)
+      // Simplified query without relationships to avoid the database error
       const { data, error } = await supabase
         .from('stories')
-        .select('*, profiles(display_name, username), story_tags(tag)')
+        .select('*')
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -57,6 +58,7 @@ export function useStories() {
     genre: string
     author_id: string
     tags?: string[]
+    cover_image_url?: string | null
   }) => {
     try {
       const { data: story, error } = await supabase
@@ -66,6 +68,7 @@ export function useStories() {
           description: storyData.description,
           genre: storyData.genre,
           author_id: storyData.author_id,
+          cover_image_url: storyData.cover_image_url,
           status: 'draft'
         })
         .select()

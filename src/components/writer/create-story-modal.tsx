@@ -10,6 +10,7 @@ import { Upload, Save, BookOpen, Plus, X, Tags, Eye } from "lucide-react"
 import { useStories } from "@/hooks/useStories"
 import { useUser } from "@/components/user-context"
 import { toast } from "sonner"
+import { supabase } from "@/integrations/supabase/client"
 
 interface CreateStoryModalProps {
   children: React.ReactNode
@@ -28,6 +29,7 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
     tags: [] as string[],
     coverImage: null as File | null
   })
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null)
   const [newTag, setNewTag] = useState("")
 
   const genres = [
@@ -44,6 +46,7 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
       coverImage: null
     })
     setNewTag("")
+    setCoverImagePreview(null)
   }
 
   const handleSubmit = async () => {
@@ -58,12 +61,35 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
     }
 
     try {
+      let coverImageUrl = null
+      
+      // Upload cover image if one is selected
+      if (formData.coverImage) {
+        const fileExt = formData.coverImage.name.split('.').pop()
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('covers')
+          .upload(fileName, formData.coverImage)
+        
+        if (uploadError) {
+          throw new Error('Failed to upload cover image')
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('covers')
+          .getPublicUrl(uploadData.path)
+        
+        coverImageUrl = publicUrl
+      }
+
       const newStory = await createStory({
         title: formData.title.trim(),
         description: formData.description.trim(),
         genre: formData.genre,
         author_id: user.id,
-        tags: formData.tags
+        tags: formData.tags,
+        cover_image_url: coverImageUrl
       })
       
       toast.success("Story created successfully!")
@@ -71,7 +97,8 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
       resetForm()
       onStoryCreated(newStory)
     } catch (error) {
-      toast.error("Failed to create story")
+      console.error('Create story error:', error)
+      toast.error(error instanceof Error ? error.message : "Failed to create story")
     }
   }
 
@@ -93,6 +120,20 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
     if (e.key === "Enter" && newTag.trim()) {
       e.preventDefault()
       handleTagAdd()
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFormData(prev => ({ ...prev, coverImage: file }))
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setCoverImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -191,10 +232,27 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
                 <p className="text-sm text-muted-foreground mb-2">
                   Drag and drop your cover image here, or click to browse
                 </p>
-                <Button variant="outline" size="sm">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="cover-image-input"
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  type="button"
+                  onClick={() => document.getElementById('cover-image-input')?.click()}
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   Choose File
                 </Button>
+                {formData.coverImage && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Selected: {formData.coverImage.name}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -203,11 +261,19 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
           <div className="space-y-4">
             <div className="border rounded-lg p-4">
               <h3 className="font-medium mb-3">Story Preview</h3>
-              <div className="aspect-[3/4] bg-secondary/30 rounded-lg flex items-center justify-center mb-3">
-                <div className="text-center text-muted-foreground">
-                  <BookOpen className="h-8 w-8 mx-auto mb-1" />
-                  <p className="text-xs">Cover Preview</p>
-                </div>
+              <div className="aspect-[3/4] bg-secondary/30 rounded-lg flex items-center justify-center mb-3 overflow-hidden">
+                {coverImagePreview ? (
+                  <img 
+                    src={coverImagePreview} 
+                    alt="Cover preview" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <BookOpen className="h-8 w-8 mx-auto mb-1" />
+                    <p className="text-xs">Cover Preview</p>
+                  </div>
+                )}
               </div>
               <div>
                 <h4 className="font-bold text-sm">{formData.title || "Story Title"}</h4>

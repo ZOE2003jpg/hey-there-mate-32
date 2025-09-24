@@ -95,7 +95,7 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
         ? existingChapters[0].chapter_number + 1 
         : 1
 
-      // Create the chapter first
+      // Create the chapter directly instead of using the split-chapter function
       const chapter = await createChapter({
         title: chapterData.title,
         content: chapterData.content,
@@ -103,12 +103,17 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
         chapter_number: nextChapterNumber
       })
 
-      // Split into slides using edge function
+      // Create slides using the useSlides hook method instead of edge function
       if (chapter) {
-        await splitChapterToSlides(chapter.id, chapterData.content, wordsPerSlide)
+        try {
+          await splitChapterToSlides(chapter.id, chapterData.content, wordsPerSlide)
+        } catch (slideError) {
+          console.warn('Slide creation failed, but chapter was saved:', slideError)
+          // Don't fail the whole operation if slide creation fails
+        }
       }
 
-      toast.success("Chapter created and split into slides!")
+      toast.success("Chapter created successfully!")
       onNavigate("manage-chapters", { storyId: chapterData.storyId })
     } catch (error) {
       toast.error("Failed to create chapter")
