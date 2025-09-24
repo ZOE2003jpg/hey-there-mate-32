@@ -12,7 +12,9 @@ import {
   Eye,
   Clock,
   TrendingUp,
-  X
+  X,
+  Heart,
+  Bookmark
 } from "lucide-react"
 
 interface SearchPageProps {
@@ -83,7 +85,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div className="flex items-center gap-4">
@@ -97,11 +99,11 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Search className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+              <Search className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               Search Stories
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               Find your next favorite read
             </p>
           </div>
@@ -109,7 +111,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
         <Button 
           variant="outline" 
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-sm"
         >
           <Filter className="h-4 w-4" />
           Filters {selectedGenres.length > 0 && `(${selectedGenres.length})`}
@@ -123,7 +125,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
           placeholder="Search for stories, authors, or keywords..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="pl-10 h-12 text-lg"
+          className="pl-10 h-10 sm:h-12 text-sm sm:text-lg"
         />
       </div>
 
@@ -131,8 +133,8 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
       {!query && (
         <Card className="vine-card">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Popular Searches
             </CardTitle>
           </CardHeader>
@@ -144,7 +146,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setQuery(search)}
-                  className="capitalize"
+                  className="capitalize text-xs sm:text-sm"
                 >
                   {search}
                 </Button>
@@ -159,9 +161,9 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
         <Card className="vine-card">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-lg">Filters</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Filters</CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={clearFilters}>
+                <Button variant="outline" size="sm" onClick={clearFilters} className="text-xs">
                   Clear All
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)}>
@@ -170,10 +172,10 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             {/* Genres */}
             <div>
-              <h3 className="font-semibold mb-3">Genres</h3>
+              <h3 className="font-semibold mb-3 text-sm sm:text-base">Genres</h3>
               <div className="flex flex-wrap gap-2">
                 {genres.map((genre) => (
                   <Button
@@ -181,6 +183,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                     variant={selectedGenres.includes(genre) ? "default" : "outline"}
                     size="sm"
                     onClick={() => toggleGenre(genre)}
+                    className="text-xs sm:text-sm"
                   >
                     {genre}
                   </Button>
@@ -190,7 +193,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
 
             {/* Sort By */}
             <div>
-              <h3 className="font-semibold mb-3">Sort By</h3>
+              <h3 className="font-semibold mb-3 text-sm sm:text-base">Sort By</h3>
               <div className="flex flex-wrap gap-2">
                 {sortOptions.map((option) => (
                   <Button
@@ -198,6 +201,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                     variant={sortBy === option.value ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSortBy(option.value)}
+                    className="text-xs sm:text-sm"
                   >
                     {option.label}
                   </Button>
@@ -211,11 +215,11 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
       {/* Search Results */}
       {query && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-semibold">
               {searchResults.length} results for "{query}"
             </h2>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               Sorted by {sortOptions.find(opt => opt.value === sortBy)?.label}
             </div>
           </div>
@@ -225,72 +229,68 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
           ) : searchResults.length === 0 ? (
             <Card className="vine-card">
               <CardContent className="pt-6 pb-6 text-center">
-                <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">No stories found</h3>
-                <p className="text-muted-foreground">
+                <Search className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-base sm:text-lg font-medium mb-2">No stories found</h3>
+                <p className="text-muted-foreground text-sm">
                   Try adjusting your search terms or filters
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-6">
+            <div className="grid gap-3 sm:gap-6">
               {searchResults.map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
-                  <CardContent className="pt-6">
-                    <div className="flex gap-4">
-                      <div className="w-20 h-28 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+                    <div className="flex gap-3 sm:gap-4">
+                      <div className="w-16 h-20 sm:w-20 sm:h-28 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
                         {story.cover_image_url ? (
                           <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
                         ) : (
-                          <BookOpen className="h-6 w-6 text-muted-foreground" />
+                          <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground" />
                         )}
                       </div>
-                      <div className="flex-1 space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-semibold text-lg">{story.title}</h3>
-                            <p className="text-muted-foreground">
+                      <div className="flex-1 space-y-2 sm:space-y-3 min-w-0">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-base sm:text-lg line-clamp-2">{story.title}</h3>
+                            <p className="text-muted-foreground text-sm line-clamp-1">
                               by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                             </p>
-                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
                               {story.description || "No description available"}
                             </p>
                           </div>
-                          <Badge variant={story.status === "published" ? "default" : "secondary"}>
+                          <Badge variant={story.status === "published" ? "default" : "secondary"} className="flex-shrink-0 text-xs">
                             {story.status}
                           </Badge>
                         </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {story.genre && (
-                            <Badge variant="outline" className="text-xs">
-                              {story.genre}
-                            </Badge>
-                          )}
-                          {story.story_tags?.map((tag) => (
-                            <Badge key={tag.tag} variant="outline" className="text-xs">
-                              {tag.tag}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Eye className="h-4 w-4" />
-                              {story.view_count}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-primary text-primary" />
-                              {story.like_count}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              Updated {new Date(story.updated_at).toLocaleDateString()}
-                            </div>
+                        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                          <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
+                          <div className="flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            {story.view_count}
                           </div>
-                          <Button size="sm" className="vine-button-hero" onClick={(e) => {e.stopPropagation(); onNavigate("reader", story)}}>
-                            Read Now
+                          <div className="flex items-center gap-1">
+                            <Heart className="h-3 w-3 text-primary" />
+                            {story.like_count}
+                          </div>
+                          <span className="text-muted-foreground hidden sm:inline">{story.comment_count} comments</span>
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={(e) => {e.stopPropagation(); /* handle library add */}}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Bookmark className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            className="h-7 px-3 text-xs vine-button-hero" 
+                            onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}
+                          >
+                            Read
                           </Button>
                         </div>
                       </div>

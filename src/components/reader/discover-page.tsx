@@ -134,19 +134,19 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           {loading ? (
             <div className="text-center py-8">Loading stories...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
               {featuredStories.map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
-                  <div className="aspect-[3/4] bg-muted/30 rounded-t-lg mb-4 flex items-center justify-center">
+                  <div className="aspect-[2/3] bg-muted/30 rounded-t-lg mb-2 flex items-center justify-center">
                     {story.cover_image_url ? (
                       <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-t-lg" />
                     ) : (
-                      <BookOpen className="h-12 w-12 text-muted-foreground" />
+                      <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
                     )}
                   </div>
-                  <CardContent className="pt-0">
+                  <CardContent className="pt-0 p-2 sm:p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline" className="mb-2">
+                      <Badge variant="outline" className="text-xs mb-1">
                         {story.genre || "General"}
                       </Badge>
                       <div className="flex gap-1">
@@ -154,38 +154,38 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                           size="sm" 
                           variant="ghost" 
                           onClick={(e) => handleLike(story.id, e)}
-                          className={isLiked(story.id) ? "text-primary" : ""}
+                          className={`h-6 w-6 p-0 ${isLiked(story.id) ? "text-primary" : ""}`}
                         >
-                          <Heart className={`h-4 w-4 ${isLiked(story.id) ? "fill-primary" : ""}`} />
+                          <Heart className={`h-3 w-3 ${isLiked(story.id) ? "fill-primary" : ""}`} />
                         </Button>
                         <Button 
                           size="sm" 
                           variant="ghost" 
                           onClick={(e) => handleAddToLibrary(story.id, e)}
-                          className={isInLibrary(story.id) ? "text-primary" : ""}
+                          className={`h-6 w-6 p-0 ${isInLibrary(story.id) ? "text-primary" : ""}`}
                         >
-                          <Bookmark className={`h-4 w-4 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
+                          <Bookmark className={`h-3 w-3 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
                         </Button>
                       </div>
                     </div>
-                    <h3 className="font-semibold text-lg mb-1">{story.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">{story.title}</h3>
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
                       by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                     </p>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{story.description || "No description available"}</p>
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-2 hidden sm:block">{story.description || "No description available"}</p>
                     
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3 w-3" />
                           {story.view_count}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Heart className="h-4 w-4 text-primary" />
+                          <Heart className="h-3 w-3 text-primary" />
                           {story.like_count}
                         </div>
                       </div>
-                      <span className="text-muted-foreground">{story.comment_count} comments</span>
+                      <span className="text-muted-foreground hidden sm:inline">{story.comment_count}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -204,44 +204,44 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="grid gap-2 sm:gap-4">
             {trendingStories.map((story, index) => (
               <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-2xl font-bold text-primary/60 w-8">
+                <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+                  <div className="flex items-center justify-between flex-col sm:flex-row gap-3 sm:gap-0">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <div className="text-lg sm:text-2xl font-bold text-primary/60 w-6 sm:w-8 flex-shrink-0">
                         #{index + 1}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-lg">{story.title}</h3>
-                        <p className="text-muted-foreground">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base sm:text-lg line-clamp-1">{story.title}</h3>
+                        <p className="text-muted-foreground text-sm line-clamp-1">
                           by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                         </p>
-                        <div className="flex items-center gap-4 mt-2">
-                          <Badge variant="outline">{story.genre || "General"}</Badge>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Eye className="h-4 w-4" />
+                        <div className="flex items-center gap-2 sm:gap-4 mt-2 flex-wrap">
+                          <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
+                          <div className="flex items-center gap-1 text-xs">
+                            <Eye className="h-3 w-3" />
                             {story.view_count}
                           </div>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Heart className="h-4 w-4 text-primary" />
+                          <div className="flex items-center gap-1 text-xs">
+                            <Heart className="h-3 w-3 text-primary" />
                             {story.like_count}
                           </div>
-                          <span className="text-sm text-muted-foreground">{story.comment_count} comments</span>
+                          <span className="text-xs text-muted-foreground hidden sm:inline">{story.comment_count} comments</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
                       <Button 
                         size="sm" 
                         variant="outline" 
                         onClick={(e) => handleAddToLibrary(story.id, e)}
-                        className={isInLibrary(story.id) ? "text-primary" : ""}
+                        className={`${isInLibrary(story.id) ? "text-primary" : ""} h-8`}
                       >
-                        <Bookmark className={`h-4 w-4 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
+                        <Bookmark className={`h-3 w-3 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
                       </Button>
-                      <Button size="sm" className="vine-button-hero" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
+                      <Button size="sm" className="vine-button-hero h-8 px-3 text-xs" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
                         Read Now
                       </Button>
                     </div>
@@ -254,7 +254,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
       </Card>
 
       {/* Quick Categories */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
         {[
           { 
             name: "Most Liked", 
@@ -278,10 +278,10 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           }
         ].map((category) => (
           <Card key={category.name} className="vine-card hover-scale cursor-pointer">
-            <CardContent className="pt-6 text-center">
-              <category.icon className="h-8 w-8 mx-auto mb-4 text-primary" />
-              <h3 className="font-semibold mb-1">{category.name}</h3>
-              <p className="text-sm text-muted-foreground">{category.count}</p>
+            <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6 text-center">
+              <category.icon className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-primary" />
+              <h3 className="font-semibold text-sm sm:text-base mb-1">{category.name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">{category.count}</p>
             </CardContent>
           </Card>
         ))}

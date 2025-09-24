@@ -135,33 +135,33 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
       </Card>
 
       {/* Library Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
         <Card className="vine-card">
-          <CardContent className="pt-6 text-center">
-            <Library className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">{stats.totalSaved}</div>
-            <div className="text-sm text-muted-foreground">Saved Stories</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6 text-center">
+            <Library className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
+            <div className="text-lg sm:text-2xl font-bold">{stats.totalSaved}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Saved Stories</div>
           </CardContent>
         </Card>
         <Card className="vine-card">
-          <CardContent className="pt-6 text-center">
-            <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">{stats.currentlyReading}</div>
-            <div className="text-sm text-muted-foreground">Currently Reading</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6 text-center">
+            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
+            <div className="text-lg sm:text-2xl font-bold">{stats.currentlyReading}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Currently Reading</div>
           </CardContent>
         </Card>
         <Card className="vine-card">
-          <CardContent className="pt-6 text-center">
-            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">{stats.completed}</div>
-            <div className="text-sm text-muted-foreground">Completed</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6 text-center">
+            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
+            <div className="text-lg sm:text-2xl font-bold">{stats.completed}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Completed</div>
           </CardContent>
         </Card>
         <Card className="vine-card">
-          <CardContent className="pt-6 text-center">
-            <Clock className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl font-bold">{stats.totalSlides}</div>
-            <div className="text-sm text-muted-foreground">Slides Read</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6 text-center">
+            <Clock className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
+            <div className="text-lg sm:text-2xl font-bold">{stats.totalSlides}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Slides Read</div>
           </CardContent>
         </Card>
       </div>
