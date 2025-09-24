@@ -291,14 +291,18 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none p-8"
         onClick={handleSlideNavigation}
       >
-        <div className="max-w-4xl mx-auto px-8 py-16">
-          <div className="prose prose-lg lg:prose-xl max-w-none text-center">
-            <p className="text-xl lg:text-2xl leading-relaxed">
-              {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
-            </p>
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="vine-slide-reader">
+            <div className="vine-slide-content">
+              <div className="prose prose-lg lg:prose-xl max-w-none text-center">
+                <p className="text-xl lg:text-2xl leading-relaxed font-medium">
+                  {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
