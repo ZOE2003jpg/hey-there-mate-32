@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = "fire" | "azure"
+type Theme = "fire" | "azure" | "light"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -33,10 +33,12 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
 
-    root.classList.remove("fire", "azure")
+    root.classList.remove("fire", "azure", "light")
 
     if (theme === "azure") {
       root.classList.add("azure")
+    } else if (theme === "light") {
+      root.classList.add("light")
     } else {
       root.classList.add("fire")
     }

@@ -18,67 +18,25 @@ interface PreviewReaderProps {
 }
 
 export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
-  const [currentSlide, setCurrentSlide] = useState(1)
-  const [slides, setSlides] = useState<string[]>([])
   const [fontSize, setFontSize] = useState(16)
   const [fontFamily, setFontFamily] = useState('serif')
 
-  useEffect(() => {
-    if (chapter?.content) {
-      // Split content into slides (400 words per slide)
-      const words = chapter.content.split(/\s+/)
-      const wordsPerSlide = 400
-      const newSlides = []
-      
-      for (let i = 0; i < words.length; i += wordsPerSlide) {
-        const slideWords = words.slice(i, i + wordsPerSlide)
-        newSlides.push(slideWords.join(" "))
-      }
-      
-      setSlides(newSlides)
-    }
-  }, [chapter])
-
-  const totalSlides = slides.length
-  const progress = totalSlides > 0 ? Math.round((currentSlide / totalSlides) * 100) : 0
-
-  const nextSlide = () => {
-    if (currentSlide < totalSlides) {
-      setCurrentSlide(currentSlide + 1)
-    }
-  }
-
-  const prevSlide = () => {
-    if (currentSlide > 1) {
-      setCurrentSlide(currentSlide - 1)
-    }
-  }
-
-  const handleSlideNavigation = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const width = rect.width
-    
-    if (x > width * 0.7) {
-      nextSlide() // Right 30% - next slide
-    } else if (x < width * 0.3) {
-      prevSlide() // Left 30% - previous slide
-    }
-  }
+  // Preview mode shows only the full chapter content as one slide
+  const chapterContent = chapter?.content || 'Loading chapter content...'
 
   return (
     <div className="fixed inset-0 bg-background z-40 w-full h-full">
-      {/* Progress Bar */}
+      {/* Progress Bar - Full for preview mode */}
       <div className="absolute top-0 left-0 right-0 z-50">
-        <Progress value={progress} className="h-2 rounded-none bg-muted/20">
-          <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+        <Progress value={100} className="h-2 rounded-none bg-muted/20">
+          <div className="h-full bg-primary transition-all" style={{ width: '100%' }} />
         </Progress>
       </div>
 
-      {/* Preview Banner */}
+      {/* Preview Banner with Chapter Info */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
         <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-          Preview Mode
+          Preview Mode - {chapter?.title || 'Chapter'}
         </div>
       </div>
 
@@ -111,10 +69,7 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
       </div>
 
       {/* Main Reading Area */}
-      <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8"
-        onClick={handleSlideNavigation}
-      >
+      <div className="h-full w-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
           <div className="border-2 border-primary/20 rounded-lg p-4 sm:p-6 lg:p-8 bg-card/50 backdrop-blur-sm min-h-[60vh] sm:min-h-[70vh]">
             <div className="prose max-w-none text-justify">
@@ -122,29 +77,16 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
                 {chapter?.title || 'Preview Chapter'}
               </h2>
               <div 
-                className="leading-relaxed font-medium w-full text-sm sm:text-base md:text-lg"
+                className="leading-relaxed font-medium w-full text-sm sm:text-base md:text-lg text-justify"
                 style={{ 
                   fontSize: `${Math.max(12, Math.min(fontSize, 24))}px`,
                   fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
                 }}
               >
-                {slides[currentSlide - 1] || 'Loading slide content...'}
+                {chapterContent}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Navigation Hints */}
-      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <ChevronLeft className="h-4 w-4" />
-          <span>Tap left</span>
-        </div>
-        <div className="w-px h-4 bg-border"></div>
-        <div className="flex items-center gap-2">
-          <span>Tap right</span>
-          <ChevronRight className="h-4 w-4" />
         </div>
       </div>
 
@@ -159,9 +101,9 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
         <span className="hidden sm:inline">Back to Editor</span>
       </Button>
 
-      {/* Slide Counter */}
+      {/* Chapter Info */}
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm">
-        {currentSlide} / {totalSlides}
+        Full Chapter
       </div>
     </div>
   )
