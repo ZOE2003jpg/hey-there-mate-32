@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -34,40 +34,26 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
   const { user } = useUser()
   const { analytics, loading } = useAnalytics(user?.id)
   const [timeRange, setTimeRange] = useState("30")
-  const [analyticsData, setAnalyticsData] = useState<any>(null)
-
-  useEffect(() => {
-    if (analytics) {
-      setAnalyticsData(analytics)
-    }
-  }, [analytics])
 
   // Fallback data if no analytics available
-  const overallStats = analyticsData ? {
-    totalReads: analyticsData.totalReads || 0,
-    totalLikes: analyticsData.totalLikes || 0,
-    totalComments: analyticsData.totalComments || 0,
-    completionRate: analyticsData.completionRate || 0,
-    avgReadingTime: analyticsData.avgReadingTime || 0,
-    followers: analyticsData.followers || 0
-  } : {
-    totalReads: 0,
-    totalLikes: 0,
-    totalComments: 0,
-    completionRate: 0,
-    avgReadingTime: 0,
-    followers: 0
+  const overallStats = {
+    totalReads: analytics.total_reads || 0,
+    totalLikes: analytics.total_likes || 0,
+    totalComments: analytics.total_comments || 0,
+    completionRate: analytics.completion_rate || 0,
+    avgReadingTime: analytics.avg_reading_time || 0,
+    followers: analytics.total_followers || 0
   }
 
-  const readsData = analyticsData?.readsOverTime || [
+  const readsData = [
     { date: "No Data", reads: 0, likes: 0 }
   ]
 
-  const storiesData = analyticsData?.storiesData || [
+  const storiesData = [
     { name: "No Stories", reads: 0, percentage: 0 }
   ]
 
-  const completionData = analyticsData?.completionData || [
+  const completionData = [
     { chapter: "No Data", completion: 0 }
   ]
 

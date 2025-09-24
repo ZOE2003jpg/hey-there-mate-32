@@ -26,18 +26,18 @@ interface DashboardProps {
 export function Dashboard({ onNavigate }: DashboardProps) {
   const { user } = useUser()
   const { stories, loading: storiesLoading } = useStories()
-  const { analytics } = useAnalytics(user?.id)
+  const { writerStats, loading: analyticsLoading } = useAnalytics(user?.id)
   const { stats: earningsStats } = useEarnings(user?.id)
 
   const userStories = stories.filter(story => story.author_id === user?.id)
   
   const stats = {
     totalStories: userStories.length,
-    totalReads: userStories.reduce((sum, story) => sum + story.view_count, 0),
-    totalLikes: userStories.reduce((sum, story) => sum + story.like_count, 0),
-    totalComments: userStories.reduce((sum, story) => sum + story.comment_count, 0),
+    totalReads: writerStats.total_reads,
+    totalLikes: writerStats.total_likes,
+    totalComments: writerStats.total_comments,
     earnings: earningsStats.totalEarnings,
-    followers: 0 // This would come from a followers table in a real app
+    followers: writerStats.total_followers
   }
 
   const recentNotifications = [
@@ -96,7 +96,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <CardContent className="pt-6">
             <Eye className="h-6 w-6 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold">
-              {storiesLoading ? "..." : stats.totalReads.toLocaleString()}
+              {analyticsLoading ? "..." : stats.totalReads.toLocaleString()}
             </div>
             <div className="text-sm text-muted-foreground">Reads</div>
           </CardContent>
@@ -106,7 +106,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <CardContent className="pt-6">
             <Heart className="h-6 w-6 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold">
-              {storiesLoading ? "..." : stats.totalLikes.toLocaleString()}
+              {analyticsLoading ? "..." : stats.totalLikes.toLocaleString()}
             </div>
             <div className="text-sm text-muted-foreground">Likes</div>
           </CardContent>
@@ -116,7 +116,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <CardContent className="pt-6">
             <MessageCircle className="h-6 w-6 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold">
-              {storiesLoading ? "..." : stats.totalComments}
+              {analyticsLoading ? "..." : stats.totalComments}
             </div>
             <div className="text-sm text-muted-foreground">Comments</div>
           </CardContent>
@@ -133,7 +133,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         <Card className="vine-card text-center">
           <CardContent className="pt-6">
             <Users className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{stats.followers}</div>
+            <div className="text-2xl font-bold">{analyticsLoading ? "..." : stats.followers}</div>
             <div className="text-sm text-muted-foreground">Followers</div>
           </CardContent>
         </Card>

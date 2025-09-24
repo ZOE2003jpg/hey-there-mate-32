@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          chapter_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          story_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          chapter_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          story_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          chapter_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          story_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chapters: {
         Row: {
           chapter_number: number
@@ -558,6 +594,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      writer_stats: {
+        Row: {
+          avg_reading_time: number | null
+          completion_rate: number | null
+          created_at: string
+          id: string
+          total_comments: number | null
+          total_followers: number | null
+          total_likes: number | null
+          total_reads: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_reading_time?: number | null
+          completion_rate?: number | null
+          created_at?: string
+          id?: string
+          total_comments?: number | null
+          total_followers?: number | null
+          total_likes?: number | null
+          total_reads?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_reading_time?: number | null
+          completion_rate?: number | null
+          created_at?: string
+          id?: string
+          total_comments?: number | null
+          total_followers?: number | null
+          total_likes?: number | null
+          total_reads?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
