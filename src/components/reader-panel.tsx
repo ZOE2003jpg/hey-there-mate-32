@@ -42,7 +42,7 @@ export function ReaderPanel() {
       case "reader":
         return <SlideReader story={currentStory} onNavigate={handleNavigate} />
       case "preview":
-        return <PreviewReader chapter={currentStory} onNavigate={handleNavigate} />
+        return <PreviewReader chapter={currentStory?.chapter || currentStory} onNavigate={handleNavigate} />
       case "library":
         return <LibraryPage onNavigate={handleNavigate} />
       case "search":
@@ -61,7 +61,7 @@ export function ReaderPanel() {
 
   // If we're in preview mode, show full screen preview
   if (currentPage === "preview") {
-    return <PreviewReader chapter={currentStory} onNavigate={handleNavigate} />
+    return <PreviewReader chapter={currentStory?.chapter || currentStory} onNavigate={handleNavigate} />
   }
 
   // Also show story chapters page without sidebar

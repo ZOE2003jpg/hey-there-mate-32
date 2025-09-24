@@ -259,7 +259,15 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => onNavigate("add-chapter", { chapterId: chapter.id, storyId: story.id })}
+                        onClick={() => {
+                          const chapterData = chapters.find(c => c.id === chapter.id)
+                          onNavigate("add-chapter", { 
+                            editData: { 
+                              chapter: chapterData, 
+                              storyId: story.id 
+                            }
+                          })
+                        }}
                       >
                         <Edit className="h-4 w-4 mr-1" />
                         Edit

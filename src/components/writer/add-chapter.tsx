@@ -26,19 +26,25 @@ import { supabase } from '@/integrations/supabase/client'
 
 interface AddChapterProps {
   onNavigate: (page: string, data?: any) => void
+  editData?: {
+    chapter: any
+    storyId: string
+  }
 }
 
-export function AddChapter({ onNavigate }: AddChapterProps) {
+export function AddChapter({ onNavigate, editData }: AddChapterProps) {
   const { user } = useUser()
-  const { createChapter, loading } = useChapters()
+  const { createChapter, updateChapter, loading } = useChapters()
   const { splitChapterToSlides } = useSlides()
   const { stories } = useStories()
   
   const [chapterData, setChapterData] = useState({
-    title: "",
-    content: "",
-    storyId: stories.length > 0 ? stories[0].id : ""
+    title: editData?.chapter?.title || "",
+    content: editData?.chapter?.content || "",
+    storyId: editData?.storyId || (stories.length > 0 ? stories[0].id : "")
   })
+  const [isEditing, setIsEditing] = useState(!!editData?.chapter)
+  const [chapterId, setChapterId] = useState(editData?.chapter?.id || null)
   
   const [slides, setSlides] = useState<string[]>([])
   const [wordsPerSlide, setWordsPerSlide] = useState(400)
@@ -83,48 +89,71 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
     }
 
     try {
-      // Get the current chapter count for this story to set proper number
-      const { data: existingChapters, error: countError } = await supabase
-        .from('chapters')
-        .select('chapter_number')
-        .eq('story_id', chapterData.storyId)
-        .order('chapter_number', { ascending: false })
-        .limit(1)
+      let chapter
       
-      if (countError) {
-        console.error('Error fetching chapter count:', countError)
-      }
-      
-      const nextChapterNumber = existingChapters && existingChapters.length > 0 
-        ? existingChapters[0].chapter_number + 1 
-        : 1
-
-      // Create the chapter
-      const chapter = await createChapter({
-        title: chapterData.title,
-        content: chapterData.content,
-        story_id: chapterData.storyId,
-        chapter_number: nextChapterNumber
-      })
-
-      // Create slides
-      if (chapter) {
-        try {
-          await splitChapterToSlides(chapter.id, chapterData.content, wordsPerSlide)
-          
-          // If publishing, update status
-          if (publish) {
-            await supabase
-              .from('chapters')
-              .update({ status: 'published' })
-              .eq('id', chapter.id)
+      if (isEditing && chapterId) {
+        // Update existing chapter
+        chapter = await updateChapter(chapterId, {
+          title: chapterData.title,
+          content: chapterData.content,
+          status: publish ? 'published' : 'draft'
+        })
+        
+        // Recreate slides for updated content
+        if (chapter) {
+          try {
+            await splitChapterToSlides(chapterId, chapterData.content, wordsPerSlide)
+          } catch (slideError) {
+            console.warn('Slide update failed, but chapter was saved:', slideError)
           }
-        } catch (slideError) {
-          console.warn('Slide creation failed, but chapter was saved:', slideError)
+        }
+      } else {
+        // Create new chapter
+        const { data: existingChapters, error: countError } = await supabase
+          .from('chapters')
+          .select('chapter_number')
+          .eq('story_id', chapterData.storyId)
+          .order('chapter_number', { ascending: false })
+          .limit(1)
+        
+        if (countError) {
+          console.error('Error fetching chapter count:', countError)
+        }
+        
+        const nextChapterNumber = existingChapters && existingChapters.length > 0 
+          ? existingChapters[0].chapter_number + 1 
+          : 1
+
+        chapter = await createChapter({
+          title: chapterData.title,
+          content: chapterData.content,
+          story_id: chapterData.storyId,
+          chapter_number: nextChapterNumber
+        })
+
+        // Update status if publishing
+        if (publish && chapter) {
+          await supabase
+            .from('chapters')
+            .update({ status: 'published' })
+            .eq('id', chapter.id)
+        }
+
+        // Create slides
+        if (chapter) {
+          try {
+            await splitChapterToSlides(chapter.id, chapterData.content, wordsPerSlide)
+          } catch (slideError) {
+            console.warn('Slide creation failed, but chapter was saved:', slideError)
+          }
         }
       }
 
-      toast.success(publish ? "Chapter published successfully!" : "Chapter saved as draft!")
+      toast.success(
+        isEditing 
+          ? (publish ? "Chapter updated and published!" : "Chapter updated successfully!")
+          : (publish ? "Chapter published successfully!" : "Chapter saved as draft!")
+      )
       onNavigate("manage-chapters", { storyId: chapterData.storyId })
     } catch (error) {
       if (error.code === '23505') {
@@ -182,8 +211,8 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Add Chapter</h1>
-            <p className="text-muted-foreground">Write your chapter and preview slides</p>
+            <h1 className="text-2xl font-bold">{isEditing ? 'Edit Chapter' : 'Add Chapter'}</h1>
+            <p className="text-muted-foreground">{isEditing ? 'Update your chapter content and preview changes' : 'Write your chapter and preview slides'}</p>
           </div>
         </div>
       </div>

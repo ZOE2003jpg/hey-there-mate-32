@@ -48,7 +48,7 @@ export function WriterPanel() {
     switch (currentPage) {
       case "dashboard": return <Dashboard onNavigate={handleNavigate} />
       case "create-story": return <CreateStory onNavigate={handleNavigate} />
-      case "add-chapter": return <AddChapter onNavigate={handleNavigate} />
+      case "add-chapter": return <AddChapter onNavigate={handleNavigate} editData={selectedData?.editData} />
       case "story-view": return <StoryView story={selectedData?.story} onNavigate={handleNavigate} />
       case "manage-stories": return <ManageStories onNavigate={handleNavigate} />
       case "manage-chapters": return <ManageChapters story={selectedData} onNavigate={handleNavigate} />
