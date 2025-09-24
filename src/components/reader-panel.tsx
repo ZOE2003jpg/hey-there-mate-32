@@ -37,6 +37,8 @@ export function ReaderPanel() {
     switch (currentPage) {
       case "discover":
         return <DiscoverPage onNavigate={handleNavigate} />
+      case "details":
+        return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "story-chapters":
         return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "reader":
@@ -64,8 +66,8 @@ export function ReaderPanel() {
     return <PreviewReader chapter={currentStory?.chapter || currentStory} onNavigate={handleNavigate} />
   }
 
-  // Also show story chapters page without sidebar
-  if (currentPage === "story-chapters") {
+  // Also show story chapters page without sidebar for details and story-chapters
+  if (currentPage === "story-chapters" || currentPage === "details") {
     return (
       <div className="min-h-screen p-8">
         <StoryChapters story={currentStory} onNavigate={handleNavigate} />

@@ -50,16 +50,71 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
       // For now, assume we're reading the first chapter
       // In a real app, you'd pass the current chapter ID
       const firstChapter = story.chapters?.[0]
-      if (!firstChapter) return
+      if (!firstChapter) {
+        // If no chapters, create basic slides from story content
+        if (story.description) {
+          const words = story.description.split(/\s+/)
+          const wordsPerSlide = 400
+          const slides = []
+          
+          for (let i = 0; i < words.length; i += wordsPerSlide) {
+            const slideWords = words.slice(i, i + wordsPerSlide)
+            slides.push({
+              content: slideWords.join(" "),
+              type: 'content',
+              slide_number: slides.length + 1
+            })
+          }
+          
+          setAllSlides(slides)
+        }
+        return
+      }
 
       setCurrentChapter(firstChapter.id)
       
       try {
         const slidesData = await getSlidesWithAds(firstChapter.id, user?.id)
-        setAllSlides(slidesData.slides || [])
+        if (slidesData.slides && slidesData.slides.length > 0) {
+          setAllSlides(slidesData.slides)
+        } else {
+          // If no slides exist, create them from chapter content
+          if (firstChapter.content) {
+            const words = firstChapter.content.split(/\s+/)
+            const wordsPerSlide = 400
+            const slides = []
+            
+            for (let i = 0; i < words.length; i += wordsPerSlide) {
+              const slideWords = words.slice(i, i + wordsPerSlide)
+              slides.push({
+                content: slideWords.join(" "),
+                type: 'content',
+                slide_number: slides.length + 1
+              })
+            }
+            
+            setAllSlides(slides)
+          }
+        }
       } catch (error) {
         console.error('Failed to load slides:', error)
-        toast.error('Failed to load story content')
+        // Fallback: create slides from chapter content
+        if (firstChapter?.content) {
+          const words = firstChapter.content.split(/\s+/)
+          const wordsPerSlide = 400
+          const slides = []
+          
+          for (let i = 0; i < words.length; i += wordsPerSlide) {
+            const slideWords = words.slice(i, i + wordsPerSlide)
+            slides.push({
+              content: slideWords.join(" "),
+              type: 'content',
+              slide_number: slides.length + 1
+            })
+          }
+          
+          setAllSlides(slides)
+        }
       }
     }
 
@@ -291,10 +346,10 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none p-8"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="max-w-3xl mx-auto w-full">
+        <div className="w-full max-w-5xl mx-auto">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
               <div className="prose prose-lg lg:prose-xl max-w-none text-center">

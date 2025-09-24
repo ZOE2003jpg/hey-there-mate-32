@@ -77,10 +77,10 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none p-8"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="max-w-3xl mx-auto w-full">
+        <div className="w-full max-w-5xl mx-auto">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
               <div className="prose prose-lg lg:prose-xl max-w-none text-center">
