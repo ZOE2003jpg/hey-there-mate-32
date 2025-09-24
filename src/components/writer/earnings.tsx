@@ -267,8 +267,8 @@ export function Earnings({ onNavigate }: EarningsProps) {
                 <p className="text-sm text-muted-foreground">Revenue rate</p>
               </div>
               <div className="text-right">
-                <p className="font-bold">$2.85</p>
-                <p className="text-xs text-green-600">+$0.15 vs last month</p>
+                <p className="font-bold">$0.00</p>
+                <p className="text-xs text-muted-foreground">No data yet</p>
               </div>
             </div>
 
@@ -279,7 +279,7 @@ export function Earnings({ onNavigate }: EarningsProps) {
               </div>
               <div className="text-right">
                 <p className="font-bold">${stats.thisMonthEarnings.toFixed(2)}</p>
-                <p className="text-xs text-green-600">From {stats.revenueBreakdown.length} sources</p>
+                <p className="text-xs text-muted-foreground">{stats.revenueBreakdown.length > 0 ? `From ${stats.revenueBreakdown.length} sources` : 'No earnings yet'}</p>
               </div>
             </div>
 
@@ -290,7 +290,7 @@ export function Earnings({ onNavigate }: EarningsProps) {
               </div>
               <div className="text-right">
                 <p className="font-bold">1st of next month</p>
-                <p className="text-xs text-muted-foreground">Automatic processing</p>
+                <p className="text-xs text-muted-foreground">When minimum reached</p>
               </div>
             </div>
           </CardContent>
