@@ -230,7 +230,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                       >
                         <Bookmark className={`h-4 w-4 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
                       </Button>
-                      <Button size="sm" className="vine-button-hero" onClick={(e) => {e.stopPropagation(); onNavigate("reader", story)}}>
+                      <Button size="sm" className="vine-button-hero" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
                         Read Now
                       </Button>
                     </div>

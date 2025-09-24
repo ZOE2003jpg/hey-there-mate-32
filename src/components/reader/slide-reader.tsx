@@ -17,6 +17,7 @@ import { useReads } from "@/hooks/useReads"
 import { useLikes } from "@/hooks/useLikes"
 import { useAds } from "@/hooks/useAds"
 import { useUser } from "@/components/user-context"
+import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
 
 interface SlideReaderProps {
@@ -52,6 +53,26 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       let selectedChapter = chapter
       if (!selectedChapter && story.chapters && story.chapters.length > 0) {
         selectedChapter = story.chapters.find(ch => ch.content && ch.content.trim()) || story.chapters[0]
+      }
+      
+      // If still no chapter, try to fetch chapters from the database
+      if (!selectedChapter && story?.id) {
+        console.log('No chapters in story data, fetching from database for story:', story.id)
+        try {
+          const { data: fetchedChapters } = await supabase
+            .from('chapters')
+            .select('*')
+            .eq('story_id', story.id)
+            .eq('status', 'published')
+            .order('chapter_number', { ascending: true })
+          
+          if (fetchedChapters && fetchedChapters.length > 0) {
+            selectedChapter = fetchedChapters[0]
+            console.log('Found chapter from database:', selectedChapter)
+          }
+        } catch (error) {
+          console.error('Failed to fetch chapters:', error)
+        }
       }
       
       if (!selectedChapter) {
@@ -359,11 +380,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
-              <div className="prose prose-lg sm:prose-xl lg:prose-2xl max-w-none text-center">
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-medium">
+              <div className="prose prose-xl sm:prose-2xl lg:prose-3xl max-w-none text-center">
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-relaxed font-medium max-w-5xl mx-auto">
                   {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
                 </p>
               </div>
