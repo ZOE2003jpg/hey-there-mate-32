@@ -7,6 +7,7 @@ import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
 import { PreviewReader } from "@/components/reader/preview-reader"
 import { MobileNav } from "@/components/mobile-nav"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { 
@@ -116,6 +117,7 @@ export function ReaderPanel() {
               <BookOpen className="h-6 w-6 text-primary" />
               <h1 className="text-lg font-bold">Reader Panel</h1>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       )}

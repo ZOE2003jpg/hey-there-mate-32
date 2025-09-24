@@ -134,7 +134,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           {loading ? (
             <div className="text-center py-8">Loading stories...</div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredStories.map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
                   <div className="aspect-[3/4] bg-muted/30 rounded-t-lg mb-4 flex items-center justify-center">
@@ -254,7 +254,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
       </Card>
 
       {/* Quick Categories */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { 
             name: "Most Liked", 

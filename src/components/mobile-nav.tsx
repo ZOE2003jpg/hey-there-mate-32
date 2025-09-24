@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, BookOpen, Library, Search, Settings } from "lucide-react"
 
 interface MobileNavProps {
@@ -33,8 +34,9 @@ export function MobileNav({ currentPage, onNavigate }: MobileNavProps) {
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b">
+          <div className="p-6 border-b flex justify-between items-center">
             <h2 className="text-lg font-semibold">Navigation</h2>
+            <ThemeToggle />
           </div>
           <nav className="flex-1 p-4">
             <div className="space-y-2">

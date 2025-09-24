@@ -12,6 +12,7 @@ import { Settings } from "@/components/admin/settings"
 import { AdminConfig } from "@/components/admin/admin-config"
 import { TestDataSetup } from "@/components/admin/test-data-setup"
 import { AdminMobileNav } from "./admin-mobile-nav"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -126,6 +127,7 @@ export function AdminPanel() {
               <Shield className="h-6 w-6 text-primary" />
               <h1 className="text-lg font-bold">Admin Panel</h1>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       )}
