@@ -42,7 +42,7 @@ export function ReaderPanel() {
       case "story-chapters":
         return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "reader":
-        return <SlideReader story={currentStory} onNavigate={handleNavigate} />
+        return <SlideReader story={currentStory?.story || currentStory} chapter={currentStory?.chapter} onNavigate={handleNavigate} />
       case "preview":
         return <PreviewReader chapter={currentStory?.chapter || currentStory} onNavigate={handleNavigate} />
       case "library":
@@ -58,7 +58,7 @@ export function ReaderPanel() {
 
   // If we're in reader mode, show full screen reader
   if (currentPage === "reader") {
-    return <SlideReader story={currentStory} onNavigate={handleNavigate} />
+    return <SlideReader story={currentStory?.story || currentStory} chapter={currentStory?.chapter} onNavigate={handleNavigate} />
   }
 
   // If we're in preview mode, show full screen preview

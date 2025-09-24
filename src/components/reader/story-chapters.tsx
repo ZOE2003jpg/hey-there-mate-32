@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Clock, Eye } from "lucide-react"
+import { BookOpen, Clock, Eye, ChevronLeft } from "lucide-react"
 import { useChapters } from "@/hooks/useChapters"
 
 interface StoryChaptersProps {
@@ -25,6 +25,16 @@ export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Button 
+          variant="ghost" 
+          onClick={() => onNavigate("discover")}
+          className="mb-4"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Discover
+        </Button>
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{story?.title}</h1>

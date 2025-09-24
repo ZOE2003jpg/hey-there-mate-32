@@ -21,10 +21,11 @@ import { toast } from "sonner"
 
 interface SlideReaderProps {
   story: any
+  chapter?: any
   onNavigate: (page: string, data?: any) => void
 }
 
-export function SlideReader({ story, onNavigate }: SlideReaderProps) {
+export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { user } = useUser()
   const [currentSlide, setCurrentSlide] = useState(1)
   const [showMenu, setShowMenu] = useState(false)
@@ -47,13 +48,13 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
     const loadSlidesWithAds = async () => {
       if (!story?.id) return
       
-      // Get the first available chapter with content
-      let firstChapter = null
-      if (story.chapters && story.chapters.length > 0) {
-        firstChapter = story.chapters.find(ch => ch.content && ch.content.trim()) || story.chapters[0]
+      // Use the specific chapter passed in, or find the first available chapter
+      let selectedChapter = chapter
+      if (!selectedChapter && story.chapters && story.chapters.length > 0) {
+        selectedChapter = story.chapters.find(ch => ch.content && ch.content.trim()) || story.chapters[0]
       }
       
-      if (!firstChapter) {
+      if (!selectedChapter) {
         // No chapters available - show error message
         setAllSlides([{
           content: 'No chapters available to read. Please check back later.',
@@ -63,16 +64,17 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
         return
       }
 
-      setCurrentChapter(firstChapter.id)
+      setCurrentChapter(selectedChapter.id)
       
       try {
-        const slidesData = await getSlidesWithAds(firstChapter.id, user?.id)
+        const slidesData = await getSlidesWithAds(selectedChapter.id, user?.id)
+        console.log('Slides data received:', slidesData)
         if (slidesData.slides && slidesData.slides.length > 0) {
           setAllSlides(slidesData.slides)
         } else {
           // If no slides exist, create them from chapter content
-          if (firstChapter.content) {
-            const words = firstChapter.content.split(/\s+/)
+          if (selectedChapter.content) {
+            const words = selectedChapter.content.split(/\s+/)
             const wordsPerSlide = 400
             const slides = []
             
@@ -85,14 +87,22 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
               })
             }
             
+            console.log('Created slides from chapter content:', slides)
             setAllSlides(slides)
+          } else {
+            console.log('No chapter content available')
+            setAllSlides([{
+              content: 'Chapter content is not available.',
+              type: 'content',
+              slide_number: 1
+            }])
           }
         }
       } catch (error) {
         console.error('Failed to load slides:', error)
         // Fallback: create slides from chapter content
-        if (firstChapter?.content) {
-          const words = firstChapter.content.split(/\s+/)
+        if (selectedChapter?.content) {
+          const words = selectedChapter.content.split(/\s+/)
           const wordsPerSlide = 400
           const slides = []
           
@@ -105,13 +115,21 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
             })
           }
           
+          console.log('Fallback: Created slides from chapter content:', slides)
           setAllSlides(slides)
+        } else {
+          console.log('Fallback: No chapter content for fallback')
+          setAllSlides([{
+            content: 'Unable to load chapter content.',
+            type: 'content',
+            slide_number: 1
+          }])
         }
       }
     }
 
     loadSlidesWithAds()
-  }, [story, user?.id])
+  }, [story, chapter, user?.id])
 
   // Track reading progress
   useEffect(() => {
@@ -372,15 +390,15 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
-      {/* Exit Button */}
+      {/* Back Button */}
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => onNavigate("discover")}
+        onClick={() => onNavigate("story-chapters", story)}
         className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10"
       >
         <X className="h-4 w-4 sm:mr-2" />
-        <span className="hidden sm:inline">Exit</span>
+        <span className="hidden sm:inline">Back</span>
       </Button>
 
       {/* Slide Counter */}
