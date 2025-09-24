@@ -117,11 +117,22 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Platform overview and key metrics
-        </p>
+      <div className="flex items-center gap-4 mb-8">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => onNavigate("home")}
+          className="flex items-center gap-2"
+        >
+          <BookOpen className="h-4 w-4" />
+          Back
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Platform overview and key metrics
+          </p>
+        </div>
       </div>
 
       {/* Quick Stats Cards */}

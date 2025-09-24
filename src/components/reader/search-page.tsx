@@ -86,14 +86,25 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Search className="h-8 w-8 text-primary" />
-            Search Stories
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Find your next favorite read
-          </p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onNavigate("home")}
+            className="flex items-center gap-2"
+          >
+            <BookOpen className="h-4 w-4" />
+            Back
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Search className="h-8 w-8 text-primary" />
+              Search Stories
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Find your next favorite read
+            </p>
+          </div>
         </div>
         <Button 
           variant="outline" 
