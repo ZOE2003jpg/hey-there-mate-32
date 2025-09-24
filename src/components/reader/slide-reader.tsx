@@ -47,13 +47,17 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
     const loadSlidesWithAds = async () => {
       if (!story?.id) return
       
-      // For now, assume we're reading the first chapter
-      // In a real app, you'd pass the current chapter ID
-      const firstChapter = story.chapters?.[0]
+      // Get the first available chapter with content
+      let firstChapter = null
+      if (story.chapters && story.chapters.length > 0) {
+        firstChapter = story.chapters.find(ch => ch.content && ch.content.trim()) || story.chapters[0]
+      }
+      
       if (!firstChapter) {
         // If no chapters, create basic slides from story content
-        if (story.description) {
-          const words = story.description.split(/\s+/)
+        const contentToUse = story.content || story.description || "This story is loading..."
+        if (contentToUse) {
+          const words = contentToUse.split(/\s+/)
           const wordsPerSlide = 400
           const slides = []
           
@@ -349,11 +353,11 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
         className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 py-8"
         onClick={handleSlideNavigation}
       >
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto px-8">
           <div className="vine-slide-reader">
             <div className="vine-slide-content">
-              <div className="prose prose-lg lg:prose-xl max-w-none text-center">
-                <p className="text-xl lg:text-2xl leading-relaxed font-medium">
+              <div className="prose prose-xl lg:prose-2xl max-w-none text-center">
+                <p className="text-2xl lg:text-3xl leading-relaxed font-medium">
                   {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
                 </p>
               </div>
