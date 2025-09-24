@@ -70,10 +70,14 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('covers')
-          .upload(fileName, formData.coverImage)
+          .upload(fileName, formData.coverImage, {
+            cacheControl: '3600',
+            upsert: false
+          })
         
         if (uploadError) {
-          throw new Error('Failed to upload cover image')
+          console.error('Upload error:', uploadError)
+          throw new Error(`Upload failed: ${uploadError.message}`)
         }
         
         const { data: { publicUrl } } = supabase.storage

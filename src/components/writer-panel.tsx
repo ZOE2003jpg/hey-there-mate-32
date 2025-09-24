@@ -9,7 +9,7 @@ import { Analytics } from "./writer/analytics"
 import { Earnings } from "./writer/earnings"
 import { Notifications } from "./writer/notifications"
 import { Profile } from "./writer/profile"
-import { Settings } from "./writer/settings"
+import { PreviewReader } from "./reader/preview-reader"
 import { Button } from "@/components/ui/button"
 import { 
   BarChart3, 
@@ -56,7 +56,7 @@ export function WriterPanel() {
       case "earnings": return <Earnings onNavigate={handleNavigate} />
       case "notifications": return <Notifications onNavigate={handleNavigate} />
       case "profile": return <Profile onNavigate={handleNavigate} />
-      case "settings": return <Settings onNavigate={handleNavigate} />
+      case "preview-reader": return <PreviewReader chapter={selectedData?.chapter} onNavigate={handleNavigate} />
       default: return <Dashboard onNavigate={handleNavigate} />
     }
   }

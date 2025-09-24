@@ -84,12 +84,16 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
 
     try {
       // Get the current chapter count for this story to set proper number
-      const { data: existingChapters } = await supabase
+      const { data: existingChapters, error: countError } = await supabase
         .from('chapters')
         .select('chapter_number')
         .eq('story_id', chapterData.storyId)
         .order('chapter_number', { ascending: false })
         .limit(1)
+      
+      if (countError) {
+        console.error('Error fetching chapter count:', countError)
+      }
       
       const nextChapterNumber = existingChapters && existingChapters.length > 0 
         ? existingChapters[0].chapter_number + 1 
@@ -148,10 +152,9 @@ export function AddChapter({ onNavigate }: AddChapterProps) {
       slide_count: Math.ceil(chapterData.content.split(/\s+/).length / wordsPerSlide)
     }
     
-    // Navigate to reader with preview data
-    onNavigate('slide-reader', { 
-      chapter: previewChapter, 
-      isPreview: true 
+    // Navigate to preview reader
+    onNavigate('preview-reader', { 
+      chapter: previewChapter
     })
   }
 

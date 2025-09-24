@@ -73,11 +73,11 @@ export function useSlides(chapterId?: string) {
         } else {
           // Save current slide if it has content
           if (currentSlide) {
-            slides.push({
-              chapter_id: chapterId,
-              order_number: slideOrder++,
-              content: currentSlide
-            })
+          slides.push({
+            chapter_id: chapterId,
+            slide_number: slideOrder++,
+            content: currentSlide
+          })
           }
           // Start new slide with current sentence
           currentSlide = trimmedSentence + '.'
@@ -86,11 +86,11 @@ export function useSlides(chapterId?: string) {
 
       // Add the last slide if it has content
       if (currentSlide) {
-        slides.push({
-          chapter_id: chapterId,
-          order_number: slideOrder,
-          content: currentSlide
-        })
+      slides.push({
+        chapter_id: chapterId,
+        slide_number: slideOrder,
+        content: currentSlide
+      })
       }
 
       // Delete existing slides for this chapter
