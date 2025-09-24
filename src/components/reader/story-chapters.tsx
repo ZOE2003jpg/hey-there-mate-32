@@ -13,7 +13,7 @@ interface StoryChaptersProps {
 export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
   const { chapters, loading } = useChapters(story?.id)
   
-  const publishedChapters = chapters.filter(chapter => chapter.status === 'published')
+  const publishedChapters = chapters.filter(chapter => chapter.status === 'published' || chapter.status === 'draft')
 
   const handleReadChapter = (chapter: any) => {
     onNavigate('reader', { story, chapter })

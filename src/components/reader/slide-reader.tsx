@@ -54,24 +54,12 @@ export function SlideReader({ story, onNavigate }: SlideReaderProps) {
       }
       
       if (!firstChapter) {
-        // If no chapters, create basic slides from story content
-        const contentToUse = story.content || story.description || "This story is loading..."
-        if (contentToUse) {
-          const words = contentToUse.split(/\s+/)
-          const wordsPerSlide = 400
-          const slides = []
-          
-          for (let i = 0; i < words.length; i += wordsPerSlide) {
-            const slideWords = words.slice(i, i + wordsPerSlide)
-            slides.push({
-              content: slideWords.join(" "),
-              type: 'content',
-              slide_number: slides.length + 1
-            })
-          }
-          
-          setAllSlides(slides)
-        }
+        // No chapters available - show error message
+        setAllSlides([{
+          content: 'No chapters available to read. Please check back later.',
+          type: 'content',
+          slide_number: 1
+        }])
         return
       }
 
