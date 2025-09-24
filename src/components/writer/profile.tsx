@@ -100,16 +100,23 @@ export function Profile({ onNavigate }: ProfileProps) {
       
       // Delete old avatar if exists
       try {
-        await supabase.storage
+        const { data: files } = await supabase.storage
           .from('avatars')
-          .remove([`${user.id}-`]) // This will fail silently which is fine
+          .list(user.id)
+        
+        if (files && files.length > 0) {
+          const filesToDelete = files.map(file => `${user.id}/${file.name}`)
+          await supabase.storage
+            .from('avatars')
+            .remove(filesToDelete)
+        }
       } catch (e) {
         // Ignore delete errors
       }
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { 
+        .upload(`${user.id}/${fileName}`, file, { 
           upsert: false,
           cacheControl: '3600'
         })
@@ -122,7 +129,7 @@ export function Profile({ onNavigate }: ProfileProps) {
       // Get public URL
       const { data } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName)
+        .getPublicUrl(`${user.id}/${fileName}`)
 
       const avatarUrl = data.publicUrl
 
