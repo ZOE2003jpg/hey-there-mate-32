@@ -5,6 +5,7 @@ import { useEarnings } from "@/hooks/useEarnings"
 import { useUser } from "@/components/user-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { CreateStoryModal } from "./create-story-modal"
 import { 
   PenTool, 
   Plus, 
@@ -74,10 +75,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             Welcome back! Here's your writing progress overview
           </p>
         </div>
-        <Button size="lg" className="vine-button-hero" onClick={() => onNavigate("create-story")}>
-          <Plus className="h-5 w-5 mr-2" />
-          Create New Story
-        </Button>
+        <CreateStoryModal onStoryCreated={(story) => onNavigate("story-view", { story })}>
+          <Button size="lg" className="vine-button-hero">
+            <Plus className="h-5 w-5 mr-2" />
+            Create New Story
+          </Button>
+        </CreateStoryModal>
       </div>
 
       {/* Quick Stats Grid */}
@@ -141,13 +144,15 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
       {/* Action Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="vine-card cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onNavigate("create-story")}>
-          <CardContent className="pt-6 text-center">
-            <Plus className="h-12 w-12 text-primary mx-auto mb-4" />
-            <CardTitle className="mb-2">Create New Story</CardTitle>
-            <CardDescription>Start writing your next masterpiece</CardDescription>
-          </CardContent>
-        </Card>
+        <CreateStoryModal onStoryCreated={(story) => onNavigate("story-view", { story })}>
+          <Card className="vine-card cursor-pointer hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6 text-center">
+              <Plus className="h-12 w-12 text-primary mx-auto mb-4" />
+              <CardTitle className="mb-2">Create New Story</CardTitle>
+              <CardDescription>Start writing your next masterpiece</CardDescription>
+            </CardContent>
+          </Card>
+        </CreateStoryModal>
 
         <Card className="vine-card cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onNavigate("manage-stories")}>
           <CardContent className="pt-6 text-center">

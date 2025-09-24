@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Dashboard } from "./writer/dashboard"
 import { CreateStory } from "./writer/create-story"
 import { AddChapter } from "./writer/add-chapter" 
+import { StoryView } from "./writer/story-view"
 import { ManageStories } from "./writer/manage-stories"
 import { ManageChapters } from "./writer/manage-chapters"
 import { Analytics } from "./writer/analytics"
@@ -35,8 +36,6 @@ export function WriterPanel() {
 
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "create-story", label: "Create Story", icon: PlusSquare },
-    { id: "add-chapter", label: "Add Chapter", icon: FileText },
     { id: "manage-stories", label: "My Stories", icon: BookOpen },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "earnings", label: "Earnings", icon: DollarSign },
@@ -50,6 +49,7 @@ export function WriterPanel() {
       case "dashboard": return <Dashboard onNavigate={handleNavigate} />
       case "create-story": return <CreateStory onNavigate={handleNavigate} />
       case "add-chapter": return <AddChapter onNavigate={handleNavigate} />
+      case "story-view": return <StoryView story={selectedData?.story} onNavigate={handleNavigate} />
       case "manage-stories": return <ManageStories onNavigate={handleNavigate} />
       case "manage-chapters": return <ManageChapters story={selectedData} onNavigate={handleNavigate} />
       case "analytics": return <Analytics onNavigate={handleNavigate} />
