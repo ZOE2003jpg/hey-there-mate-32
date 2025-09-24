@@ -81,13 +81,13 @@ export function PreviewReader({ chapter, onNavigate }: PreviewReaderProps) {
         onClick={handleSlideNavigation}
       >
         <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader">
+          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-8 bg-card/50 backdrop-blur-sm">
             <div className="vine-slide-content">
-              <div className="prose prose-xl sm:prose-2xl lg:prose-3xl max-w-none text-center">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-8 text-primary">
+              <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-center">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-8 text-primary">
                   {chapter?.title || 'Preview Chapter'}
                 </h2>
-                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-relaxed font-medium max-w-5xl mx-auto">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed font-medium max-w-4xl mx-auto">
                   {slides[currentSlide - 1] || 'Loading slide content...'}
                 </p>
               </div>

@@ -381,10 +381,10 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         onClick={handleSlideNavigation}
       >
         <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader">
+          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-8 bg-card/50 backdrop-blur-sm">
             <div className="vine-slide-content">
-              <div className="prose prose-xl sm:prose-2xl lg:prose-3xl max-w-none text-center">
-                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-relaxed font-medium max-w-5xl mx-auto">
+              <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-center">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed font-medium max-w-4xl mx-auto">
                   {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
                 </p>
               </div>
