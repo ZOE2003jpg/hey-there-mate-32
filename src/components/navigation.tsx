@@ -34,7 +34,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">VN</span>
           </div>
-          <span className="hidden font-bold sm:inline-block vine-text-gradient">
+          <span className="font-bold vine-text-gradient">
             VineNovel
           </span>
         </button>
@@ -78,9 +78,9 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         {/* Mobile Menu Button */}
         <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
           {user?.profile && (
-            <div className="flex items-center space-x-1 text-sm mr-2">
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">{user.profile.display_name || user.profile.username || user.email}</span>
+            <div className="flex items-center space-x-1 text-xs mr-2">
+              <User className="h-3 w-3" />
+              <span className="truncate max-w-20">{user.profile.display_name || user.profile.username || user.email}</span>
             </div>
           )}
           <ThemeToggle />
