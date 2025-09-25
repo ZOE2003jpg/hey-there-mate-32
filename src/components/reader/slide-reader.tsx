@@ -219,6 +219,25 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     setIsAtChapterEnd(currentSlideData?.type === 'chapter_end')
   }, [currentSlide, allSlides])
 
+  // Cleanup audio when component unmounts or navigating away
+  useEffect(() => {
+    return () => {
+      if (chapterAudio) {
+        chapterAudio.pause()
+        chapterAudio.currentTime = 0
+      }
+    }
+  }, [chapterAudio])
+
+  // Stop audio when navigating away
+  const handleNavigateWithCleanup = (page: string, data?: any) => {
+    if (chapterAudio) {
+      chapterAudio.pause()
+      chapterAudio.currentTime = 0
+    }
+    onNavigate(page, data)
+  }
+
   // Track reading progress
   useEffect(() => {
     if (!user?.id || !story?.id || !currentChapter || totalSlides === 0) return
@@ -268,6 +287,12 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const loadNextChapter = async () => {
     if (!nextChapterId) return
     
+    // Stop current chapter audio
+    if (chapterAudio) {
+      chapterAudio.pause()
+      chapterAudio.currentTime = 0
+    }
+    
     try {
       const { data: nextChapter } = await supabase
         .from('chapters')
@@ -280,6 +305,9 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         const loadSlides = async (targetChapter: any) => {
           setCurrentChapter(targetChapter.id)
           setCurrentSlide(1)
+          
+          // Load audio for new chapter
+          loadChapterAudio(targetChapter.id)
           
           if (targetChapter.content) {
             const words = targetChapter.content.split(/\s+/).filter((word: string) => word.trim())
@@ -365,6 +393,22 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     setAudioVolume(volume)
     if (chapterAudio) {
       chapterAudio.volume = volume
+    }
+  }
+
+  const increaseVolume = () => {
+    const newVolume = Math.min(1, audioVolume + 0.1)
+    setAudioVolume(newVolume)
+    if (chapterAudio) {
+      chapterAudio.volume = newVolume
+    }
+  }
+
+  const decreaseVolume = () => {
+    const newVolume = Math.max(0, audioVolume - 0.1)
+    setAudioVolume(newVolume)
+    if (chapterAudio) {
+      chapterAudio.volume = newVolume
     }
   }
 
@@ -494,6 +538,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
             
             {showVolumeControl && (
               <div className="flex items-center gap-2 animate-in slide-in-from-right duration-200">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={decreaseVolume}
+                  className="h-6 w-6 p-0"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
                 <Slider
                   value={[audioVolume * 100]}
                   onValueChange={handleVolumeChange}
@@ -501,6 +553,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
                   step={1}
                   className="w-20"
                 />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={increaseVolume}
+                  className="h-6 w-6 p-0"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
                 <span className="text-xs font-medium min-w-[2ch]">
                   {Math.round(audioVolume * 100)}
                 </span>
@@ -526,6 +586,19 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
+      {/* Chapter Progress Bar */}
+      <div className="absolute top-12 left-4 right-4 z-50">
+        <div className="bg-background/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+            <span>Chapter Progress</span>
+            <span>{progress}% complete</span>
+          </div>
+          <Progress value={progress} className="h-1">
+            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+          </Progress>
+        </div>
+      </div>
+
       {/* Menu Overlay */}
       {showMenu && (
         <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-20 flex items-center justify-center">
@@ -547,7 +620,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                onClick={() => onNavigate("library")}
+                onClick={() => handleNavigateWithCleanup("library")}
                 className="h-16 flex-col gap-2"
               >
                 <MessageCircle className="h-6 w-6" />
@@ -555,7 +628,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => onNavigate("settings")}
+                onClick={() => handleNavigateWithCleanup("settings")}
                 className="h-16 flex-col gap-2"
               >
                 <Menu className="h-6 w-6" />
@@ -705,17 +778,52 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
             )}
             
             <div className="vine-slide-content flex-1 flex items-center">
-              <div className="prose max-w-none text-justify w-full">
-                <div 
-                  className="leading-relaxed font-medium max-w-6xl mx-auto overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent"
-                  style={{ 
-                    fontSize: `${fontSize}px`,
-                    fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
-                  }}
-                >
-                  {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
+              {isAtChapterEnd ? (
+                <div className="w-full max-w-4xl mx-auto text-center space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-primary">Chapter Complete!</h3>
+                    <p className="text-muted-foreground">You've finished this chapter.</p>
+                    <div className="w-20 h-1 bg-primary/50 mx-auto rounded-full"></div>
+                  </div>
+                  
+                  {nextChapterId ? (
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">Ready for the next chapter?</p>
+                      <Button
+                        onClick={loadNextChapter}
+                        className="vine-button-hero px-8 py-3 text-lg"
+                      >
+                        <BookOpen className="h-5 w-5 mr-2" />
+                        Continue to Next Chapter
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">You've reached the end of available chapters.</p>
+                      <Button
+                        onClick={() => handleNavigateWithCleanup("story-chapters", story)}
+                        variant="outline"
+                        className="px-6 py-2"
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Back to Chapters
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : (
+                <div className="prose max-w-none text-justify w-full">
+                  <div 
+                    className="leading-relaxed font-medium max-w-6xl mx-auto overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent"
+                    style={{ 
+                      fontSize: `${fontSize}px`,
+                      fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
+                    }}
+                  >
+                    {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -743,7 +851,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => onNavigate("story-chapters", story)}
+        onClick={() => handleNavigateWithCleanup("story-chapters", story)}
         className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10"
       >
         <X className="h-4 w-4 sm:mr-2" />
