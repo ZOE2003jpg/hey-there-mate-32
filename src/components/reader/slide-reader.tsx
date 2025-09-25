@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import { useSlides } from "@/hooks/useSlides"
 import { useReads } from "@/hooks/useReads"
+import { useChapters } from "@/hooks/useChapters"
 import { useRealtimeLikes } from "@/hooks/useRealtimeLikes"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useBackgroundSound } from "@/hooks/useBackgroundSound"
@@ -58,8 +59,12 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showVolumeControl, setShowVolumeControl] = useState(false)
   const [isAudioPlaying, setIsAudioPlaying] = useState(false)
   
-  const { getSlidesWithAds } = useSlides()
-  const { trackProgress, getReadingProgress } = useReads(user?.id)
+  const { slides, loading } = useSlides(chapter?.id)
+  const { trackProgress, reads, getReadingProgress } = useReads(user?.id)
+  const { chapters } = useChapters(story?.id)
+  
+  // Get all reading progress for chapter navigation
+  const readingProgress = reads || []
   const { toggleLike, isLiked } = useRealtimeLikes(user?.id)
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
   const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
@@ -230,13 +235,24 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     }
   }, [chapterAudio])
 
-  // Stop audio when navigating away
   const handleNavigateWithCleanup = (page: string, data?: any) => {
+    // Stop music and clean up audio when navigating away
     if (chapterAudio) {
       chapterAudio.pause()
       chapterAudio.currentTime = 0
     }
     onNavigate(page, data)
+  }
+
+  // Get all chapters for navigation
+  const allChapters = chapters.filter(chapter => chapter.status === 'published').sort((a, b) => a.chapter_number - b.chapter_number)
+  
+  // Find current chapter index and next chapter
+  const currentChapterIndex = allChapters.findIndex(ch => ch.id === currentChapter)
+  const nextChapter = currentChapterIndex >= 0 && currentChapterIndex < allChapters.length - 1 ? allChapters[currentChapterIndex + 1] : null
+  
+  const handleChapterNavigation = (targetChapter: any) => {
+    handleNavigateWithCleanup('reader', { story, chapter: targetChapter })
   }
 
   // Track reading progress
@@ -381,11 +397,17 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       return
     }
 
+    if (isInLibrary(story.id)) {
+      toast.info("Story is already in your library")
+      return
+    }
+
     try {
       await addToLibrary(story.id, user.id)
       toast.success('Added to library!')
     } catch (error) {
-      toast.error('Failed to add to library')
+      console.error("Library error:", error)
+      toast.error(error instanceof Error ? error.message : 'Failed to add to library')
     }
   }
 
@@ -524,79 +546,45 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Button>
       </div>
 
-      {/* Progress Bar */}
-      <div className="absolute top-0 left-0 right-0 z-50">
-        <Progress value={progress} className="h-2 rounded-none bg-muted/20">
-          <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
-        </Progress>
+      {/* Vertical Progress Bar - Left Side */}
+      <div className="absolute top-16 left-2 bottom-16 z-50 w-2">
+        <div className="h-full bg-muted/20 rounded-full relative">
+          <div 
+            className="absolute bottom-0 left-0 w-full bg-primary rounded-full transition-all duration-300 ease-in-out"
+            style={{ height: `${progress}%` }}
+          />
+        </div>
       </div>
 
-      {/* Volume Control Panel */}
-      <div className="absolute top-4 right-4 z-50">
-        <div className="flex items-center gap-2">
-          {/* Volume Control */}
-          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowVolumeControl(!showVolumeControl)}
-              className="h-8 w-8 p-0"
-            >
-              {audioVolume === 0 ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-            
-            {showVolumeControl && (
-              <div className="flex items-center gap-2 animate-in slide-in-from-right duration-200">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={decreaseVolume}
-                  className="h-6 w-6 p-0"
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <Slider
-                  value={[audioVolume * 100]}
-                  onValueChange={handleVolumeChange}
-                  max={100}
-                  step={1}
-                  className="w-20"
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={increaseVolume}
-                  className="h-6 w-6 p-0"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-                <span className="text-xs font-medium min-w-[2ch]">
-                  {Math.round(audioVolume * 100)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Audio Playback Control */}
-          {chapterAudio && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={toggleAudioPlayback}
-              className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-            >
-              {isAudioPlaying ? (
-                <VolumeX className="h-3 w-3" />
-              ) : (
-                <Volume2 className="h-3 w-3" />
-              )}
-            </Button>
-          )}
+      {/* Volume Controls - Right Side */}
+      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 flex flex-col gap-2 bg-background/80 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={increaseVolume}
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90"
+        >
+          <span className="text-sm font-bold">+</span>
+        </Button>
+        <div className="text-xs text-center text-muted-foreground py-1 min-w-[3ch]">
+          {Math.round(audioVolume * 100)}%
         </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={decreaseVolume}
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90"
+        >
+          <span className="text-sm font-bold">−</span>
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={toggleAudioPlayback}
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90 mt-1"
+        >
+          {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+        </Button>
       </div>
 
       {/* Chapter Progress Bar */}
@@ -842,34 +830,43 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
-      {/* Navigation Hints */}
-      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <ChevronLeft className="h-4 w-4" />
-          <span>Tap left</span>
+      {/* Chapter Navigation at Bottom */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-4 bg-background/80 backdrop-blur-sm rounded-lg p-3 shadow-lg max-w-[90vw] overflow-hidden">
+        <div className="flex items-center gap-2 max-w-xs overflow-x-auto scrollbar-thin scrollbar-thumb-primary/20">
+          {allChapters.map((chapterItem, index) => {
+            const isCurrentChapter = chapterItem.id === currentChapter
+            const hasBeenRead = readingProgress.some(r => r.chapter_id === chapterItem.id && (r.progress || 0) > 80)
+            return (
+              <Button
+                key={chapterItem.id}
+                size="sm"
+                variant={isCurrentChapter ? "default" : hasBeenRead ? "secondary" : "outline"}
+                onClick={() => handleChapterNavigation(chapterItem)}
+                className="h-8 w-8 p-0 flex-shrink-0 text-xs"
+                title={`Chapter ${chapterItem.chapter_number}: ${chapterItem.title}`}
+              >
+                {chapterItem.chapter_number}
+              </Button>
+            )
+          })}
         </div>
-        <div className="w-px h-4 bg-border"></div>
-        <div className="flex items-center gap-2">
-          <Menu className="h-4 w-4" />
-          <span>Tap center</span>
-        </div>
-        <div className="w-px h-4 bg-border"></div>
-        <div className="flex items-center gap-2">
-          <span>Tap right</span>
-          <ChevronRight className="h-4 w-4" />
-        </div>
+        
+        {/* Next Chapter Button */}
+        {currentSlide === totalSlides && nextChapter && (
+          <div className="border-l pl-4 ml-2">
+            <Button
+              onClick={() => handleChapterNavigation(nextChapter)}
+              className="flex items-center gap-2 text-sm"
+              size="sm"
+            >
+              Next Chapter
+              <ArrowLeft className="h-4 w-4 rotate-180" />
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => handleNavigateWithCleanup("story-chapters", story)}
-        className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10"
-      >
-        <X className="h-4 w-4 sm:mr-2" />
-        <span className="hidden sm:inline">Back</span>
-      </Button>
+      {/* Remove duplicate back button */}
 
       {/* Slide Counter */}
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm">
