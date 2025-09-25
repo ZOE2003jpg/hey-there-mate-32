@@ -56,6 +56,29 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 </Button>
               )
             })}
+            
+            {/* Mode switching for admin users */}
+            {user?.profile?.role === 'admin' && (
+              <div className="flex items-center space-x-2 border-l pl-4 ml-2">
+                <span className="text-xs text-muted-foreground">Mode:</span>
+                <Button
+                  size="sm"
+                  variant={currentPanel === 'reader' ? "default" : "ghost"}
+                  onClick={() => onPanelChange('reader')}
+                >
+                  <BookOpen className="h-3 w-3 mr-1" />
+                  Reader
+                </Button>
+                <Button
+                  size="sm"
+                  variant={currentPanel === 'writer' ? "default" : "ghost"}
+                  onClick={() => onPanelChange('writer')}
+                >
+                  <PenTool className="h-3 w-3 mr-1" />
+                  Writer
+                </Button>
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-3">
             {user?.profile && (
@@ -76,23 +99,31 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
+        <div className="flex md:hidden flex-1 items-center justify-end space-x-1">
           {user?.profile && (
-            <div className="flex items-center space-x-1 text-xs mr-2">
+            <div className="flex items-center space-x-1 text-xs mr-1">
               <User className="h-3 w-3" />
-              <span className="truncate max-w-20">{user.profile.display_name || user.profile.username || user.email}</span>
+              <span className="truncate max-w-16">{user.profile.display_name || user.profile.username || user.email}</span>
+              <span className="text-muted-foreground text-xs">({user.profile.role})</span>
             </div>
+          )}
+          {user && (
+            <Button variant="ghost" size="sm" onClick={signOut} className="h-8 px-2 text-xs">
+              <LogOut className="h-3 w-3 mr-1" />
+              Logout
+            </Button>
           )}
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="h-8 w-8"
           >
             {isMobileMenuOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             )}
           </Button>
         </div>
@@ -119,18 +150,34 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 </Button>
               )
             })}
-            {user && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  signOut()
-                  setIsMobileMenuOpen(false)
-                }}
-                className="w-full justify-start flex items-center space-x-2 text-destructive"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-              </Button>
+            
+            {/* Mode switching for users with multiple roles */}
+            {user?.profile?.role === 'admin' && (
+              <div className="border-t pt-2 mt-2">
+                <p className="text-xs text-muted-foreground mb-2 px-3">Switch Mode:</p>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    onPanelChange('reader')
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="w-full justify-start flex items-center space-x-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span>Reader Mode</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    onPanelChange('writer')
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="w-full justify-start flex items-center space-x-2"
+                >
+                  <PenTool className="h-4 w-4" />
+                  <span>Writer Mode</span>
+                </Button>
+              </div>
             )}
           </div>
         </div>

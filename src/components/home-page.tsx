@@ -127,27 +127,27 @@ export function HomePage({ onPanelChange }: HomePageProps) {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-12">Trending Stories</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {stories.slice(0, 6).map((story) => (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {stories.slice(0, 8).map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="aspect-[3/4] bg-secondary/30 rounded-lg mb-4 flex items-center justify-center">
-                      <BookOpen className="h-12 w-12 text-muted-foreground" />
+                  <CardContent className="p-3">
+                    <div className="aspect-[3/4] bg-secondary/30 rounded-lg mb-3 flex items-center justify-center">
+                      <BookOpen className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <Badge variant="outline" className="mb-2">{story.genre}</Badge>
-                    <h3 className="font-semibold text-lg mb-2">{story.title}</h3>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-4 text-sm">
+                    <Badge variant="outline" className="mb-2 text-xs">{story.genre}</Badge>
+                    <h3 className="font-semibold text-sm mb-2 line-clamp-2">{story.title}</h3>
+                    <div className="flex justify-between items-center text-xs">
+                      <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3 w-3" />
                           {story.view_count}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
+                          <Heart className="h-3 w-3" />
                           {story.like_count}
                         </div>
                       </div>
-                      <Button size="sm">Read</Button>
+                      <Button size="sm" className="h-6 px-2 text-xs">Read</Button>
                     </div>
                   </CardContent>
                 </Card>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Slider } from "@/components/ui/slider"
 import { 
   ChevronLeft,
   ChevronRight,
@@ -13,11 +14,17 @@ import {
   SkipForward,
   Type,
   Plus,
-  Minus
+  Minus,
+  BookOpen,
+  Volume2,
+  VolumeX,
+  Bookmark
 } from "lucide-react"
 import { useSlides } from "@/hooks/useSlides"
 import { useReads } from "@/hooks/useReads"
-import { useLikes } from "@/hooks/useLikes"
+import { useRealtimeLikes } from "@/hooks/useRealtimeLikes"
+import { useLibrary } from "@/hooks/useLibrary"
+import { useBackgroundSound } from "@/hooks/useBackgroundSound"
 import { useAds } from "@/hooks/useAds"
 import { useUser } from "@/components/user-context"
 import { supabase } from "@/integrations/supabase/client"
@@ -42,10 +49,13 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [fontFamily, setFontFamily] = useState('serif')
   const [chaptersList, setChaptersList] = useState<any[]>([])
   const [nextChapterId, setNextChapterId] = useState<string | null>(null)
+  const [showSoundMenu, setShowSoundMenu] = useState(false)
   
   const { getSlidesWithAds } = useSlides()
   const { trackProgress, getReadingProgress } = useReads(user?.id)
-  const { toggleLike, isLiked } = useLikes(user?.id)
+  const { toggleLike, isLiked } = useRealtimeLikes(user?.id)
+  const { addToLibrary, isInLibrary } = useLibrary(user?.id)
+  const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
   const { incrementImpressions, incrementClicks } = useAds()
 
   const totalSlides = allSlides.length
@@ -187,6 +197,55 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const nextSlide = () => {
     if (currentSlide < totalSlides) {
       setCurrentSlide(currentSlide + 1)
+    } else if (nextChapterId) {
+      // Auto-advance to next chapter
+      loadNextChapter()
+    }
+  }
+
+  const loadNextChapter = async () => {
+    if (!nextChapterId) return
+    
+    try {
+      const { data: nextChapter } = await supabase
+        .from('chapters')
+        .select('*')
+        .eq('id', nextChapterId)
+        .single()
+      
+      if (nextChapter) {
+        // Load slides for next chapter  
+        const loadSlides = async (targetChapter: any) => {
+          setCurrentChapter(targetChapter.id)
+          setCurrentSlide(1)
+          
+          if (targetChapter.content) {
+            const words = targetChapter.content.split(/\s+/).filter((word: string) => word.trim())
+            const wordsPerSlide = 400
+            const slides: any[] = []
+            
+            for (let i = 0; i < words.length; i += wordsPerSlide) {
+              const slideWords = words.slice(i, i + wordsPerSlide)
+              slides.push({
+                content: slideWords.join(' '),
+                type: 'content',
+                slide_number: slides.length + 1,
+                chapter_title: targetChapter.title
+              })
+            }
+            
+            setAllSlides(slides)
+            
+            // Update next chapter ID
+            const currentIndex = chaptersList.findIndex(c => c.id === targetChapter.id)
+            setNextChapterId(currentIndex >= 0 && currentIndex < chaptersList.length - 1 ? chaptersList[currentIndex + 1].id : null)
+          }
+        }
+        
+        await loadSlides(nextChapter)
+      }
+    } catch (error) {
+      console.error('Failed to load next chapter:', error)
     }
   }
 
@@ -221,6 +280,20 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       toast.success(isLiked(story.id) ? 'Story liked!' : 'Like removed')
     } catch (error) {
       toast.error('Failed to update like')
+    }
+  }
+
+  const handleAddToLibrary = async () => {
+    if (!user?.id || !story?.id) {
+      toast.error('Please login to add to library')
+      return
+    }
+
+    try {
+      await addToLibrary(story.id, user.id)
+      toast.success('Added to library!')
+    } catch (error) {
+      toast.error('Failed to add to library')
     }
   }
 
@@ -338,7 +411,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               </Button>
             </div>
 
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-2 flex-wrap">
               <Button
                 size="sm"
                 variant={story?.id && isLiked(story.id) ? "default" : "outline"}
@@ -346,6 +419,15 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               >
                 <Heart className={`h-4 w-4 mr-2 ${story?.id && isLiked(story.id) ? 'fill-current' : ''}`} />
                 {story?.id && isLiked(story.id) ? 'Liked' : 'Like'}
+              </Button>
+              <Button 
+                size="sm" 
+                variant={story?.id && isInLibrary(story.id) ? "default" : "outline"}
+                onClick={handleAddToLibrary}
+                disabled={story?.id && isInLibrary(story.id)}
+              >
+                <Bookmark className="h-4 w-4 mr-2" />
+                {story?.id && isInLibrary(story.id) ? 'In Library' : 'Add to Library'}
               </Button>
               <Button size="sm" variant="outline">
                 <MessageCircle className="h-4 w-4 mr-2" />
@@ -355,6 +437,61 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
                 <Share className="h-4 w-4 mr-2" />
                 Share
               </Button>
+            </div>
+
+            {/* Background Sound Controls */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Background Sound</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowSoundMenu(!showSoundMenu)}
+                >
+                  {isPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                </Button>
+              </div>
+              
+              {showSoundMenu && (
+                <div className="space-y-3 p-3 border rounded-lg">
+                  <div className="grid grid-cols-3 gap-2">
+                    {defaultSounds.map((sound) => (
+                      <Button
+                        key={sound.id}
+                        size="sm"
+                        variant={currentSound?.id === sound.id ? "default" : "outline"}
+                        onClick={() => playSound(sound)}
+                        className="text-xs"
+                      >
+                        {sound.name}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  {currentSound && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={isPlaying ? pauseSound : () => playSound(currentSound)}
+                        >
+                          {isPlaying ? 'Pause' : 'Play'}
+                        </Button>
+                        <span className="text-xs text-muted-foreground">Volume: {Math.round(volume * 100)}%</span>
+                      </div>
+                      <Slider
+                        value={[volume]}
+                        onValueChange={([newVolume]) => changeVolume(newVolume)}
+                        max={1}
+                        min={0}
+                        step={0.1}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <Button
@@ -399,22 +536,33 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto"
         onClick={handleSlideNavigation}
       >
         <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-8 bg-card/50 backdrop-blur-sm">
-            <div className="vine-slide-content">
-              <div className="prose max-w-none text-justify">
-                <p 
-                  className="leading-relaxed font-medium max-w-6xl mx-auto"
+          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-4 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[70vh] flex flex-col">
+            
+            {/* Chapter Title */}
+            {allSlides[currentSlide - 1]?.chapter_title && (
+              <div className="mb-4 text-center">
+                <h2 className="text-lg sm:text-xl font-bold text-orange-500 mb-2">
+                  {allSlides[currentSlide - 1]?.chapter_title}
+                </h2>
+                <div className="w-16 h-0.5 bg-orange-500/50 mx-auto"></div>
+              </div>
+            )}
+            
+            <div className="vine-slide-content flex-1 flex items-center">
+              <div className="prose max-w-none text-justify w-full">
+                <div 
+                  className="leading-relaxed font-medium max-w-6xl mx-auto overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent"
                   style={{ 
                     fontSize: `${fontSize}px`,
                     fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
                   }}
                 >
                   {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
-                </p>
+                </div>
               </div>
             </div>
           </div>
