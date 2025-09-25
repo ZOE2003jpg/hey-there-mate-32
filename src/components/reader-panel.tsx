@@ -108,32 +108,22 @@ export function ReaderPanel() {
         </div>
       )}
 
-      {/* Mobile Navigation */}
+      {/* Mobile Header with Navigation */}
       {isMobile && (
-        <div className="fixed top-16 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-border z-40 p-2">
-          <div className="flex items-center gap-2 overflow-x-auto">
-            <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Button
-                  key={item.id}
-                  variant={currentPage === item.id ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => handleNavigate(item.id)}
-                  className="flex items-center gap-1 whitespace-nowrap"
-                >
-                  <Icon className="h-3 w-3" />
-                  <span className="text-xs">{item.label}</span>
-                </Button>
-              )
-            })}
+        <div className="fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-border z-50 h-14 sm:h-16">
+          <div className="flex items-center justify-between px-3 sm:px-4 h-full">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
+              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+              <h1 className="text-base sm:text-lg font-bold truncate">Reader Panel</h1>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-[120px]' : ''}`}>
+      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-14 sm:pt-16' : ''}`}>
         <div className="p-3 sm:p-4 lg:p-8">
           {renderPage()}
         </div>
