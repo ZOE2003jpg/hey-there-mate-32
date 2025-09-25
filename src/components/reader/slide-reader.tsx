@@ -599,6 +599,39 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Button>
       </div>
 
+      {/* Mobile Volume Control - Always Visible on Mobile */}
+      <div className="absolute bottom-20 right-4 z-50 md:hidden">
+        <div className="bg-background/90 backdrop-blur-sm rounded-lg p-2 shadow-lg border flex flex-col items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={increaseVolume}
+            className="h-7 w-7 p-0 rounded-full"
+          >
+            <span className="text-xs font-bold">+</span>
+          </Button>
+          <div className="text-xs text-center text-muted-foreground min-w-[2ch]">
+            {Math.round(audioVolume * 100)}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={decreaseVolume}
+            className="h-7 w-7 p-0 rounded-full"
+          >
+            <span className="text-xs font-bold">−</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleAudioPlayback}
+            className="h-7 w-7 p-0 rounded-full mt-1"
+          >
+            {isAudioPlaying ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
+          </Button>
+        </div>
+      </div>
+
       {/* Desktop Progress Bar - Left Side */}
       <div className="absolute top-16 left-2 bottom-16 z-50 w-2 hidden md:block">
         <div className="h-full bg-muted/20 rounded-full relative">
