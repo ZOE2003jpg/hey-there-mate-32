@@ -118,23 +118,16 @@ export function AdminPanel() {
         </div>
       )}
 
-      {/* Mobile Header with Navigation */}
+      {/* Mobile Navigation - Use sheet/drawer instead of fixed header */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-border z-50 h-14 sm:h-16">
-          <div className="flex items-center justify-between px-3 sm:px-4 h-full">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <AdminMobileNav currentPage={currentPage} onNavigate={handleNavigate} />
-              <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
-              <h1 className="text-base sm:text-lg font-bold truncate">Admin Panel</h1>
-            </div>
-            <ThemeToggle />
-          </div>
+        <div className="fixed top-16 left-4 z-40">
+          <AdminMobileNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-14 sm:pt-16' : ''}`}>
-        <div className="p-3 sm:p-4 lg:p-8">
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 sm:p-6 lg:p-8">
           {renderPage()}
         </div>
       </div>

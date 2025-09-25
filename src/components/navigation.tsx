@@ -26,7 +26,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
   return (
     <nav className="vine-card sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-16 items-center px-4">
         <button
           onClick={() => onPanelChange("home")}
           className="flex items-center space-x-2 mr-6"
@@ -99,18 +99,18 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-1">
+        <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
           {user?.profile && (
-            <div className="flex items-center space-x-1 text-xs mr-1 min-w-0 max-w-[140px] sm:max-w-none">
+            <div className="flex items-center space-x-1 text-xs mr-1 min-w-0 max-w-[120px] xs:max-w-[160px] sm:max-w-none">
               <User className="h-3 w-3 flex-shrink-0" />
               <span className="truncate text-xs">{user.profile.display_name || user.profile.username || user.email}</span>
-              <span className="text-muted-foreground text-xs hidden sm:inline">({user.profile.role})</span>
+              <span className="text-muted-foreground text-xs hidden xs:inline">({user.profile.role})</span>
             </div>
           )}
           {user && (
             <Button variant="ghost" size="sm" onClick={signOut} className="h-8 px-2 text-xs flex-shrink-0">
               <LogOut className="h-3 w-3 mr-1" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden xs:inline">Out</span>
             </Button>
           )}
           <ThemeToggle />
@@ -118,7 +118,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             variant="ghost"
             size="icon"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="h-8 w-8 flex-shrink-0"
+            className="h-8 w-8 flex-shrink-0 ml-1"
           >
             {isMobileMenuOpen ? (
               <X className="h-4 w-4" />
