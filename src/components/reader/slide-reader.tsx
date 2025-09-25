@@ -46,6 +46,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showAd, setShowAd] = useState(false)
   const [adCountdown, setAdCountdown] = useState(5)
   const [currentAd, setCurrentAd] = useState<any>(null)
+  const [videoWatched, setVideoWatched] = useState(false)
+  const [adVideoRef, setAdVideoRef] = useState<HTMLVideoElement | null>(null)
   const [allSlides, setAllSlides] = useState<any[]>([])
   const [currentChapter, setCurrentChapter] = useState<string | null>(null)
   const [fontSize, setFontSize] = useState(16)
@@ -68,7 +70,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { toggleLike, isLiked } = useRealtimeLikes(user?.id)
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
   const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
-  const { incrementImpressions, incrementClicks } = useAds()
+  const { ads, incrementImpressions, incrementClicks } = useAds()
   const { getChapterSounds } = useSoundsLibrary()
 
   const totalSlides = allSlides.length
@@ -272,20 +274,23 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     return () => clearTimeout(timeoutId)
   }, [currentSlide, user?.id, story?.id, currentChapter, totalSlides])
 
-  // Handle ad display
+  // Handle video end event
+  const handleVideoEnd = () => {
+    setVideoWatched(true)
+    setAdCountdown(0)
+  }
+
+  // Set up video ref when ad changes
   useEffect(() => {
-    const currentSlideData = allSlides[currentSlide - 1]
-    if (currentSlideData && currentSlideData.type === 'ad') {
-      setCurrentAd(currentSlideData.ad)
-      setShowAd(true)
-      setAdCountdown(5)
-      
-      // Track ad impression
-      if (currentSlideData.ad?.id) {
-        incrementImpressions(currentSlideData.ad.id)
+    if (showAd && adVideoRef && currentAd) {
+      adVideoRef.onended = handleVideoEnd
+      adVideoRef.onloadedmetadata = () => {
+        // Reset states when video loads
+        setVideoWatched(false)
+        setAdCountdown(Math.max(5, Math.floor(adVideoRef.duration || 5)))
       }
     }
-  }, [currentSlide, allSlides])
+  }, [showAd, adVideoRef, currentAd])
 
   // Ad countdown
   useEffect(() => {
@@ -297,7 +302,21 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
   const nextSlide = () => {
     if (currentSlide < totalSlides) {
-      setCurrentSlide(currentSlide + 1)
+      // Check if we need to show an ad (every 5 slides)
+      const nextSlideNum = currentSlide + 1
+      if (nextSlideNum % 5 === 0 && ads.length > 0) {
+        // Show ad before proceeding to next slide
+        const randomAd = ads[Math.floor(Math.random() * ads.length)]
+        setCurrentAd(randomAd)
+        setShowAd(true)
+        setVideoWatched(false)
+        setAdCountdown(5)
+        
+        // Track ad impression
+        incrementImpressions(randomAd.id)
+      } else {
+        setCurrentSlide(nextSlideNum)
+      }
     }
   }
 
@@ -364,9 +383,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   }
 
   const skipAd = () => {
-    setShowAd(false)
-    setAdCountdown(5)
-    setCurrentAd(null)
+    if (videoWatched || adCountdown === 0) {
+      setShowAd(false)
+      setAdCountdown(5)
+      setCurrentAd(null)
+      setVideoWatched(false)
+      // Continue to the next slide
+      setCurrentSlide(currentSlide + 1)
+    }
   }
 
   const handleAdClick = () => {
@@ -462,56 +486,63 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   if (showAd) {
     return (
       <div className="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="relative max-w-2xl w-full mx-4">
+        <div className="relative max-w-4xl w-full mx-4">
           <div className="bg-background border rounded-lg p-8 text-center space-y-6">
-            <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-              <Play className="h-12 w-12 text-primary" />
-            </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2">Advertisement</h3>
+              <h3 className="text-xl font-semibold mb-2">Video Advertisement</h3>
               <p className="text-muted-foreground">
-                Supporting VineNovel with a short message
+                Please watch this short ad to continue reading
               </p>
             </div>
             <div className="bg-muted/50 rounded-lg p-6">
-              {currentAd ? (
-                <>
-                  <p className="text-lg font-medium">{currentAd.title || 'Advertisement'}</p>
-                  <p className="text-muted-foreground mt-2">{currentAd.description || 'Sponsored content'}</p>
-                  {currentAd.video_url && (
-                    <video 
-                      src={currentAd.video_url} 
-                      className="w-full h-32 object-cover rounded mt-4"
-                      controls
-                    />
-                  )}
-                </>
+              {currentAd && currentAd.video_url ? (
+                <div className="space-y-4">
+                  <video 
+                    ref={setAdVideoRef}
+                    src={currentAd.video_url} 
+                    className="w-full max-h-96 object-contain rounded"
+                    controls
+                    autoPlay
+                    playsInline
+                  />
+                  <div className="text-sm text-muted-foreground">
+                    {!videoWatched && adCountdown > 0 && (
+                      <p>You can skip in {adCountdown} seconds or wait for the video to finish</p>
+                    )}
+                    {videoWatched && (
+                      <p className="text-green-600">✓ Video completed! You can now continue.</p>
+                    )}
+                  </div>
+                </div>
               ) : (
-                <>
+                <div className="space-y-4">
+                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                    <Play className="h-12 w-12 text-primary" />
+                  </div>
                   <p className="text-lg font-medium">Discover amazing stories on VineNovel Premium</p>
-                  <p className="text-muted-foreground mt-2">Ad-free reading experience with exclusive content</p>
-                </>
+                  <p className="text-muted-foreground">Ad-free reading experience with exclusive content</p>
+                </div>
               )}
             </div>
             <div className="flex justify-center gap-4">
               <Button 
                 variant="outline" 
                 onClick={skipAd}
-                disabled={adCountdown > 0}
-                className="min-w-32"
+                disabled={!videoWatched && adCountdown > 0}
+                className={videoWatched ? "bg-green-600 hover:bg-green-700 text-white" : ""}
               >
-                {adCountdown > 0 ? (
-                  <>Skip in {adCountdown}s</>
-                ) : (
-                  <>
-                    <SkipForward className="h-4 w-4 mr-2" />
-                    Skip Ad
-                  </>
-                )}
+                {!videoWatched && adCountdown > 0 
+                  ? `Wait ${adCountdown}s` 
+                  : videoWatched 
+                    ? 'Continue Reading' 
+                    : 'Skip Ad'
+                }
               </Button>
-              <Button className="vine-button-hero" onClick={handleAdClick}>
-                Learn More
-              </Button>
+              {currentAd && (
+                <Button onClick={handleAdClick}>
+                  Learn More
+                </Button>
+              )}
             </div>
           </div>
         </div>

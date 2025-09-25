@@ -15,11 +15,31 @@ export interface Ad {
 const mockAds: Ad[] = [
   {
     id: '1',
-    video_url: 'https://example.com/ad1.mp4',
+    video_url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
     start_date: '2024-01-01',
     end_date: '2024-12-31',
     impressions: 1000,
     clicks: 50,
+    created_at: new Date().toISOString(),
+    status: 'active'
+  },
+  {
+    id: '2',
+    video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    start_date: '2024-01-01',
+    end_date: '2024-12-31',
+    impressions: 800,
+    clicks: 40,
+    created_at: new Date().toISOString(),
+    status: 'active'
+  },
+  {
+    id: '3',
+    video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    start_date: '2024-01-01',
+    end_date: '2024-12-31',
+    impressions: 1200,
+    clicks: 60,
     created_at: new Date().toISOString(),
     status: 'active'
   }
