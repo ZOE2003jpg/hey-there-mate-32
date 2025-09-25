@@ -26,6 +26,7 @@ import { useRealtimeLikes } from "@/hooks/useRealtimeLikes"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useBackgroundSound } from "@/hooks/useBackgroundSound"
 import { useAds } from "@/hooks/useAds"
+import { useSoundsLibrary } from "@/hooks/useSoundsLibrary"
 import { useUser } from "@/components/user-context"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
@@ -50,6 +51,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [chaptersList, setChaptersList] = useState<any[]>([])
   const [nextChapterId, setNextChapterId] = useState<string | null>(null)
   const [showSoundMenu, setShowSoundMenu] = useState(false)
+  const [chapterAudio, setChapterAudio] = useState<HTMLAudioElement | null>(null)
+  const [isAtChapterEnd, setIsAtChapterEnd] = useState(false)
   
   const { getSlidesWithAds } = useSlides()
   const { trackProgress, getReadingProgress } = useReads(user?.id)
@@ -57,6 +60,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
   const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
   const { incrementImpressions, incrementClicks } = useAds()
+  const { getChapterSounds } = useSoundsLibrary()
 
   const totalSlides = allSlides.length
   const progress = totalSlides > 0 ? Math.round((currentSlide / totalSlides) * 100) : 0
@@ -122,11 +126,15 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       setCurrentChapter(selectedChapter.id)
       setCurrentSlide(1)
+      setIsAtChapterEnd(false)
+      
+      // Load chapter audio
+      loadChapterAudio(selectedChapter.id)
       
       // Build slides locally from chapter content
       try {
         if (selectedChapter.content) {
-          const words = selectedChapter.content.split(/\s+/)
+          const words = selectedChapter.content.split(/\s+/).filter(word => word.trim())
           const wordsPerSlide = 400
           const slides: any[] = []
           
@@ -135,7 +143,18 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
             slides.push({
               content: slideWords.join(' '),
               type: 'content',
-              slide_number: slides.length + 1
+              slide_number: slides.length + 1,
+              chapter_title: selectedChapter.title
+            })
+          }
+          
+          // Add next chapter button slide if there's a next chapter
+          if (nextChapterId) {
+            slides.push({
+              content: 'Chapter Complete!',
+              type: 'chapter_end',
+              slide_number: slides.length + 1,
+              chapter_title: selectedChapter.title
             })
           }
           
@@ -153,6 +172,44 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
     loadSlides()
   }, [story, chapter])
+
+  // Load chapter audio
+  const loadChapterAudio = async (chapterId: string) => {
+    try {
+      const chapterSounds = await getChapterSounds(chapterId)
+      if (chapterSounds.length > 0) {
+        // Stop current audio
+        if (chapterAudio) {
+          chapterAudio.pause()
+          chapterAudio.currentTime = 0
+        }
+        
+        // Load first sound (could be enhanced to support multiple sounds)
+        const sound = chapterSounds[0]
+        if (sound.sound?.file_url) {
+          const audio = new Audio(sound.sound.file_url)
+          audio.volume = sound.volume
+          audio.loop = sound.loop_sound
+          setChapterAudio(audio)
+          
+          // Auto-play after a short delay
+          setTimeout(() => {
+            audio.play().catch(console.error)
+          }, 1000)
+        }
+      } else {
+        setChapterAudio(null)
+      }
+    } catch (error) {
+      console.error('Failed to load chapter audio:', error)
+    }
+  }
+
+  // Check if at chapter end
+  useEffect(() => {
+    const currentSlideData = allSlides[currentSlide - 1]
+    setIsAtChapterEnd(currentSlideData?.type === 'chapter_end')
+  }, [currentSlide, allSlides])
 
   // Track reading progress
   useEffect(() => {
@@ -197,9 +254,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const nextSlide = () => {
     if (currentSlide < totalSlides) {
       setCurrentSlide(currentSlide + 1)
-    } else if (nextChapterId) {
-      // Auto-advance to next chapter
-      loadNextChapter()
     }
   }
 
@@ -243,6 +297,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         }
         
         await loadSlides(nextChapter)
+        toast.success(`Now reading: ${nextChapter.title}`)
       }
     } catch (error) {
       console.error('Failed to load next chapter:', error)
@@ -372,7 +427,21 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40 w-full h-full">
+    <div 
+      className="fixed inset-0 bg-background z-40 w-full h-full select-none"
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitTapHighlightColor: 'transparent',
+        pointerEvents: 'auto'
+      }}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+      onSelectStart={(e) => e.preventDefault()}
+    >
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 z-50">
         <Progress value={progress} className="h-2 rounded-none bg-muted/20">

@@ -80,6 +80,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chapter_sounds: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          id: string
+          loop_sound: boolean | null
+          sound_id: string
+          volume: number | null
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          id?: string
+          loop_sound?: boolean | null
+          sound_id: string
+          volume?: number | null
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          id?: string
+          loop_sound?: boolean | null
+          sound_id?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
       chapters: {
         Row: {
           chapter_number: number
@@ -491,6 +518,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sounds_library: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          duration: number | null
+          file_url: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          file_url: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          file_url?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       stories: {
         Row: {
