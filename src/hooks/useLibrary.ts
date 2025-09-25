@@ -28,9 +28,9 @@ export function useLibrary(userId?: string) {
         .from('library')
         .select(`
           *,
-          stories (
+          stories!inner (
             *,
-            profiles (
+            profiles!stories_author_id_fkey (
               display_name,
               username
             ),

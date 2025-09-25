@@ -57,13 +57,13 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-md mx-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {mode === "signin" ? <LogIn className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-2 sm:space-y-3">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            {mode === "signin" ? <LogIn className="h-4 w-4 sm:h-5 sm:w-5" /> : <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />}
             {mode === "signin" ? "Welcome Back" : "Join VineNovel"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm sm:text-base">
             {mode === "signin" 
               ? "Sign in to access your personalized storytelling experience" 
               : "Create your account to start your storytelling journey"
@@ -77,8 +77,8 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="signin">
-            <form onSubmit={handleAuth} className="space-y-4">
+          <TabsContent value="signin" className="mt-4 sm:mt-6">
+            <form onSubmit={handleAuth} className="space-y-3 sm:space-y-4">
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -110,24 +110,24 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-10 sm:h-11" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Signing in...
+                    <span className="text-sm sm:text-base">Signing in...</span>
                   </>
                 ) : (
                   <>
                     <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
+                    <span className="text-sm sm:text-base">Sign In</span>
                   </>
                 )}
               </Button>
             </form>
           </TabsContent>
 
-          <TabsContent value="signup">
-            <form onSubmit={handleAuth} className="space-y-4">
+          <TabsContent value="signup" className="mt-4 sm:mt-6">
+            <form onSubmit={handleAuth} className="space-y-3 sm:space-y-4">
               {error && (
                 <Alert variant={error.includes("Check your email") ? "default" : "destructive"}>
                   <AlertCircle className="h-4 w-4" />
@@ -174,16 +174,16 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 </Select>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-10 sm:h-11" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Creating account...
+                    <span className="text-sm sm:text-base">Creating account...</span>
                   </>
                 ) : (
                   <>
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Create Account
+                    <span className="text-sm sm:text-base">Create Account</span>
                   </>
                 )}
               </Button>
