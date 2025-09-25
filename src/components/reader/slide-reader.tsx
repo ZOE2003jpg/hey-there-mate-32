@@ -587,18 +587,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Button>
       </div>
 
-      {/* Chapter Progress Bar */}
-      <div className="absolute top-12 left-4 right-4 z-50">
-        <div className="bg-background/80 backdrop-blur-sm rounded-lg px-1 sm:px-4 py-2 shadow-lg">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-            <span>Chapter Progress</span>
-            <span>{progress}% complete</span>
-          </div>
-          <Progress value={progress} className="h-1">
-            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
-          </Progress>
-        </div>
-      </div>
 
       {/* Menu Overlay */}
       {showMenu && (
@@ -762,11 +750,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-2 sm:px-6 lg:px-8 py-8 overflow-y-auto"
         onClick={handleSlideNavigation}
       >
-        <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-4 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[70vh] flex flex-col">
+        <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 lg:px-6">
+          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-2 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[70vh] flex flex-col">
             
             {/* Chapter Title */}
             {allSlides[currentSlide - 1]?.chapter_title && (
@@ -815,7 +803,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               ) : (
                 <div className="prose max-w-none text-justify w-full">
                   <div 
-                    className="leading-relaxed font-medium max-w-6xl mx-auto overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent"
+                    className="leading-relaxed font-medium w-full overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent px-1"
                     style={{ 
                       fontSize: `${fontSize}px`,
                       fontFamily: fontFamily === 'serif' ? 'Georgia, serif' : fontFamily === 'sans-serif' ? 'Arial, sans-serif' : 'Courier, monospace'
