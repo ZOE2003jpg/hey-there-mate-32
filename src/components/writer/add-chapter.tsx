@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { ChapterSoundManager } from "./chapter-sound-manager"
 import { 
   ArrowLeft, 
   Split, 
@@ -15,7 +16,8 @@ import {
   Edit3,
   FileText,
   Clock,
-  Type
+  Type,
+  Music
 } from "lucide-react"
 import { useChapters } from "@/hooks/useChapters"
 import { useSlides } from "@/hooks/useSlides"
@@ -48,6 +50,7 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
   
   const [slides, setSlides] = useState<string[]>([])
   const [wordsPerSlide, setWordsPerSlide] = useState(400)
+  const [showSoundManager, setShowSoundManager] = useState(false)
   
   const wordCount = chapterData.content.split(" ").filter(word => word.length > 0).length
   const estimatedSlides = Math.ceil(wordCount / wordsPerSlide)
@@ -384,6 +387,16 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
                 <Eye className="h-4 w-4 mr-2" />
                 Preview Reader Mode
               </Button>
+              {isEditing && chapterId && (
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => setShowSoundManager(!showSoundManager)}
+                >
+                  <Music className="h-4 w-4 mr-2" />
+                  {showSoundManager ? "Hide" : "Add"} Chapter Music
+                </Button>
+              )}
               <Button 
                 className="w-full vine-button-hero justify-start" 
                 onClick={() => handleSaveChapter(true)}
@@ -394,6 +407,22 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Sound Manager */}
+          {showSoundManager && isEditing && chapterId && (
+            <Card className="vine-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Music className="h-4 w-4" />
+                  Chapter Music
+                </CardTitle>
+                <CardDescription>Add background music to enhance your chapter</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChapterSoundManager chapterId={chapterId} chapterTitle={chapterData.title} />
+              </CardContent>
+            </Card>
+          )}
 
           <Card className="vine-card">
             <CardHeader>
@@ -414,6 +443,10 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
               <div>
                 <p className="font-medium">Cliffhangers</p>
                 <p className="text-muted-foreground">End chapters with hooks to keep readers engaged</p>
+              </div>
+              <div>
+                <p className="font-medium">Audio Enhancement</p>
+                <p className="text-muted-foreground">Add background music to create atmosphere</p>
               </div>
             </CardContent>
           </Card>

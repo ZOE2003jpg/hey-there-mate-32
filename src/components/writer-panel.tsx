@@ -9,6 +9,7 @@ import { Analytics } from "./writer/analytics"
 import { Earnings } from "./writer/earnings"
 import { Notifications } from "./writer/notifications"
 import { Profile } from "./writer/profile"
+import { SoundLibrary } from "./writer/sound-library"
 import { PreviewReader } from "./reader/preview-reader"
 import { WriterMobileNav } from "./writer-mobile-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -23,7 +24,8 @@ import {
   DollarSign,
   Bell,
   User,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Music
 } from "lucide-react"
 
 export function WriterPanel() {
@@ -41,6 +43,7 @@ export function WriterPanel() {
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "manage-stories", label: "My Stories", icon: BookOpen },
+    { id: "sound-library", label: "Sound Library", icon: Music },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "earnings", label: "Earnings", icon: DollarSign },
     { id: "notifications", label: "Notifications", icon: Bell },
@@ -56,6 +59,7 @@ export function WriterPanel() {
       case "story-view": return <StoryView story={selectedData?.story} onNavigate={handleNavigate} />
       case "manage-stories": return <ManageStories onNavigate={handleNavigate} />
       case "manage-chapters": return <ManageChapters story={selectedData} onNavigate={handleNavigate} />
+      case "sound-library": return <SoundLibrary onNavigate={handleNavigate} />
       case "analytics": return <Analytics onNavigate={handleNavigate} />
       case "earnings": return <Earnings onNavigate={handleNavigate} />
       case "notifications": return <Notifications onNavigate={handleNavigate} />

@@ -11,7 +11,7 @@ import { toast } from "sonner"
 
 interface ChapterSoundManagerProps {
   chapterId: string
-  chapterTitle: string
+  chapterTitle?: string
 }
 
 export function ChapterSoundManager({ chapterId, chapterTitle }: ChapterSoundManagerProps) {

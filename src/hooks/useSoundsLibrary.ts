@@ -102,6 +102,27 @@ export function useSoundsLibrary() {
 
   useEffect(() => {
     fetchSounds()
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('sounds-library-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'sounds_library'
+        },
+        (payload) => {
+          console.log('Sound library updated:', payload)
+          fetchSounds() // Refetch sounds when changes occur
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return {
