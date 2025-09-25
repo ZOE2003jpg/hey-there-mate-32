@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
     }
 
     // Create slides with ads inserted
-    const slidesWithAds = []
+    const slidesWithAds: any[] = []
     const activeAds = ads || []
     let adIndex = 0
 
@@ -94,19 +94,24 @@ Deno.serve(async (req) => {
 
         // Log ad impression if readerId provided
         if (readerId) {
-          supabase
-            .from('ad_logs')
-            .insert({
-              reader_id: readerId,
-              ad_id: ad.id,
-              slide_position: index + 1,
-              watched: false
-            })
-            .then(() => {
+          // Fire and forget - don't block on ad logging
+          (async () => {
+            try {
+              await supabase
+                .from('ad_logs')
+                .insert({
+                  reader_id: readerId,
+                  ad_id: ad.id,
+                  slide_position: index + 1,
+                  watched: false
+                })
+              
               // Update ad impression count
-              return supabase.rpc('increment_ad_impressions', { ad_id: ad.id })
-            })
-            .catch(error => console.error('Error logging ad impression:', error))
+              await supabase.rpc('increment_ad_impressions', { ad_id: ad.id })
+            } catch (error) {
+              console.error('Error logging ad impression:', error)
+            }
+          })()
         }
 
         adIndex++

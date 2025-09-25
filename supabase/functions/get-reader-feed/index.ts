@@ -93,14 +93,14 @@ Deno.serve(async (req) => {
         .eq('reader_id', readerId)
 
       if (progressData) {
-        readingProgress = progressData.reduce((acc, read) => {
+        readingProgress = progressData.reduce((acc: any, read: any) => {
           acc[read.novel_id] = {
             chapterId: read.chapter_id,
             slideNumber: read.slide_number,
             completed: read.completed
           }
           return acc
-        }, {})
+        }, {} as Record<string, any>)
       }
 
       // Get reader's likes
@@ -118,12 +118,12 @@ Deno.serve(async (req) => {
     }
 
     // Enhance stories with additional metadata
-    const enhancedStories = stories?.map(story => ({
+    const enhancedStories = stories?.map((story: any) => ({
       ...story,
       chapterCount: story.chapters?.length || 0,
-      tags: story.story_tags?.map(tag => tag.tag) || [],
+      tags: story.story_tags?.map((tag: any) => tag.tag) || [],
       author: story.profiles?.display_name || story.profiles?.username || 'Unknown Author',
-      readingProgress: readingProgress[story.id] || null
+      readingProgress: (readingProgress as Record<string, any>)[story.id] || null
     }))
 
     console.log(`Successfully fetched ${enhancedStories?.length || 0} stories for reader feed`)

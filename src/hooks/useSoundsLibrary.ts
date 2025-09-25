@@ -51,17 +51,14 @@ export function useSoundsLibrary() {
         .from('chapter_sounds')
         .select(`
           *,
-          sounds_library!inner(*)
+          sound:sounds_library(*)
         `)
         .eq('chapter_id', chapterId)
 
       if (error) throw error
       
-      // Transform the data to match our interface
-      return (data || []).map((item: any) => ({
-        ...item,
-        sound: item.sounds_library
-      }))
+      // Return the data as-is since we're using the sound alias
+      return data || []
     } catch (err) {
       console.error('Failed to fetch chapter sounds:', err)
       return []
