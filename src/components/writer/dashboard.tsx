@@ -41,26 +41,52 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     followers: writerStats.total_followers
   }
 
-  const recentNotifications = [
-    {
-      id: 1,
-      message: "New story analytics available",
-      time: "2 hours ago",
-      type: "analytics"
-    },
-    {
-      id: 2,
-      message: `Total earnings: $${earningsStats.totalEarnings.toFixed(2)}`,
-      time: "1 day ago", 
-      type: "earnings"
-    },
-    {
-      id: 3,
-      message: `${stats.totalStories} stories published`,
-      time: "3 days ago",
-      type: "milestone"
+  // Get recent real-time activities
+  const getRecentActivities = () => {
+    const activities = []
+    
+    // Add recent story stats
+    if (stats.totalReads > 0) {
+      activities.push({
+        id: 1,
+        message: `${stats.totalReads.toLocaleString()} total reads across your stories`,
+        time: "Updated now",
+        type: "reads"
+      })
     }
-  ]
+    
+    if (stats.totalLikes > 0) {
+      activities.push({
+        id: 2,
+        message: `${stats.totalLikes.toLocaleString()} likes received`,
+        time: "Updated now",
+        type: "likes"
+      })
+    }
+    
+    if (stats.earnings > 0) {
+      activities.push({
+        id: 3,
+        message: `$${stats.earnings.toFixed(2)} earned from your stories`,
+        time: "Updated now",
+        type: "earnings"
+      })
+    }
+    
+    // Add story milestones
+    if (stats.totalStories > 0) {
+      activities.push({
+        id: 4,
+        message: `${stats.totalStories} ${stats.totalStories === 1 ? 'story' : 'stories'} published`,
+        time: "Current",
+        type: "milestone"
+      })
+    }
+    
+    return activities.slice(0, 3) // Show only top 3
+  }
+  
+  const recentNotifications = getRecentActivities()
 
   return (
     <div className="space-y-8">

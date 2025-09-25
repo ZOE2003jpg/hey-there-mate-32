@@ -136,29 +136,26 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-           {loading ? (
+          {loading ? (
             <div className="text-center py-8">Loading stories...</div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {featuredStories.map((story) => (
-                <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex gap-3 sm:gap-4">
-                      {/* Story Cover - Smaller and on the left */}
-                      <div className="aspect-[2/3] w-16 sm:w-20 md:w-24 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="grid gap-3 sm:gap-4">
+              {/* Desktop: Grid layout with image on top */}
+              <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {featuredStories.map((story) => (
+                  <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
+                    <CardContent className="p-4">
+                      {/* Image on top for desktop */}
+                      <div className="aspect-[3/4] bg-muted/30 rounded-lg mb-3 flex items-center justify-center">
                         {story.cover_image_url ? (
                           <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
                         ) : (
-                          <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                          <BookOpen className="h-8 w-8 text-muted-foreground" />
                         )}
                       </div>
-                      
-                      {/* Story Info - Takes remaining space */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className="text-xs">
-                            {story.genre || "General"}
-                          </Badge>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-start">
+                          <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
                           <div className="flex gap-1">
                             <Button 
                               size="sm" 
@@ -178,13 +175,10 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                             </Button>
                           </div>
                         </div>
-                        
-                        <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">{story.title}</h3>
-                        <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
+                        <h3 className="font-semibold text-base line-clamp-2">{story.title}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-1">
                           by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                         </p>
-                        <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{story.description || "No description available"}</p>
-                        
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-xs">
                             <div className="flex items-center gap-1">
@@ -195,17 +189,144 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                               <Heart className="h-3 w-3 text-primary" />
                               <span>{story.like_count}</span>
                             </div>
-                            <span className="text-muted-foreground">{story.comment_count}</span>
                           </div>
                           <Button size="sm" className="vine-button-hero h-7 px-3 text-xs" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
                             Read
                           </Button>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Tablet: Two-column layout */}
+              <div className="hidden md:grid lg:hidden md:grid-cols-2 gap-4">
+                {featuredStories.map((story) => (
+                  <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
+                    <CardContent className="p-4">
+                      <div className="flex gap-3">
+                        <div className="aspect-[2/3] w-20 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                          {story.cover_image_url ? (
+                            <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <BookOpen className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex justify-between items-start">
+                            <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
+                            <div className="flex gap-1">
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={(e) => handleLike(story.id, e)}
+                                className={`h-6 w-6 p-0 ${isLiked(story.id) ? "text-primary" : ""}`}
+                              >
+                                <Heart className={`h-3 w-3 ${isLiked(story.id) ? "fill-primary" : ""}`} />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={(e) => handleAddToLibrary(story.id, e)}
+                                className={`h-6 w-6 p-0 ${isInLibrary(story.id) ? "text-primary" : ""}`}
+                              >
+                                <Bookmark className={`h-3 w-3 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
+                              </Button>
+                            </div>
+                          </div>
+                          <h3 className="font-semibold text-sm line-clamp-2">{story.title}</h3>
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-xs">
+                              <div className="flex items-center gap-1">
+                                <Eye className="h-3 w-3" />
+                                <span>{story.view_count}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Heart className="h-3 w-3 text-primary" />
+                                <span>{story.like_count}</span>
+                              </div>
+                            </div>
+                            <Button size="sm" className="vine-button-hero h-7 px-3 text-xs" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
+                              Read
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Mobile: Compact horizontal layout */}
+              <div className="grid md:hidden grid-cols-1 gap-3">
+                {featuredStories.map((story) => (
+                  <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
+                    <CardContent className="p-3">
+                      <div className="flex gap-3">
+                        {/* Thumbnail left */}
+                        <div className="aspect-[2/3] w-16 bg-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                          {story.cover_image_url ? (
+                            <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <BookOpen className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </div>
+                        
+                        {/* Title + author right */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start mb-1">
+                            <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
+                            <div className="flex gap-1">
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={(e) => handleLike(story.id, e)}
+                                className={`h-6 w-6 p-0 ${isLiked(story.id) ? "text-primary" : ""}`}
+                              >
+                                <Heart className={`h-3 w-3 ${isLiked(story.id) ? "fill-primary" : ""}`} />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={(e) => handleAddToLibrary(story.id, e)}
+                                className={`h-6 w-6 p-0 ${isInLibrary(story.id) ? "text-primary" : ""}`}
+                              >
+                                <Bookmark className={`h-3 w-3 ${isInLibrary(story.id) ? "fill-primary" : ""}`} />
+                              </Button>
+                            </div>
+                          </div>
+                          <h3 className="font-semibold text-sm line-clamp-2">{story.title}</h3>
+                          <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
+                            by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Action buttons below */}
+                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
+                        <div className="flex items-center gap-3 text-xs">
+                          <div className="flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            <span>{story.view_count}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Heart className="h-3 w-3 text-primary" />
+                            <span>{story.like_count}</span>
+                          </div>
+                          <span className="text-muted-foreground">{story.comment_count}</span>
+                        </div>
+                        <Button size="sm" className="vine-button-hero h-7 px-3 text-xs" onClick={(e) => {e.stopPropagation(); onNavigate("story-chapters", story)}}>
+                          Read
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </CardContent>
