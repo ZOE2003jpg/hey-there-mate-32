@@ -53,6 +53,9 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showSoundMenu, setShowSoundMenu] = useState(false)
   const [chapterAudio, setChapterAudio] = useState<HTMLAudioElement | null>(null)
   const [isAtChapterEnd, setIsAtChapterEnd] = useState(false)
+  const [audioVolume, setAudioVolume] = useState(0.5)
+  const [showVolumeControl, setShowVolumeControl] = useState(false)
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false)
   
   const { getSlidesWithAds } = useSlides()
   const { trackProgress, getReadingProgress } = useReads(user?.id)
@@ -188,9 +191,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         const sound = chapterSounds[0]
         if (sound.sound?.file_url) {
           const audio = new Audio(sound.sound.file_url)
-          audio.volume = sound.volume
+          audio.volume = audioVolume
           audio.loop = sound.loop_sound
           setChapterAudio(audio)
+          
+          // Add event listeners
+          audio.onplay = () => setIsAudioPlaying(true)
+          audio.onpause = () => setIsAudioPlaying(false)
+          audio.onended = () => setIsAudioPlaying(false)
           
           // Auto-play after a short delay
           setTimeout(() => {
@@ -352,6 +360,24 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     }
   }
 
+  const handleVolumeChange = (newVolume: number[]) => {
+    const volume = newVolume[0] / 100
+    setAudioVolume(volume)
+    if (chapterAudio) {
+      chapterAudio.volume = volume
+    }
+  }
+
+  const toggleAudioPlayback = () => {
+    if (chapterAudio) {
+      if (isAudioPlaying) {
+        chapterAudio.pause()
+      } else {
+        chapterAudio.play().catch(console.error)
+      }
+    }
+  }
+
   const handleSlideNavigation = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -448,6 +474,58 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Progress>
       </div>
 
+      {/* Volume Control Panel */}
+      <div className="absolute top-4 right-4 z-50">
+        <div className="flex items-center gap-2">
+          {/* Volume Control */}
+          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowVolumeControl(!showVolumeControl)}
+              className="h-8 w-8 p-0"
+            >
+              {audioVolume === 0 ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+            
+            {showVolumeControl && (
+              <div className="flex items-center gap-2 animate-in slide-in-from-right duration-200">
+                <Slider
+                  value={[audioVolume * 100]}
+                  onValueChange={handleVolumeChange}
+                  max={100}
+                  step={1}
+                  className="w-20"
+                />
+                <span className="text-xs font-medium min-w-[2ch]">
+                  {Math.round(audioVolume * 100)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Audio Playback Control */}
+          {chapterAudio && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={toggleAudioPlayback}
+              className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
+            >
+              {isAudioPlaying ? (
+                <VolumeX className="h-3 w-3" />
+              ) : (
+                <Volume2 className="h-3 w-3" />
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+
       {/* Menu Overlay */}
       {showMenu && (
         <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-20 flex items-center justify-center">
@@ -458,6 +536,12 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               <p className="text-sm text-muted-foreground mt-2">
                 Slide {currentSlide} of {totalSlides} • {progress}% complete
               </p>
+              {chapterAudio && (
+                <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
+                  <Volume2 className="h-3 w-3" />
+                  <span>Background music {isAudioPlaying ? 'playing' : 'paused'}</span>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
