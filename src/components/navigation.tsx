@@ -103,16 +103,16 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
 
         {/* Mobile Layout */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-1 sm:space-x-2">
+        <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
           {user?.profile && (
-            <div className="flex items-center space-x-1 text-xs mr-1 min-w-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[160px]">
-              <User className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate text-xs">{user.profile.display_name || user.profile.username || user.email}</span>
+            <div className="flex items-center space-x-2 text-xs min-w-0 max-w-[120px] sm:max-w-[160px]">
+              <User className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate">{user.profile.display_name || user.profile.username || user.email}</span>
             </div>
           )}
           {user && (
-            <Button variant="ghost" size="sm" onClick={signOut} className="h-8 px-2 text-xs flex-shrink-0">
-              <LogOut className="h-3 w-3" />
+            <Button variant="ghost" size="sm" onClick={signOut} className="h-9 px-3 text-xs flex-shrink-0">
+              <LogOut className="h-4 w-4" />
               <span className="sr-only">Logout</span>
             </Button>
           )}
@@ -121,7 +121,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             variant="ghost"
             size="icon"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="h-8 w-8 flex-shrink-0 ml-1"
+            className="h-9 w-9 flex-shrink-0"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
           >
@@ -139,7 +139,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden border-t bg-background/98 backdrop-blur animate-in slide-in-from-top-1 duration-200"
+          className="md:hidden border-t bg-background/95 backdrop-blur-sm animate-in slide-in-from-top-1 duration-200 shadow-lg"
         >
           <div className="container py-4 px-3 sm:px-4 space-y-3">
             <div className="space-y-2">

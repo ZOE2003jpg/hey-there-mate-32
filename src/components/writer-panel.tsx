@@ -10,6 +10,7 @@ import { Earnings } from "./writer/earnings"
 import { Notifications } from "./writer/notifications"
 import { Profile } from "./writer/profile"
 import { SoundLibrary } from "./writer/sound-library"
+import { EditStoryModal } from "./writer/edit-story-modal"
 import { PreviewReader } from "./reader/preview-reader"
 import { WriterMobileNav } from "./writer-mobile-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -65,6 +66,16 @@ export function WriterPanel() {
       case "notifications": return <Notifications onNavigate={handleNavigate} />
       case "profile": return <Profile onNavigate={handleNavigate} />
       case "preview-reader": return <PreviewReader chapter={selectedData?.chapter} onNavigate={handleNavigate} />
+      case "edit-story": return (
+        <div className="max-w-4xl mx-auto">
+          <EditStoryModal 
+            story={selectedData} 
+            onStoryUpdated={() => handleNavigate("manage-stories")}
+          >
+            <Button className="mb-4">Edit Story</Button>
+          </EditStoryModal>
+        </div>
+      )
       default: return <Dashboard onNavigate={handleNavigate} />
     }
   }
@@ -103,9 +114,9 @@ export function WriterPanel() {
         </div>
       )}
 
-      {/* Mobile Navigation - Use sheet/drawer instead of fixed header */}
+      {/* Mobile Navigation */}
       {isMobile && (
-        <div className="fixed top-16 left-4 z-40">
+        <div className="fixed top-20 left-4 z-40">
           <WriterMobileNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
       )}

@@ -7,6 +7,7 @@ import { useStories } from "@/hooks/useStories"
 import { useUser } from "@/components/user-context"
 import { toast } from "sonner"
 import { CreateStoryModal } from "./create-story-modal"
+import { EditStoryModal } from "./edit-story-modal"
 import { 
   ArrowLeft, 
   Plus, 
@@ -153,92 +154,127 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
           {filteredStories.map((story) => (
             <Card key={story.id} className="vine-card">
               <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                  {/* Cover Image */}
-                  <div className="w-16 h-20 sm:w-20 sm:h-28 bg-secondary/30 rounded-lg flex-shrink-0 flex items-center justify-center mx-auto sm:mx-0">
-                    {story.cover_image_url ? (
-                      <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
-                    ) : (
-                      <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
-                    )}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  {/* Mobile: Horizontal Layout - Cover Left, Details Right */}
+                  <div className="flex sm:hidden gap-3">
+                    <div className="w-16 h-20 bg-secondary/30 rounded-lg flex-shrink-0 flex items-center justify-center">
+                      {story.cover_image_url ? (
+                        <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <BookOpen className="h-6 w-6 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-base font-bold truncate">{story.title}</h3>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {story.genre || "General"} • {new Date(story.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge variant={getStatusColor(story.status)} className="text-xs flex-shrink-0">
+                          {story.status}
+                        </Badge>
+                      </div>
+                      <div className="flex gap-4 text-xs text-muted-foreground mb-2">
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          {story.view_count.toLocaleString()}
+                        </span>
+                        <span>{story.like_count} likes</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Story Details */}
-                  <div className="flex-1 space-y-2 text-center sm:text-left">
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
-                      <div className="text-center sm:text-left">
-                        <h3 className="text-lg sm:text-xl font-bold">{story.title}</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          {story.genre || "General"} • Created {new Date(story.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Badge variant={getStatusColor(story.status)} className="text-xs">
-                        {story.status}
-                      </Badge>
+                  {/* Desktop: Vertical Layout */}
+                  <div className="hidden sm:flex gap-4">
+                    <div className="w-20 h-28 bg-secondary/30 rounded-lg flex-shrink-0 flex items-center justify-center">
+                      {story.cover_image_url ? (
+                        <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <BookOpen className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
-
-                    <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-2 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
-                      <div className="flex items-center justify-center sm:justify-start gap-1">
-                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                        {story.view_count.toLocaleString()} reads
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="text-xl font-bold">{story.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {story.genre || "General"} • Created {new Date(story.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge variant={getStatusColor(story.status)} className="text-xs">
+                          {story.status}
+                        </Badge>
                       </div>
-                      <div className="flex items-center justify-center sm:justify-start gap-1">
-                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                        Updated {new Date(story.updated_at).toLocaleDateString()}
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col gap-3 pt-2">
-                      <div className="flex justify-center sm:justify-start gap-4 text-xs sm:text-sm">
+                      <div className="flex gap-6 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Eye className="h-4 w-4" />
+                          {story.view_count.toLocaleString()} reads
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          Updated {new Date(story.updated_at).toLocaleDateString()}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4 text-sm">
                         <span>{story.like_count} likes</span>
                         <span>{story.comment_count} comments</span>
                       </div>
-
-                      <div className="flex flex-col sm:flex-row items-center gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => toggleStatus(story.id, story.status)}
-                          className="w-full sm:w-auto text-xs sm:text-sm"
-                        >
-                          {story.status === 'published' ? 'Unpublish' : 'Publish'}
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => onNavigate("manage-chapters", story)}
-                          className="w-full sm:w-auto text-xs sm:text-sm"
-                        >
-                          <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          Edit
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="outline" className="w-full sm:w-auto">
-                              <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
-                              <span className="ml-1 sm:hidden">More</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem onClick={() => onNavigate("manage-chapters", story)}>
-                              <BookOpen className="h-4 w-4 mr-2" />
-                              View Chapters
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onNavigate("analytics", story)}>
-                              <Filter className="h-4 w-4 mr-2" />
-                              Analytics
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="text-destructive"
-                              onClick={() => handleDeleteClick(story.id)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
                     </div>
+                  </div>
+
+                  {/* Action Buttons - Full Width on Mobile */}
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3 sm:mt-0">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => toggleStatus(story.id, story.status)}
+                      className="w-full sm:w-auto text-xs"
+                    >
+                      {story.status === 'published' ? 'Unpublish' : 'Publish'}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => onNavigate("edit-story", story)}
+                      className="w-full sm:w-auto text-xs"
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit Story
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => onNavigate("manage-chapters", story)}
+                      className="w-full sm:w-auto text-xs"
+                    >
+                      <BookOpen className="h-3 w-3 mr-1" />
+                      Chapters
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs">
+                          <MoreHorizontal className="h-3 w-3" />
+                          <span className="ml-1 sm:hidden">More</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 bg-background border shadow-lg">
+                        <DropdownMenuItem onClick={() => onNavigate("analytics", story)}>
+                          <Filter className="h-4 w-4 mr-2" />
+                          Analytics
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-destructive"
+                          onClick={() => handleDeleteClick(story.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </CardContent>

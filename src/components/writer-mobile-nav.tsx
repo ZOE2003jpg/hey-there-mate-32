@@ -36,9 +36,9 @@ export function WriterMobileNav({ currentPage, onNavigate }: WriterMobileNavProp
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background/98">
+      <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background/95 backdrop-blur-sm border-r shadow-lg">
         <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-6 border-b flex justify-between items-center bg-muted/20">
+          <div className="p-4 sm:p-6 border-b flex justify-between items-center bg-card/50">
             <div className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
               <h2 className="text-base sm:text-lg font-semibold">Writer Menu</h2>
@@ -51,7 +51,7 @@ export function WriterMobileNav({ currentPage, onNavigate }: WriterMobileNavProp
                 <Button
                   key={item.id}
                   variant={currentPage === item.id ? "default" : "ghost"}
-                  className="w-full justify-start h-11 sm:h-12 text-sm sm:text-base transition-all duration-200"
+                  className="w-full justify-start h-11 sm:h-12 text-sm sm:text-base transition-all duration-200 hover:bg-accent"
                   onClick={() => handleNavigation(item.id)}
                 >
                   <item.icon className="mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
@@ -60,7 +60,7 @@ export function WriterMobileNav({ currentPage, onNavigate }: WriterMobileNavProp
               ))}
             </div>
           </nav>
-          <div className="p-3 sm:p-4 border-t bg-muted/10">
+          <div className="p-3 sm:p-4 border-t bg-card/30">
             <p className="text-xs text-muted-foreground text-center">Writer Panel Navigation</p>
           </div>
         </div>
