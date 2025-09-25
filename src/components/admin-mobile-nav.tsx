@@ -14,7 +14,8 @@ import {
   Settings as SettingsIcon,
   UserCheck,
   FileText,
-  Database
+  Database,
+  Shield
 } from "lucide-react"
 
 interface AdminMobileNavProps {
@@ -53,27 +54,33 @@ export function AdminMobileNav({ currentPage, onNavigate }: AdminMobileNavProps)
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background/98">
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Admin Panel</h2>
+          <div className="p-4 sm:p-6 border-b flex justify-between items-center bg-muted/20">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-primary" />
+              <h2 className="text-base sm:text-lg font-semibold">Admin Menu</h2>
+            </div>
             <ThemeToggle />
           </div>
-          <nav className="flex-1 p-4">
-            <div className="space-y-2">
+          <nav className="flex-1 p-3 sm:p-4 overflow-y-auto">
+            <div className="space-y-1 sm:space-y-2">
               {navItems.map((item) => (
                 <Button
                   key={item.id}
                   variant={currentPage === item.id ? "default" : "ghost"}
-                  className="w-full justify-start"
+                  className="w-full justify-start h-11 sm:h-12 text-sm sm:text-base transition-all duration-200"
                   onClick={() => handleNavigation(item.id)}
                 >
-                  <item.icon className="mr-3 h-4 w-4" />
-                  {item.label}
+                  <item.icon className="mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                  <span>{item.label}</span>
                 </Button>
               ))}
             </div>
           </nav>
+          <div className="p-3 sm:p-4 border-t bg-muted/10">
+            <p className="text-xs text-muted-foreground text-center">Admin Panel Navigation</p>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
