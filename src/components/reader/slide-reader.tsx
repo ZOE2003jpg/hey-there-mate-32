@@ -599,37 +599,35 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Button>
       </div>
 
-      {/* Mobile Volume Control - Positioned Below Slide Area */}
-      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-50 md:hidden">
-        <div className="bg-background/95 backdrop-blur-md rounded-xl p-3 shadow-xl border border-border/50 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={decreaseVolume}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-          >
-            <span className="text-sm font-bold">−</span>
-          </Button>
-          <div className="flex flex-col items-center gap-1">
-            <div className="text-xs font-medium text-foreground">{Math.round(audioVolume * 100)}%</div>
-            <div className="text-xs text-muted-foreground">Volume</div>
-          </div>
+      {/* Mobile Volume Control - Always Visible on Mobile */}
+      <div className="absolute bottom-20 right-4 z-50 md:hidden">
+        <div className="bg-background/90 backdrop-blur-sm rounded-lg p-2 shadow-lg border flex flex-col items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={increaseVolume}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+            className="h-7 w-7 p-0 rounded-full"
           >
-            <span className="text-sm font-bold">+</span>
+            <span className="text-xs font-bold">+</span>
           </Button>
-          <div className="w-px h-6 bg-border" />
+          <div className="text-xs text-center text-muted-foreground min-w-[2ch]">
+            {Math.round(audioVolume * 100)}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={decreaseVolume}
+            className="h-7 w-7 p-0 rounded-full"
+          >
+            <span className="text-xs font-bold">−</span>
+          </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleAudioPlayback}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+            className="h-7 w-7 p-0 rounded-full mt-1"
           >
-            {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            {isAudioPlaying ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
           </Button>
         </div>
       </div>
@@ -729,34 +727,32 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       )}
 
-      {/* Desktop Volume Controls - Positioned on Left Side Below Progress */}
-      <div className="absolute left-4 top-3/4 transform -translate-y-1/2 z-50 hidden md:flex flex-col gap-2 bg-background/90 backdrop-blur-md rounded-xl p-3 shadow-xl border border-border/50">
-        <div className="text-xs font-medium text-center text-foreground mb-1">Audio</div>
+      {/* Desktop Volume Controls */}
+      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 hidden md:flex flex-col gap-2 bg-background/80 backdrop-blur-sm rounded-lg p-2 shadow-lg">
         <Button
           size="sm"
           variant="ghost"
           onClick={increaseVolume}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90"
         >
           <span className="text-sm font-bold">+</span>
         </Button>
-        <div className="text-xs text-center text-muted-foreground py-1 min-w-[3ch] font-medium">
+        <div className="text-xs text-center text-muted-foreground py-1 min-w-[3ch]">
           {Math.round(audioVolume * 100)}%
         </div>
         <Button
           size="sm"
           variant="ghost"
           onClick={decreaseVolume}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90"
         >
           <span className="text-sm font-bold">−</span>
         </Button>
-        <div className="w-8 h-px bg-border my-1" />
         <Button
           size="sm"
           variant="ghost"
           onClick={toggleAudioPlayback}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+          className="h-8 w-8 p-0 rounded-full hover:bg-background/90 mt-1"
         >
           {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
         </Button>

@@ -25,22 +25,19 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
     : []
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 light:bg-background light:border-b-border dark:bg-background/95 dark:backdrop-blur-sm azure:bg-background/95 azure:backdrop-blur-sm border-b shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3 flex-shrink-0 min-w-0">
-            <button
-              onClick={() => onPanelChange("home")}
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary flex items-center justify-center"
-            >
-              <span className="text-primary-foreground font-bold text-xs sm:text-sm">VN</span>
-            </button>
-            <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-primary truncate">VineNovel</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Visual Storytelling Platform</p>
-            </div>
+    <nav className="vine-card sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 sm:h-16 items-center px-3 sm:px-4">
+        <button
+          onClick={() => onPanelChange("home")}
+          className="flex items-center space-x-2 mr-4 sm:mr-6 flex-shrink-0"
+        >
+          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-xs sm:text-sm">VN</span>
           </div>
+          <span className="font-bold vine-text-gradient text-sm sm:text-base hidden xs:inline">
+            VineNovel
+          </span>
+        </button>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex flex-1 items-center justify-between">
@@ -136,7 +133,6 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </div>
-      </div>
       </div>
 
       {/* Mobile Menu */}
