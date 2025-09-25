@@ -48,6 +48,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [currentAd, setCurrentAd] = useState<any>(null)
   const [videoWatched, setVideoWatched] = useState(false)
   const [adVideoRef, setAdVideoRef] = useState<HTMLVideoElement | null>(null)
+  const [showFontControls, setShowFontControls] = useState(false)
+  const [showVolumeControls, setShowVolumeControls] = useState(false)
   const [allSlides, setAllSlides] = useState<any[]>([])
   const [currentChapter, setCurrentChapter] = useState<string | null>(null)
   const [fontSize, setFontSize] = useState(16)
@@ -577,8 +579,28 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </Button>
       </div>
 
-      {/* Vertical Progress Bar - Left Side */}
-      <div className="absolute top-16 left-2 bottom-16 z-50 w-2">
+      {/* Mobile Controls Toggle Buttons */}
+      <div className="absolute top-4 right-4 z-50 flex gap-2 md:hidden">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowFontControls(!showFontControls)}
+          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
+        >
+          <Type className="h-4 w-4" />
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowVolumeControls(!showVolumeControls)}
+          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
+        >
+          <Volume2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Desktop Progress Bar - Left Side */}
+      <div className="absolute top-16 left-2 bottom-16 z-50 w-2 hidden md:block">
         <div className="h-full bg-muted/20 rounded-full relative">
           <div 
             className="absolute bottom-0 left-0 w-full bg-primary rounded-full transition-all duration-300 ease-in-out"
@@ -587,8 +609,93 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
-      {/* Volume Controls - Right Side */}
-      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 flex flex-col gap-2 bg-background/80 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+      {/* Mobile Progress Bar - Bottom */}
+      <div className="absolute bottom-2 left-4 right-4 z-50 md:hidden">
+        <div className="h-1 bg-muted/20 rounded-full relative">
+          <div 
+            className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Font Controls */}
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 hidden md:flex flex-col gap-2 bg-background/80 rounded-lg p-2 backdrop-blur-sm shadow-lg">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setFontSize(prev => Math.min(prev + 2, 24))}
+          className="h-8 w-8 p-0"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setFontSize(prev => Math.max(prev - 2, 12))}
+          className="h-8 w-8 p-0"
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setFontFamily(prev => prev === 'serif' ? 'sans-serif' : prev === 'sans-serif' ? 'mono' : 'serif')}
+          className="h-8 w-8 p-0"
+        >
+          <Type className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Mobile Font Controls Overlay */}
+      {showFontControls && (
+        <div className="absolute inset-x-4 top-16 z-40 md:hidden">
+          <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium">Text Settings</h4>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowFontControls(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setFontSize(prev => Math.max(prev - 2, 12))}
+                className="h-8 w-8 p-0"
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="text-sm min-w-[3ch] text-center">{fontSize}px</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setFontSize(prev => Math.min(prev + 2, 24))}
+                className="h-8 w-8 p-0"
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setFontFamily(prev => prev === 'serif' ? 'sans-serif' : prev === 'sans-serif' ? 'mono' : 'serif')}
+                className="h-8 px-3"
+              >
+                <Type className="h-3 w-3 mr-1" />
+                {fontFamily === 'serif' ? 'Serif' : fontFamily === 'sans-serif' ? 'Sans' : 'Mono'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Volume Controls */}
+      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 hidden md:flex flex-col gap-2 bg-background/80 backdrop-blur-sm rounded-lg p-2 shadow-lg">
         <Button
           size="sm"
           variant="ghost"
@@ -617,6 +724,62 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
           {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
         </Button>
       </div>
+
+      {/* Mobile Volume Controls Overlay */}
+      {showVolumeControls && (
+        <div className="absolute inset-x-4 top-16 z-40 md:hidden">
+          <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium">Audio Settings</h4>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowVolumeControls(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={decreaseVolume}
+                className="h-8 w-8 p-0"
+              >
+                <span className="text-sm font-bold">−</span>
+              </Button>
+              <span className="text-sm min-w-[4ch] text-center">{Math.round(audioVolume * 100)}%</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={increaseVolume}
+                className="h-8 w-8 p-0"
+              >
+                <span className="text-sm font-bold">+</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleAudioPlayback}
+                className="h-8 px-3"
+              >
+                {isAudioPlaying ? (
+                  <>
+                    <Volume2 className="h-3 w-3 mr-1" />
+                    Playing
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="h-3 w-3 mr-1" />
+                    Paused
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       {/* Menu Overlay */}
@@ -781,11 +944,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-2 sm:px-6 lg:px-8 py-8 overflow-y-auto"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-2 sm:px-6 lg:px-8 py-8 pb-12 md:pb-8 overflow-y-auto"
         onClick={handleSlideNavigation}
       >
         <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 lg:px-6">
-          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-2 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[70vh] flex flex-col">
+          <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-3 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[60vh] md:min-h-[70vh] flex flex-col mt-12 md:mt-0">
             
             {/* Chapter Title */}
             {allSlides[currentSlide - 1]?.chapter_title && (
@@ -888,7 +1051,12 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       {/* Remove duplicate back button */}
 
       {/* Slide Counter */}
-      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 bg-background/80 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm md:block hidden">
+        {currentSlide} / {totalSlides}
+      </div>
+
+      {/* Mobile Slide Counter */}
+      <div className="absolute top-16 right-4 z-10 bg-background/80 rounded-full px-2 py-1 text-xs md:hidden">
         {currentSlide} / {totalSlides}
       </div>
     </div>

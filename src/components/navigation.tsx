@@ -103,14 +103,14 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           {user?.profile && (
             <div className="flex items-center space-x-1 text-xs mr-1 min-w-0">
               <User className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate max-w-20 sm:max-w-24">{user.profile.display_name || user.profile.username || user.email}</span>
-              <span className="text-muted-foreground text-xs hidden xs:inline">({user.profile.role})</span>
+              <span className="truncate max-w-16 xs:max-w-20 sm:max-w-24">{user.profile.display_name || user.profile.username || user.email}</span>
+              <span className="text-muted-foreground text-xs hidden sm:inline">({user.profile.role})</span>
             </div>
           )}
           {user && (
             <Button variant="ghost" size="sm" onClick={signOut} className="h-8 px-1 sm:px-2 text-xs">
               <LogOut className="h-3 w-3 mr-0 sm:mr-1" />
-              <span className="hidden xs:inline">Logout</span>
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           )}
           <ThemeToggle />

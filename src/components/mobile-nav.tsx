@@ -32,24 +32,24 @@ export function MobileNav({ currentPage, onNavigate }: MobileNavProps) {
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="left" className="w-72 sm:w-80 p-0">
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Navigation</h2>
+          <div className="p-4 sm:p-6 border-b flex justify-between items-center">
+            <h2 className="text-base sm:text-lg font-semibold">Navigation</h2>
             <ThemeToggle />
           </div>
-          <nav className="flex-1 p-4">
-            <div className="space-y-2">
+          <nav className="flex-1 p-3 sm:p-4">
+            <div className="space-y-1 sm:space-y-2">
               {navItems.map((item) => (
-                <Button
-                  key={item.id}
-                  variant={currentPage === item.id ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => handleNavigation(item.id)}
-                >
-                  <item.icon className="mr-3 h-4 w-4" />
-                  {item.label}
-                </Button>
+                  <Button
+                    key={item.id}
+                    variant={currentPage === item.id ? "default" : "ghost"}
+                    className="w-full justify-start h-10 sm:h-11"
+                    onClick={() => handleNavigation(item.id)}
+                  >
+                    <item.icon className="mr-2 sm:mr-3 h-4 w-4" />
+                    <span className="text-sm sm:text-base">{item.label}</span>
+                  </Button>
               ))}
             </div>
           </nav>
