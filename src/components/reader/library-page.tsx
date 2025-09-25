@@ -79,7 +79,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -87,14 +87,14 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
             className="flex items-center gap-2"
           >
             <BookOpen className="h-4 w-4" />
-            Back
+            <span className="hidden xs:inline">Back</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Library className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 sm:gap-3">
+              <Library className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               My Library
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               Your reading collection and progress
             </p>
           </div>
@@ -104,17 +104,19 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
             variant={sortBy === "recent" ? "default" : "outline"}
             onClick={() => setSortBy("recent")}
             size="sm"
+            className="text-xs sm:text-sm"
           >
-            <Clock className="h-4 w-4 mr-2" />
-            Recent
+            <Clock className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Recent</span>
           </Button>
           <Button
             variant={sortBy === "alphabetical" ? "default" : "outline"}
             onClick={() => setSortBy("alphabetical")}
             size="sm"
+            className="text-xs sm:text-sm"
           >
-            <Filter className="h-4 w-4 mr-2" />
-            A-Z
+            <Filter className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">A-Z</span>
           </Button>
         </div>
       </div>
@@ -194,7 +196,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filteredLibrary.map((item) => {
             const story = item.stories
             if (!story) return null
@@ -205,7 +207,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
                   onClick={() => onNavigate("reader", story)}
                   className="cursor-pointer"
                 >
-                  <div className="aspect-[3/4] bg-muted/30 rounded-t-lg mb-4 flex items-center justify-center">
+                  <div className="aspect-[3/4] bg-muted/30 rounded-t-lg mb-3 sm:mb-4 flex items-center justify-center">
                     {story.cover_image_url ? (
                       <img 
                         src={story.cover_image_url} 
@@ -213,15 +215,15 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
                         className="w-full h-full object-cover rounded-t-lg" 
                       />
                     ) : (
-                      <BookOpen className="h-12 w-12 text-muted-foreground" />
+                      <BookOpen className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
                     )}
                   </div>
                 </div>
                 
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 p-3 sm:p-4">
                   <div className="flex justify-between items-start mb-2">
                     {story.genre && (
-                      <Badge variant="outline">{story.genre}</Badge>
+                      <Badge variant="outline" className="text-xs">{story.genre}</Badge>
                     )}
                     <Button 
                       size="sm" 
@@ -230,31 +232,31 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
                         e.stopPropagation()
                         handleRemove(story.id)
                       }}
-                      className="text-destructive hover:text-destructive"
+                      className="text-destructive hover:text-destructive h-6 w-6 p-0"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                   
-                  <h3 className="font-semibold text-lg mb-1 line-clamp-2">{story.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <h3 className="font-semibold text-sm sm:text-lg mb-1 line-clamp-2">{story.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1">
                     by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                   </p>
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2 hidden sm:block">
                     {story.description || "No description available"}
                   </p>
                   
-                  <div className="text-xs text-muted-foreground mb-4">
-                    Added {new Date(item.created_at).toLocaleDateString()}
+                  <div className="text-xs text-muted-foreground mb-3 sm:mb-4">
+                    <span className="hidden sm:inline">Added {new Date(item.created_at).toLocaleDateString()}</span>
                     {(() => {
                       const progress = getReadingProgress(story.id)
                       if (progress && !Array.isArray(progress)) {
                         return (
                           <div className="mt-1">
                             <div className="text-xs">Progress: {Math.round(progress.progress || 0)}%</div>
-                            <div className="w-full bg-secondary rounded-full h-2 mt-1">
+                            <div className="w-full bg-secondary rounded-full h-1.5 sm:h-2 mt-1">
                               <div 
-                                className="bg-primary h-2 rounded-full" 
+                                className="bg-primary h-1.5 sm:h-2 rounded-full" 
                                 style={{ width: `${Math.min(100, progress.progress || 0)}%` }}
                               />
                             </div>
@@ -266,7 +268,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
                   </div>
 
                   <Button 
-                    className="w-full vine-button-hero"
+                    className="w-full vine-button-hero text-xs sm:text-sm h-7 sm:h-9"
                     onClick={(e) => {
                       e.stopPropagation()
                       onNavigate("reader", story)

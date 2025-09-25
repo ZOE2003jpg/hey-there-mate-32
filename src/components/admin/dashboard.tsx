@@ -117,69 +117,71 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => onNavigate("home")}
-          className="flex items-center gap-2"
-        >
-          <BookOpen className="h-4 w-4" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Platform overview and key metrics
-          </p>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onNavigate("home")}
+            className="flex items-center gap-2"
+          >
+            <BookOpen className="h-4 w-4" />
+            <span className="hidden xs:inline">Back</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+              Platform overview and key metrics
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Quick Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="vine-card">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <BookOpen className="h-8 w-8 text-primary" />
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <div>
-                <div className="text-2xl font-bold">{systemStats.totalNovels.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Novels</div>
+                <div className="text-lg sm:text-2xl font-bold">{systemStats.totalNovels.toLocaleString()}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Novels</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="vine-card">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <FileText className="h-8 w-8 text-primary" />
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <div>
-                <div className="text-2xl font-bold">{systemStats.totalChapters.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Chapters</div>
+                <div className="text-lg sm:text-2xl font-bold">{systemStats.totalChapters.toLocaleString()}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Chapters</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="vine-card">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <Users className="h-8 w-8 text-primary" />
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <div>
-                <div className="text-2xl font-bold">{systemStats.totalReaders.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Readers</div>
+                <div className="text-lg sm:text-2xl font-bold">{systemStats.totalReaders.toLocaleString()}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Readers</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="vine-card">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <TrendingUp className="h-8 w-8 text-primary" />
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <div>
-                <div className="text-2xl font-bold">{systemStats.totalWriters.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Writers</div>
+                <div className="text-lg sm:text-2xl font-bold">{systemStats.totalWriters.toLocaleString()}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total Writers</div>
               </div>
             </div>
           </CardContent>
@@ -351,27 +353,29 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
         <Button 
-          className="vine-button-hero"
+          className="vine-button-hero text-sm sm:text-base h-10 sm:h-12"
           onClick={() => onNavigate("writers")}
         >
-          <Users className="h-4 w-4 mr-2" />
-          Manage Writers
+          <Users className="h-4 w-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">Manage </span>Writers
         </Button>
         <Button 
           variant="outline"
           onClick={() => onNavigate("novels")}
+          className="text-sm sm:text-base h-10 sm:h-12"
         >
-          <BookOpen className="h-4 w-4 mr-2" />
-          Manage Novels
+          <BookOpen className="h-4 w-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">Manage </span>Novels
         </Button>
         <Button 
           variant="outline"
           onClick={() => onNavigate("reports")}
+          className="text-sm sm:text-base h-10 sm:h-12 col-span-2 md:col-span-1"
         >
-          <Flag className="h-4 w-4 mr-2" />
-          View Reports
+          <Flag className="h-4 w-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">View </span>Reports
         </Button>
       </div>
     </div>

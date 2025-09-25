@@ -106,12 +106,12 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
       {loading ? (
         <div className="text-center py-8">Loading analytics...</div>
       ) : (
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <Eye className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.totalReads.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total Reads</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.totalReads.toLocaleString()}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Total Reads</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-green-500">+12%</span>
@@ -120,10 +120,10 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <Heart className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.totalLikes.toLocaleString()}</div>
-            <div className="text-sm text-muted-foreground">Total Likes</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.totalLikes.toLocaleString()}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Total Likes</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-green-500">+8%</span>
@@ -132,10 +132,10 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <MessageCircle className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.totalComments}</div>
-            <div className="text-sm text-muted-foreground">Comments</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.totalComments}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Comments</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingDown className="h-3 w-3 text-red-500 mr-1" />
               <span className="text-red-500">-3%</span>
@@ -144,10 +144,10 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <BarChart3 className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.completionRate}%</div>
-            <div className="text-sm text-muted-foreground">Completion Rate</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.completionRate}%</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Completion Rate</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-green-500">+2%</span>
@@ -156,10 +156,10 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.avgReadingTime}</div>
-            <div className="text-sm text-muted-foreground">Avg. Reading (min)</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.avgReadingTime}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Avg. Reading (min)</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-green-500">+5%</span>
@@ -168,10 +168,10 @@ export function Analytics({ onNavigate }: AnalyticsProps) {
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <Users className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{overallStats.followers}</div>
-            <div className="text-sm text-muted-foreground">Followers</div>
+          <CardContent className="pt-4 p-3 sm:pt-6 sm:p-6">
+            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{overallStats.followers}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Followers</div>
             <div className="flex items-center justify-center mt-1 text-xs">
               <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-green-500">+15%</span>

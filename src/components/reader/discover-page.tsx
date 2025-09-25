@@ -79,7 +79,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -87,14 +87,14 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
             className="flex items-center gap-2"
           >
             <BookOpen className="h-4 w-4" />
-            Back
+            <span className="hidden xs:inline">Back</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 sm:gap-3">
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               Discover Stories
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               Find your next favorite story
             </p>
           </div>
@@ -102,10 +102,10 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
         <Button 
           variant="outline"
           onClick={() => onNavigate("search")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-sm"
         >
           <Filter className="h-4 w-4" />
-          Advanced Search
+          <span className="hidden xs:inline">Advanced</span> Search
         </Button>
       </div>
 
@@ -136,10 +136,10 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
+           {loading ? (
             <div className="text-center py-8">Loading stories...</div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {featuredStories.map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer" onClick={() => onNavigate("details", story)}>
                   <div className="aspect-[2/3] bg-muted/30 rounded-t-lg mb-2 flex items-center justify-center">
@@ -180,14 +180,14 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                     <p className="text-xs text-muted-foreground mb-2 line-clamp-2 hidden sm:block">{story.description || "No description available"}</p>
                     
                     <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <div className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
-                          {story.view_count}
+                          <span className="hidden xs:inline">{story.view_count}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Heart className="h-3 w-3 text-primary" />
-                          {story.like_count}
+                          <span className="hidden xs:inline">{story.like_count}</span>
                         </div>
                       </div>
                       <span className="text-muted-foreground hidden sm:inline">{story.comment_count}</span>
@@ -259,7 +259,7 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
       </Card>
 
       {/* Quick Categories */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
         {[
           { 
             name: "Most Liked", 

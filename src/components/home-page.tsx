@@ -127,27 +127,27 @@ export function HomePage({ onPanelChange }: HomePageProps) {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-12">Trending Stories</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {stories.slice(0, 8).map((story) => (
                 <Card key={story.id} className="vine-card hover-scale cursor-pointer">
-                  <CardContent className="p-3">
+                  <CardContent className="p-3 sm:p-4">
                     <div className="aspect-[3/4] bg-secondary/30 rounded-lg mb-3 flex items-center justify-center">
-                      <BookOpen className="h-8 w-8 text-muted-foreground" />
+                      <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
                     </div>
                     <Badge variant="outline" className="mb-2 text-xs">{story.genre}</Badge>
-                    <h3 className="font-semibold text-sm mb-2 line-clamp-2">{story.title}</h3>
+                    <h3 className="font-semibold text-sm sm:text-base mb-2 line-clamp-2">{story.title}</h3>
                     <div className="flex justify-between items-center text-xs">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
-                          {story.view_count}
+                          <span className="hidden xs:inline">{story.view_count}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Heart className="h-3 w-3" />
-                          {story.like_count}
+                          <span className="hidden xs:inline">{story.like_count}</span>
                         </div>
                       </div>
-                      <Button size="sm" className="h-6 px-2 text-xs">Read</Button>
+                      <Button size="sm" className="h-6 px-2 text-xs vine-button-hero">Read</Button>
                     </div>
                   </CardContent>
                 </Card>

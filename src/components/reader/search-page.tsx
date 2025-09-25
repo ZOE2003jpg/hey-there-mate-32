@@ -88,7 +88,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -96,10 +96,10 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
             className="flex items-center gap-2"
           >
             <BookOpen className="h-4 w-4" />
-            Back
+            <span className="hidden xs:inline">Back</span>
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 sm:gap-3">
               <Search className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               Search Stories
             </h1>
@@ -114,7 +114,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
           className="flex items-center gap-2 text-sm"
         >
           <Filter className="h-4 w-4" />
-          Filters {selectedGenres.length > 0 && `(${selectedGenres.length})`}
+          <span className="hidden xs:inline">Filters</span> {selectedGenres.length > 0 && `(${selectedGenres.length})`}
         </Button>
       </div>
 
@@ -256,7 +256,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                             <p className="text-muted-foreground text-sm line-clamp-1">
                               by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
                             </p>
-                            <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2 hidden sm:block">
                               {story.description || "No description available"}
                             </p>
                           </div>
@@ -264,15 +264,15 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                             {story.status}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground flex-wrap">
                           <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
                           <div className="flex items-center gap-1">
                             <Eye className="h-3 w-3" />
-                            {story.view_count}
+                            <span className="hidden xs:inline">{story.view_count}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Heart className="h-3 w-3 text-primary" />
-                            {story.like_count}
+                            <span className="hidden xs:inline">{story.like_count}</span>
                           </div>
                           <span className="text-muted-foreground hidden sm:inline">{story.comment_count} comments</span>
                         </div>
@@ -284,6 +284,7 @@ export function SearchPage({ onNavigate }: SearchPageProps) {
                             className="h-7 px-2 text-xs"
                           >
                             <Bookmark className="h-3 w-3" />
+                            <span className="hidden xs:inline ml-1">Save</span>
                           </Button>
                           <Button 
                             size="sm" 
