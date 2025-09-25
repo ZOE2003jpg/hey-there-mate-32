@@ -98,18 +98,18 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" size="icon" onClick={() => onNavigate("dashboard")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Manage Stories</h1>
-            <p className="text-muted-foreground">View and manage all your stories</p>
+            <h1 className="text-xl sm:text-2xl font-bold">Manage Stories</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">View and manage all your stories</p>
           </div>
         </div>
         <CreateStoryModal onStoryCreated={(story) => onNavigate("story-view", { story })}>
-          <Button className="vine-button-hero">
+          <Button className="vine-button-hero text-sm sm:text-base w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             New Story
           </Button>
@@ -153,52 +153,53 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
           {filteredStories.map((story) => (
             <Card key={story.id} className="vine-card">
               <CardContent className="p-6">
-                <div className="flex gap-6">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                   {/* Cover Image */}
-                  <div className="w-20 h-28 bg-secondary/30 rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <div className="w-16 h-20 sm:w-20 sm:h-28 bg-secondary/30 rounded-lg flex-shrink-0 flex items-center justify-center mx-auto sm:mx-0">
                     {story.cover_image_url ? (
                       <img src={story.cover_image_url} alt={story.title} className="w-full h-full object-cover rounded-lg" />
                     ) : (
-                      <BookOpen className="h-8 w-8 text-muted-foreground" />
+                      <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
                     )}
                   </div>
 
                   {/* Story Details */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold">{story.title}</h3>
-                        <p className="text-sm text-muted-foreground">
+                  <div className="flex-1 space-y-2 text-center sm:text-left">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                      <div className="text-center sm:text-left">
+                        <h3 className="text-lg sm:text-xl font-bold">{story.title}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {story.genre || "General"} • Created {new Date(story.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <Badge variant={getStatusColor(story.status)}>
+                      <Badge variant={getStatusColor(story.status)} className="text-xs">
                         {story.status}
                       </Badge>
                     </div>
 
-                    <div className="flex gap-6 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
+                    <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-2 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+                      <div className="flex items-center justify-center sm:justify-start gap-1">
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                         {story.view_count.toLocaleString()} reads
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
+                      <div className="flex items-center justify-center sm:justify-start gap-1">
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                         Updated {new Date(story.updated_at).toLocaleDateString()}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="flex gap-4 text-sm">
+                    <div className="flex flex-col gap-3 pt-2">
+                      <div className="flex justify-center sm:justify-start gap-4 text-xs sm:text-sm">
                         <span>{story.like_count} likes</span>
                         <span>{story.comment_count} comments</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row items-center gap-2">
                         <Button 
                           size="sm" 
                           variant="outline"
                           onClick={() => toggleStatus(story.id, story.status)}
+                          className="w-full sm:w-auto text-xs sm:text-sm"
                         >
                           {story.status === 'published' ? 'Unpublish' : 'Publish'}
                         </Button>
@@ -206,17 +207,19 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
                           size="sm" 
                           variant="outline"
                           onClick={() => onNavigate("manage-chapters", story)}
+                          className="w-full sm:w-auto text-xs sm:text-sm"
                         >
-                          <Edit className="h-4 w-4 mr-1" />
+                          <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           Edit
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="outline">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                              <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="ml-1 sm:hidden">More</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem onClick={() => onNavigate("manage-chapters", story)}>
                               <BookOpen className="h-4 w-4 mr-2" />
                               View Chapters

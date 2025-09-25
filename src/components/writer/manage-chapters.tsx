@@ -119,53 +119,53 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <Button variant="ghost" size="icon" onClick={() => onNavigate("manage-stories")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{story.title}</h1>
-            <p className="text-muted-foreground">Manage chapters and track progress</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold">{story.title}</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Manage chapters and track progress</p>
           </div>
         </div>
-        <Button className="vine-button-hero" onClick={() => onNavigate("add-chapter")}>
+        <Button className="vine-button-hero text-sm sm:text-base w-full sm:w-auto" onClick={() => onNavigate("add-chapter")}>
           <Plus className="h-4 w-4 mr-2" />
           Add Chapter
         </Button>
       </div>
 
       {/* Story Overview */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <FileText className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{displayChapters.length}</div>
-            <div className="text-sm text-muted-foreground">Total Chapters</div>
+          <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{displayChapters.length}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Total Chapters</div>
           </CardContent>
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <BookOpen className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{publishedChapters.length}</div>
-            <div className="text-sm text-muted-foreground">Published</div>
+          <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{publishedChapters.length}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Published</div>
           </CardContent>
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <Clock className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{displayChapters.reduce((acc, ch) => acc + ch.readingTime, 0)}</div>
-            <div className="text-sm text-muted-foreground">Total Reading Time (min)</div>
+          <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+            <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{displayChapters.reduce((acc, ch) => acc + ch.readingTime, 0)}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Reading Time (min)</div>
           </CardContent>
         </Card>
 
         <Card className="vine-card text-center">
-          <CardContent className="pt-6">
-            <BarChart3 className="h-6 w-6 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{Math.round(totalProgress)}%</div>
-            <div className="text-sm text-muted-foreground">Completion</div>
+          <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+            <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-primary mx-auto mb-2" />
+            <div className="text-lg sm:text-2xl font-bold">{Math.round(totalProgress)}%</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Completion</div>
           </CardContent>
         </Card>
       </div>
@@ -196,66 +196,67 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
         ) : displayChapters.map((chapter, index) => (
           <Card key={chapter.id} className="vine-card">
             <CardContent className="p-6">
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {/* Chapter Number */}
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="font-bold text-primary">{index + 1}</span>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                  <span className="font-bold text-primary text-sm sm:text-base">{index + 1}</span>
                 </div>
 
                 {/* Chapter Details */}
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg">{chapter.title}</h3>
+                <div className="flex-1 space-y-2 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                    <div className="text-center sm:text-left">
+                      <h3 className="font-semibold text-base sm:text-lg">{chapter.title}</h3>
                       {chapter.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
                           {chapter.description}
                         </p>
                       )}
                     </div>
-                    <Badge variant={getStatusColor(chapter.status)}>
+                    <Badge variant={getStatusColor(chapter.status)} className="text-xs">
                       {chapter.status}
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm text-muted-foreground">
-                    <div>
-                      <span className="font-medium">{chapter.wordCount}</span>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.wordCount}</span>
                       <div className="text-xs">words</div>
                     </div>
-                    <div>
-                      <span className="font-medium">{chapter.slides}</span>
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.slides}</span>
                       <div className="text-xs">slides</div>
                     </div>
-                    <div>
-                      <span className="font-medium">{chapter.readingTime}</span>
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.readingTime}</span>
                       <div className="text-xs">min read</div>
                     </div>
-                    <div>
-                      <span className="font-medium">{chapter.reads}</span>
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.reads}</span>
                       <div className="text-xs">reads</div>
                     </div>
-                    <div>
-                      <span className="font-medium">{chapter.likes}</span>
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.likes}</span>
                       <div className="text-xs">likes</div>
                     </div>
-                    <div>
-                      <span className="font-medium">{chapter.comments}</span>
+                    <div className="text-center">
+                      <span className="font-medium block">{chapter.comments}</span>
                       <div className="text-xs">comments</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="text-xs text-muted-foreground">
+                  <div className="flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between pt-2">
+                    <div className="text-xs text-muted-foreground text-center sm:text-left">
                       Last updated: {chapter.lastUpdated}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
                       {chapter.status === 'draft' && (
                         <Button 
                           size="sm" 
                           variant="default"
                           onClick={() => handlePublishChapter(chapter.id)}
+                          className="w-full sm:w-auto text-xs"
                         >
                           Publish
                         </Button>
@@ -272,25 +273,28 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
                             }
                           })
                         }}
+                        className="w-full sm:w-auto text-xs"
                       >
-                        <Edit className="h-4 w-4 mr-1" />
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Edit
                       </Button>
                       <Button 
                         size="sm" 
                         variant="outline"
                         onClick={() => onNavigate("slide-reader")}
+                        className="w-full sm:w-auto text-xs"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Preview
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <MoreHorizontal className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                            <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="ml-1 sm:hidden">More</span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem>
                             <BarChart3 className="h-4 w-4 mr-2" />
                             View Analytics

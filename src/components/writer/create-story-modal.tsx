@@ -149,17 +149,17 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
         <DialogHeader>
-          <DialogTitle>Create New Story</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">Create New Story</DialogTitle>
+          <DialogDescription className="text-sm sm:text-base">
             Set up your story details and start writing your first chapter
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid lg:grid-cols-3 gap-6 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-4">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Story Title</Label>
               <Input
@@ -200,16 +200,18 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
             <div className="space-y-2">
               <Label htmlFor="tags">Tags</Label>
               <div className="space-y-2">
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     id="tags"
                     placeholder="Add tags and press Enter..."
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyPress={handleKeyPress}
+                    className="flex-1"
                   />
-                  <Button type="button" onClick={handleTagAdd} variant="outline">
-                    <Plus className="h-4 w-4" />
+                  <Button type="button" onClick={handleTagAdd} variant="outline" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-2 sm:mr-0" />
+                    <span className="sm:hidden">Add Tag</span>
                   </Button>
                 </div>
                 {formData.tags.length > 0 && (
@@ -262,7 +264,7 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="border rounded-lg p-4">
               <h3 className="font-medium mb-3">Story Preview</h3>
               <div className="aspect-[3/4] bg-secondary/30 rounded-lg flex items-center justify-center mb-3 overflow-hidden">
@@ -314,12 +316,12 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
               <Button 
                 onClick={handleSubmit}
                 disabled={loading || !formData.title.trim()}
-                className="vine-button-hero"
+                className="vine-button-hero text-sm sm:text-base"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
                 {loading ? "Creating..." : "Create Story"}
               </Button>
-              <Button variant="outline" onClick={() => setOpen(false)}>
+              <Button variant="outline" onClick={() => setOpen(false)} className="text-sm sm:text-base">
                 Cancel
               </Button>
             </div>

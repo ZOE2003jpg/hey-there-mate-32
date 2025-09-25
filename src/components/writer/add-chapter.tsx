@@ -208,21 +208,21 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <Button variant="ghost" size="icon" onClick={() => onNavigate("create-story")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{isEditing ? 'Edit Chapter' : 'Add Chapter'}</h1>
-            <p className="text-muted-foreground">{isEditing ? 'Update your chapter content and preview changes' : 'Write your chapter and preview slides'}</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold">{isEditing ? 'Edit Chapter' : 'Add Chapter'}</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">{isEditing ? 'Update your chapter content and preview changes' : 'Write your chapter and preview slides'}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <Card className="vine-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -279,15 +279,15 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
                 className="min-h-[400px]"
               />
               
-              <div className="flex gap-2">
-                <Button onClick={splitIntoSlides} disabled={!chapterData.content || loading}>
+              <div className="flex flex-col xs:flex-row gap-2">
+                <Button onClick={splitIntoSlides} disabled={!chapterData.content || loading} className="text-sm">
                   <Split className="h-4 w-4 mr-2" />
                   Split Preview
                 </Button>
-                <Button variant="outline" onClick={() => handleReSplit(300)}>
+                <Button variant="outline" onClick={() => handleReSplit(300)} className="text-sm">
                   Re-split (300 words)
                 </Button>
-                <Button variant="outline" onClick={() => handleReSplit(500)}>
+                <Button variant="outline" onClick={() => handleReSplit(500)} className="text-sm">
                   Re-split (500 words)
                 </Button>
               </div>
@@ -328,7 +328,7 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card className="vine-card">
             <CardHeader>
               <CardTitle>Chapter Stats</CardTitle>
