@@ -52,15 +52,15 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
       return
     }
     if (isInLibrary(storyId)) {
-      toast.info("Story is already in your library")
+      toast.info("Story is already saved in your library")
       return
     }
     try {
       await addToLibrary(storyId, user.id)
-      toast.success("Added to library!")
+      toast.success("Story saved to library!")
     } catch (error) {
       console.error("Library error:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to add to library")
+      toast.error(error instanceof Error ? error.message : "Failed to save to library")
     }
   }
 

@@ -99,18 +99,18 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-1">
+        <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
           {user?.profile && (
-            <div className="flex items-center space-x-1 text-xs mr-1 min-w-0 max-w-[140px] sm:max-w-none">
+            <div className="flex items-center space-x-1 text-xs min-w-0">
               <User className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate text-xs">{user.profile.display_name || user.profile.username || user.email}</span>
-              <span className="text-muted-foreground text-xs hidden sm:inline">({user.profile.role})</span>
+              <span className="truncate text-xs max-w-[60px] xs:max-w-[80px] sm:max-w-none">
+                {user.profile.display_name || user.profile.username || user.email}
+              </span>
             </div>
           )}
           {user && (
-            <Button variant="ghost" size="sm" onClick={signOut} className="h-8 px-2 text-xs flex-shrink-0">
-              <LogOut className="h-3 w-3 mr-1" />
-              <span className="hidden sm:inline">Logout</span>
+            <Button variant="ghost" size="sm" onClick={signOut} className="h-8 w-8 p-0 flex-shrink-0">
+              <LogOut className="h-3 w-3" />
             </Button>
           )}
           <ThemeToggle />
