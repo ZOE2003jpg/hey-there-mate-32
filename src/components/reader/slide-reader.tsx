@@ -18,7 +18,8 @@ import {
   BookOpen,
   Volume2,
   VolumeX,
-  Bookmark
+  Bookmark,
+  ArrowLeft
 } from "lucide-react"
 import { useSlides } from "@/hooks/useSlides"
 import { useReads } from "@/hooks/useReads"
@@ -511,6 +512,18 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       onContextMenu={(e) => e.preventDefault()}
       onDragStart={(e) => e.preventDefault()}
     >
+      {/* Back Button - Always visible in top left */}
+      <div className="absolute top-4 left-4 z-50">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => handleNavigateWithCleanup('story-chapters', story)}
+          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 z-50">
         <Progress value={progress} className="h-2 rounded-none bg-muted/20">
@@ -605,7 +618,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
           <div className="max-w-md w-full mx-4 px-2 space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-2">{story?.title || "The Digital Awakening"}</h2>
-              <p className="text-muted-foreground">by {story?.author || "Sarah Chen"}</p>
+              <p className="text-muted-foreground">by {story?.profiles?.display_name || story?.profiles?.username || "Anonymous"}</p>
               <p className="text-sm text-muted-foreground mt-2">
                 Slide {currentSlide} of {totalSlides} • {progress}% complete
               </p>

@@ -38,6 +38,9 @@ export function StoryChapters({ story, onNavigate }: StoryChaptersProps) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h1 className="text-xl sm:text-2xl font-bold line-clamp-2">{story?.title}</h1>
+          <p className="text-sm text-muted-foreground mt-1 mb-2">
+            by {story?.profiles?.display_name || story?.profiles?.username || "Anonymous"}
+          </p>
           <p className="text-muted-foreground text-sm sm:text-base mt-1 line-clamp-3">{story?.description}</p>
         </div>
         <Badge variant="outline" className="flex-shrink-0">{story?.genre}</Badge>
