@@ -13,7 +13,8 @@ import {
   FileText,
   Clock,
   BarChart3,
-  MoreHorizontal
+  MoreHorizontal,
+  Volume2
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -33,6 +34,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useChapters } from "@/hooks/useChapters"
 import { useUser } from "@/components/user-context"
+import { ChapterSoundManager } from "./chapter-sound-manager"
 import { toast } from "sonner"
 
 interface ManageChaptersProps {
@@ -44,6 +46,8 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
   const { user } = useUser()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [chapterToDelete, setChapterToDelete] = useState<string | null>(null)
+  const [showSoundManager, setShowSoundManager] = useState(false)
+  const [soundChapter, setSoundChapter] = useState<any>(null)
   
   // Use passed story data or fallback to default
   const story = passedStory || {
@@ -291,6 +295,16 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
                             <BarChart3 className="h-4 w-4 mr-2" />
                             View Analytics
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              const chapterData = chapters.find(c => c.id === chapter.id)
+                              setSoundChapter(chapterData)
+                              setShowSoundManager(true)
+                            }}
+                          >
+                            <Volume2 className="h-4 w-4 mr-2" />
+                            Manage Audio
+                          </DropdownMenuItem>
                           <DropdownMenuItem>
                             <FileText className="h-4 w-4 mr-2" />
                             Duplicate
@@ -350,6 +364,34 @@ export function ManageChapters({ onNavigate, story: passedStory }: ManageChapter
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Sound Manager Modal */}
+      {showSoundManager && soundChapter && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-4xl max-h-[80vh] overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Chapter Audio Settings</CardTitle>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setShowSoundManager(false)
+                    setSoundChapter(null)
+                  }}
+                >
+                  ×
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="overflow-y-auto">
+              <ChapterSoundManager 
+                chapterId={soundChapter.id}
+                chapterTitle={soundChapter.title}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

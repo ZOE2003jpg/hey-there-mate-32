@@ -302,3 +302,40 @@
       0 1px 2px hsl(var(--vine-orange) / 0.3);
   }
 }
+
+/* Slide reader screenshot protection */
+.vine-slide-reader {
+  background: linear-gradient(135deg, 
+    hsl(var(--background)) 0%,
+    hsl(var(--background)/0.95) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border)/0.3);
+  /* Screenshot protection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.vine-slide-content {
+  text-shadow: 0 1px 2px hsl(var(--background)/0.3);
+  /* Additional screenshot protection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Prevent screenshot via CSS filters on sensitive content */
+.vine-slide-reader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 49%, rgba(0,0,0,0.01) 50%, transparent 51%);
+  pointer-events: none;
+  z-index: -1;
+}

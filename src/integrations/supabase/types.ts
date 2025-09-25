@@ -105,7 +105,22 @@ export type Database = {
           sound_id?: string
           volume?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_chapter_sounds_chapter_id"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_chapter_sounds_sound_id"
+            columns: ["sound_id"]
+            isOneToOne: false
+            referencedRelation: "sounds_library"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chapters: {
         Row: {
