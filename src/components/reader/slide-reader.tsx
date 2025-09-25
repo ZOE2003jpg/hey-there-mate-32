@@ -589,7 +589,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Chapter Progress Bar */}
       <div className="absolute top-12 left-4 right-4 z-50">
-        <div className="bg-background/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
+        <div className="bg-background/80 backdrop-blur-sm rounded-lg px-1 sm:px-4 py-2 shadow-lg">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
             <span>Chapter Progress</span>
             <span>{progress}% complete</span>
