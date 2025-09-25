@@ -105,12 +105,12 @@ export function WriterPanel() {
 
       {/* Mobile Header with Navigation */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 bg-card border-b border-border z-50 h-16">
-          <div className="flex items-center justify-between p-4 h-full">
-            <div className="flex items-center gap-3">
+        <div className="fixed top-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-b border-border z-50 h-14 sm:h-16">
+          <div className="flex items-center justify-between px-3 sm:px-4 h-full">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <WriterMobileNav currentPage={currentPage} onNavigate={handleNavigate} />
-              <PlusSquare className="h-6 w-6 text-primary" />
-              <h1 className="text-lg font-bold">Writer Panel</h1>
+              <PlusSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+              <h1 className="text-base sm:text-lg font-bold truncate">Writer Panel</h1>
             </div>
             <ThemeToggle />
           </div>
@@ -118,8 +118,8 @@ export function WriterPanel() {
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-16' : ''}`}>
-        <div className="p-4 lg:p-8">
+      <div className={`flex-1 overflow-auto ${isMobile ? 'pt-14 sm:pt-16' : ''}`}>
+        <div className="p-3 sm:p-4 lg:p-8">
           {renderPage()}
         </div>
       </div>

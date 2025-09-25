@@ -7,10 +7,10 @@ const corsHeaders = {
 
 interface ProgressRequest {
   readerId: string
-  novelId: string
+  storyId: string
   chapterId: string
-  slideNumber: number
-  completed?: boolean
+  slideId: string
+  progress: number
 }
 
 Deno.serve(async (req) => {
@@ -25,29 +25,29 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { readerId, novelId, chapterId, slideNumber, completed = false }: ProgressRequest = await req.json()
+    const { readerId, storyId, chapterId, slideId, progress }: ProgressRequest = await req.json()
 
-    if (!readerId || !novelId || !chapterId || slideNumber === undefined) {
+    if (!readerId || !storyId || !chapterId || slideId === undefined || progress === undefined) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log(`Tracking progress for reader ${readerId}, novel ${novelId}, chapter ${chapterId}, slide ${slideNumber}`)
+    console.log(`Tracking progress for reader ${readerId}, story ${storyId}, chapter ${chapterId}, slide ${slideId}`)
 
     // Upsert reading progress
     const { data, error } = await supabase
       .from('reads')
       .upsert({
-        reader_id: readerId,
-        novel_id: novelId,
+        user_id: readerId,
+        story_id: storyId,
         chapter_id: chapterId,
-        slide_number: slideNumber,
-        completed: completed,
+        slide_id: slideId,
+        progress: progress,
         last_read_at: new Date().toISOString()
       }, {
-        onConflict: 'reader_id,novel_id,chapter_id'
+        onConflict: 'user_id,story_id,chapter_id'
       })
       .select()
 
@@ -59,13 +59,13 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Update analytics if chapter completed
-    if (completed) {
+    // Update analytics if progress is 100%
+    if (progress >= 100) {
       // Increment chapter view count
       await supabase.rpc('increment_chapter_views', { chapter_id: chapterId })
       
       // Increment story view count
-      await supabase.rpc('increment_story_views', { story_id: novelId })
+      await supabase.rpc('increment_story_views', { story_id: storyId })
     }
 
     console.log(`Successfully tracked progress for reader ${readerId}`)

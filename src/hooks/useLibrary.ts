@@ -30,7 +30,7 @@ export function useLibrary(userId?: string) {
           *,
           stories (
             *,
-            profiles!stories_author_id_fkey (
+            profiles (
               display_name,
               username
             ),

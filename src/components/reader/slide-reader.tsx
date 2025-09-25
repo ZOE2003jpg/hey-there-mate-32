@@ -44,7 +44,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [currentSlide, setCurrentSlide] = useState(1)
   const [showMenu, setShowMenu] = useState(false)
   const [showAd, setShowAd] = useState(false)
-  const [adCountdown, setAdCountdown] = useState(5)
+  const [adCountdown, setAdCountdown] = useState(6)
   const [currentAd, setCurrentAd] = useState<any>(null)
   const [videoWatched, setVideoWatched] = useState(false)
   const [adVideoRef, setAdVideoRef] = useState<HTMLVideoElement | null>(null)
@@ -289,7 +289,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       adVideoRef.onloadedmetadata = () => {
         // Reset states when video loads
         setVideoWatched(false)
-        setAdCountdown(Math.max(5, Math.floor(adVideoRef.duration || 5)))
+        setAdCountdown(Math.max(6, Math.floor(adVideoRef.duration || 6)))
       }
     }
   }, [showAd, adVideoRef, currentAd])
@@ -312,7 +312,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         setCurrentAd(randomAd)
         setShowAd(true)
         setVideoWatched(false)
-        setAdCountdown(5)
+        setAdCountdown(6)
         
         // Track ad impression
         incrementImpressions(randomAd.id)
@@ -387,7 +387,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const skipAd = () => {
     if (videoWatched || adCountdown === 0) {
       setShowAd(false)
-      setAdCountdown(5)
+      setAdCountdown(6)
       setCurrentAd(null)
       setVideoWatched(false)
       // Continue to the next slide
