@@ -510,14 +510,21 @@
   }
 }
 
-/* Story Grid System - Mobile First */
+/* Story Grid System - Mobile First with 2x2 Grid */
 .story-grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr; /* Mobile: 1 column */
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, 1fr); /* Mobile: 2 columns */
 }
 
-/* Mobile 2x2 grid */
+/* Small Mobile: Maintain 2x2 grid with tighter spacing */
+@media (min-width: 360px) {
+  .story-grid {
+    gap: 1rem;
+  }
+}
+
+/* Large Mobile: 2 columns with better spacing */
 @media (min-width: 480px) {
   .story-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -525,26 +532,26 @@
   }
 }
 
-/* Tablet: 2 columns */
+/* Tablet: 3 columns */
 @media (min-width: 768px) {
   .story-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
   }
 }
 
-/* Desktop: 3 columns */
+/* Desktop: 4 columns */
 @media (min-width: 1024px) {
   .story-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
   }
 }
 
-/* Large Desktop: 4 columns */
+/* Large Desktop: 5 columns */
 @media (min-width: 1400px) {
   .story-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
@@ -555,6 +562,9 @@
   box-shadow: 0 2px 8px hsl(var(--shadow) / 0.08);
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
+  max-height: 400px; /* Prevent cards from becoming too tall */
+  display: flex;
+  flex-direction: column;
 }
 
 .story-card:hover {
@@ -564,13 +574,18 @@
 }
 
 .story-cover {
-  @apply relative overflow-hidden;
-  aspect-ratio: 3/4; /* 3:4 aspect ratio */
+  @apply relative overflow-hidden flex-shrink-0;
+  height: 180px; /* Fixed height for consistent card size */
   background: hsl(var(--muted) / 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem; /* Padding to ensure image doesn't touch edges */
 }
 
 .story-cover img {
-  @apply w-full h-full object-cover transition-transform duration-300;
+  @apply max-w-full max-h-full object-contain transition-transform duration-300;
+  border-radius: 4px; /* Slight rounding for the image itself */
 }
 
 .story-card:hover .story-cover img {
@@ -578,13 +593,14 @@
 }
 
 .story-content {
-  @apply p-4 space-y-3;
+  @apply p-3 space-y-2 flex-1 flex flex-col justify-between;
+  min-height: 0; /* Allow content to shrink */
 }
 
 .story-title {
-  @apply font-semibold text-base leading-tight line-clamp-2;
+  @apply font-semibold text-sm leading-tight line-clamp-2;
   color: hsl(var(--foreground));
-  min-height: 2.5rem; /* Consistent height */
+  min-height: 2rem; /* Consistent height but smaller for mobile */
 }
 
 .story-author {
@@ -610,12 +626,14 @@
 }
 
 .story-read-btn {
-  @apply flex-1 h-9 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium text-sm transition-colors;
-  min-height: 44px; /* Touch-friendly */
+  @apply flex-1 h-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium text-xs transition-colors;
+  min-height: 40px; /* Touch-friendly but compact */
 }
 
 .story-like-btn, .story-bookmark-btn {
-  @apply w-9 h-9 border border-border rounded-lg hover:bg-muted transition-colors flex items-center justify-center;
+  @apply w-8 h-8 border border-border rounded-lg hover:bg-muted transition-colors flex items-center justify-center;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 /* ===== TYPOGRAPHY SYSTEM ===== */
@@ -757,15 +775,35 @@
   }
 }
 
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+  .story-cover {
+    height: 140px; /* Smaller cover on mobile */
+  }
+  
+  .story-content {
+    @apply p-2 space-y-1.5;
+  }
+  
+  .story-title {
+    @apply text-xs leading-tight;
+    min-height: 1.5rem;
+  }
+  
+  .story-author {
+    @apply text-xs;
+  }
+  
+  .story-genre {
+    @apply text-xs px-1.5 py-0.5;
+  }
+}
+
 /* Touch-Friendly Interactive Elements */
 @media (max-width: 1024px) {
   button, .button, [role="button"], .interactive {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  .story-card {
-    padding: 0.75rem;
+    min-height: 40px;
+    min-width: 40px;
   }
   
   .sidebar-item {
