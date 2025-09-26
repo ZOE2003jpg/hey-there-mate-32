@@ -19,8 +19,16 @@ import {
   Volume2,
   VolumeX,
   Bookmark,
-  ArrowLeft
+  ArrowLeft,
+  MoreVertical,
+  Settings
 } from "lucide-react"
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useSlides } from "@/hooks/useSlides"
 import { useReads } from "@/hooks/useReads"
 import { useChapters } from "@/hooks/useChapters"
@@ -50,6 +58,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [adVideoRef, setAdVideoRef] = useState<HTMLVideoElement | null>(null)
   const [showFontControls, setShowFontControls] = useState(false)
   const [showVolumeControls, setShowVolumeControls] = useState(false)
+  const [showBottomControls, setShowBottomControls] = useState(false)
   const [allSlides, setAllSlides] = useState<any[]>([])
   const [currentChapter, setCurrentChapter] = useState<string | null>(null)
   const [fontSize, setFontSize] = useState(() => {
@@ -539,7 +548,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     setStartX(null)
   }
 
-  // Font size handlers with persistence
+  // Font size handlers with persistence and smooth animations
   const handleFontSizeChange = (delta: number) => {
     const newSize = Math.max(12, Math.min(24, fontSize + delta))
     setFontSize(newSize)
@@ -555,6 +564,26 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     }
     localStorage.setItem('readerVolume', newVolume.toString())
   }
+
+  // Auto-hide bottom controls after 5 seconds
+  useEffect(() => {
+    if (showBottomControls) {
+      const timer = setTimeout(() => {
+        setShowBottomControls(false)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [showBottomControls])
+
+  // Auto-hide volume control after 3 seconds
+  useEffect(() => {
+    if (showVolumeControl) {
+      const timer = setTimeout(() => {
+        setShowVolumeControl(false)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [showVolumeControl])
 
   if (showAd) {
     return (
@@ -638,75 +667,101 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       onContextMenu={(e) => e.preventDefault()}
       onDragStart={(e) => e.preventDefault()}
     >
-      {/* Back Button - Always visible in top left */}
-      <div className="absolute top-4 left-4 z-50">
+      {/* Header with Back Button and Menu */}
+      <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-background/80 to-transparent backdrop-blur-sm">
         <Button
           size="sm"
           variant="ghost"
           onClick={() => handleNavigateWithCleanup('story-chapters', story)}
-          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
+          className="h-10 w-10 p-0 rounded-full shadow-lg hover:bg-background/90"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-5 w-5" />
         </Button>
+        
+        {/* Kebab Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-10 w-10 p-0 rounded-full shadow-lg hover:bg-background/90"
+            >
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => setShowBottomControls(!showBottomControls)}>
+              <Settings className="h-4 w-4 mr-2" />
+              Reading Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLikeToggle}>
+              <Heart className={`h-4 w-4 mr-2 ${story?.id && isLiked(story.id) ? 'fill-current' : ''}`} />
+              {story?.id && isLiked(story.id) ? 'Unlike' : 'Like Story'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleAddToLibrary} disabled={story?.id && isInLibrary(story.id)}>
+              <Bookmark className="h-4 w-4 mr-2" />
+              {story?.id && isInLibrary(story.id) ? 'In Library' : 'Add to Library'}
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Share className="h-4 w-4 mr-2" />
+              Share Story
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Comments
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Mobile Controls Toggle Buttons */}
-      <div className="absolute top-4 right-4 z-50 flex gap-2 md:hidden">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setShowFontControls(!showFontControls)}
-          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
-        >
-          <Type className="h-4 w-4" />
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setShowVolumeControls(!showVolumeControls)}
-          className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
-        >
-          <Volume2 className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Mobile Volume Control - Positioned Below Slide Area */}
-      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-50 md:hidden">
-        <div className="bg-background/95 backdrop-blur-md rounded-xl p-3 shadow-xl border border-border/50 flex items-center gap-3">
+      {/* Floating Volume Control - Bottom Right */}
+      <div className="absolute bottom-24 right-4 z-50">
+        <div className="flex flex-col items-center gap-2">
+          {showVolumeControl && (
+            <div className="bg-background/95 backdrop-blur-md rounded-xl p-3 shadow-xl border border-border/50 animate-in slide-in-from-bottom-2">
+              <div className="flex flex-col items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={increaseVolume}
+                  className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+                >
+                  <span className="text-sm font-bold">+</span>
+                </Button>
+                <div className="text-xs text-center font-medium px-2">
+                  {Math.round(audioVolume * 100)}%
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={decreaseVolume}
+                  className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+                >
+                  <span className="text-sm font-bold">−</span>
+                </Button>
+              </div>
+            </div>
+          )}
           <Button
             variant="ghost"
             size="sm"
-            onClick={decreaseVolume}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
+            onClick={() => {
+              if (showVolumeControl) {
+                toggleAudioPlayback()
+              } else {
+                setShowVolumeControl(!showVolumeControl)
+                setTimeout(() => setShowVolumeControl(false), 3000)
+              }
+            }}
+            className="h-12 w-12 p-0 bg-background/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-background/90"
           >
-            <span className="text-sm font-bold">−</span>
-          </Button>
-          <div className="flex flex-col items-center gap-1">
-            <div className="text-xs font-medium text-foreground">{Math.round(audioVolume * 100)}%</div>
-            <div className="text-xs text-muted-foreground">Volume</div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={increaseVolume}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-          >
-            <span className="text-sm font-bold">+</span>
-          </Button>
-          <div className="w-px h-6 bg-border" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleAudioPlayback}
-            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-          >
-            {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            {isAudioPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
-      {/* Desktop Progress Bar - Left Side */}
-      <div className="absolute top-16 left-2 bottom-16 z-50 w-2 hidden md:block">
+      {/* Progress Bar - Left Side */}
+      <div className="absolute top-20 left-2 bottom-20 z-50 w-2 hidden md:block">
         <div className="h-full bg-muted/20 rounded-full relative">
           <div 
             className="absolute bottom-0 left-0 w-full bg-primary rounded-full transition-all duration-300 ease-in-out"
@@ -715,8 +770,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
-      {/* Mobile Progress Bar - Bottom */}
-      <div className="absolute bottom-2 left-4 right-4 z-50 md:hidden">
+      {/* Mobile Progress Bar - Top */}
+      <div className="absolute top-20 left-4 right-4 z-50 md:hidden">
         <div className="h-1 bg-muted/20 rounded-full relative">
           <div 
             className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-300 ease-in-out"
@@ -725,165 +780,97 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         </div>
       </div>
 
-      {/* Desktop Font Controls */}
-      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 hidden md:flex flex-col gap-2 bg-background/80 rounded-lg p-2 backdrop-blur-sm shadow-lg">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setFontSize(prev => Math.min(prev + 2, 24))}
-          className="h-8 w-8 p-0"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setFontSize(prev => Math.max(prev - 2, 12))}
-          className="h-8 w-8 p-0"
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setFontFamily(prev => prev === 'serif' ? 'sans-serif' : prev === 'sans-serif' ? 'mono' : 'serif')}
-          className="h-8 w-8 p-0"
-        >
-          <Type className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Mobile Font Controls Overlay */}
-      {showFontControls && (
-        <div className="absolute inset-x-4 top-16 z-40 md:hidden">
-          <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium">Text Settings</h4>
+      {/* Bottom Controls Bar */}
+      {showBottomControls && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4">
+          <div className="bg-background/95 backdrop-blur-md rounded-xl p-4 shadow-xl border border-border/50 min-w-80">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-semibold">Reading Controls</h4>
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => setShowFontControls(false)}
+                onClick={() => setShowBottomControls(false)}
                 className="h-6 w-6 p-0"
               >
                 <X className="h-3 w-3" />
               </Button>
             </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setFontSize(prev => Math.max(prev - 2, 12))}
-                className="h-8 w-8 p-0"
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              <span className="text-sm min-w-[3ch] text-center">{fontSize}px</span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setFontSize(prev => Math.min(prev + 2, 24))}
-                className="h-8 w-8 p-0"
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setFontFamily(prev => prev === 'serif' ? 'sans-serif' : prev === 'sans-serif' ? 'mono' : 'serif')}
-                className="h-8 px-3"
-              >
-                <Type className="h-3 w-3 mr-1" />
-                {fontFamily === 'serif' ? 'Serif' : fontFamily === 'sans-serif' ? 'Sans' : 'Mono'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Desktop Volume Controls - Positioned on Left Side Below Progress */}
-      <div className="absolute left-4 top-3/4 transform -translate-y-1/2 z-50 hidden md:flex flex-col gap-2 bg-background/90 backdrop-blur-md rounded-xl p-3 shadow-xl border border-border/50">
-        <div className="text-xs font-medium text-center text-foreground mb-1">Audio</div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={increaseVolume}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-        >
-          <span className="text-sm font-bold">+</span>
-        </Button>
-        <div className="text-xs text-center text-muted-foreground py-1 min-w-[3ch] font-medium">
-          {Math.round(audioVolume * 100)}%
-        </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={decreaseVolume}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-        >
-          <span className="text-sm font-bold">−</span>
-        </Button>
-        <div className="w-8 h-px bg-border my-1" />
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={toggleAudioPlayback}
-          className="h-8 w-8 p-0 rounded-full hover:bg-accent"
-        >
-          {isAudioPlaying ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-        </Button>
-      </div>
-
-      {/* Mobile Volume Controls Overlay */}
-      {showVolumeControls && (
-        <div className="absolute inset-x-4 top-16 z-40 md:hidden">
-          <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium">Audio Settings</h4>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowVolumeControls(false)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={decreaseVolume}
-                className="h-8 w-8 p-0"
-              >
-                <span className="text-sm font-bold">−</span>
-              </Button>
-              <span className="text-sm min-w-[4ch] text-center">{Math.round(audioVolume * 100)}%</span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={increaseVolume}
-                className="h-8 w-8 p-0"
-              >
-                <span className="text-sm font-bold">+</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleAudioPlayback}
-                className="h-8 px-3"
-              >
-                {isAudioPlaying ? (
-                  <>
-                    <Volume2 className="h-3 w-3 mr-1" />
-                    Playing
-                  </>
-                ) : (
-                  <>
-                    <VolumeX className="h-3 w-3 mr-1" />
-                    Paused
-                  </>
-                )}
-              </Button>
+            
+            <div className="space-y-4">
+              {/* Font Controls */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Font Size</label>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleFontSizeChange(-2)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm min-w-[4ch] text-center">{fontSize}px</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleFontSizeChange(2)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFontFamily(prev => prev === 'serif' ? 'sans-serif' : prev === 'sans-serif' ? 'mono' : 'serif')}
+                    className="h-8 px-3"
+                  >
+                    <Type className="h-3 w-3 mr-1" />
+                    {fontFamily === 'serif' ? 'Serif' : fontFamily === 'sans-serif' ? 'Sans' : 'Mono'}
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Volume Controls */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Audio Volume</label>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={decreaseVolume}
+                    className="h-8 w-8 p-0"
+                  >
+                    <span className="text-sm font-bold">−</span>
+                  </Button>
+                  <span className="text-sm min-w-[4ch] text-center">{Math.round(audioVolume * 100)}%</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={increaseVolume}
+                    className="h-8 w-8 p-0"
+                  >
+                    <span className="text-sm font-bold">+</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleAudioPlayback}
+                    className="h-8 px-3"
+                  >
+                    {isAudioPlaying ? (
+                      <>
+                        <Volume2 className="h-3 w-3 mr-1" />
+                        Pause
+                      </>
+                    ) : (
+                      <>
+                        <VolumeX className="h-3 w-3 mr-1" />
+                        Play
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1052,8 +1039,10 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-2 sm:px-6 lg:px-8 py-8 pb-12 md:pb-8 overflow-y-auto"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-8 lg:px-12 py-24 pb-32 md:pb-24 overflow-y-auto"
         onClick={handleSlideNavigation}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 lg:px-6">
           <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-3 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[60vh] md:min-h-[70vh] flex flex-col mt-12 md:mt-0">
