@@ -78,38 +78,48 @@ export function HomePage({ onPanelChange }: HomePageProps) {
   }
 
   return (
-    <div className="main-layout">
-      <section className="section-spacing bg-gradient-to-br from-background via-background to-secondary/10">
-        <div className="container-spacing">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-7xl mx-auto">
-              <div className="content-spacing">
-                <h1 className="heading-xl leading-tight">
-                  Stories That Come
-                  <span className="text-primary block sm:inline"> Alive</span>
-                </h1>
-                <p className="body-lg text-muted-foreground max-w-xl">
-                  Experience reading like never before with VineNovel's immersive slide-based storytelling platform. Where every story comes to life.
-                </p>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="container-system">
+          <div className="content-container">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <h1 className="typography-display">
+                    Stories That Come
+                    <span className="text-primary block"> Alive</span>
+                  </h1>
+                  <p className="typography-body-lg text-muted-foreground max-w-xl">
+                    Experience reading like never before with VineNovel's immersive slide-based storytelling platform. Where every story comes to life.
+                  </p>
+                </div>
                 
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button size="lg" className="btn-hero" onClick={handleGetStarted}>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button size="lg" className="btn-primary" onClick={handleGetStarted}>
                     <Play className="h-5 w-5 mr-2" />
                     Start Reading
                   </Button>
-                  <Button size="lg" variant="outline" onClick={() => user ? onPanelChange('writer') : setShowLogin(true)} className="border-2">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    onClick={() => user ? onPanelChange('writer') : setShowLogin(true)} 
+                    className="btn-secondary"
+                  >
                     <BookOpen className="h-5 w-5 mr-2" />
                     Start Writing
                   </Button>
                 </div>
 
-                {/* Temporary Test Users Button */}
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground mb-2">Need test accounts? Create them first:</p>
+                {/* Test Users Section */}
+                <div className="pt-6 border-t border-border">
+                  <p className="typography-caption mb-3">Need test accounts? Create them first:</p>
                   <Button 
                     variant="secondary" 
                     onClick={createTestUsers}
                     disabled={creatingTestUsers}
                     size="sm"
+                    className="btn-ghost"
                   >
                     <Database className="h-4 w-4 mr-2" />
                     {creatingTestUsers ? "Creating..." : "Create Test Users"}
@@ -117,81 +127,94 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                 </div>
               </div>
 
-            <div className="relative lg:pl-8">
               <div className="relative">
-                <img src={heroImage} alt="VineNovel Platform" className="w-full rounded-2xl shadow-2xl border border-border/20" />
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-primary/10"></div>
+                <div className="relative">
+                  <img 
+                    src={heroImage} 
+                    alt="VineNovel Platform" 
+                    className="w-full rounded-2xl shadow-2xl border border-border/20" 
+                  />
+                  <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-primary/10"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Featured Stories Section */}
       {stories.length > 0 && (
-        <section className="section-spacing bg-secondary/5">
-          <div className="container-spacing">
-            <div className="text-center mb-12 lg:mb-16">
-              <h2 className="heading-lg mb-4">Trending Stories</h2>
-              <p className="body-md text-muted-foreground max-w-2xl mx-auto">
-                Discover the most popular stories on VineNovel, loved by readers worldwide
-              </p>
-            </div>
-            {/* Professional Responsive Story Grid */}
-            <div className="responsive-grid">
-              {stories.slice(0, 12).map((story) => (
-                <Card key={story.id} className="vine-card-standard hover-scale cursor-pointer group">
-                  <CardContent className="p-0 h-full">
+        <section className="bg-muted/30">
+          <div className="container-system">
+            <div className="content-container">
+              <div className="text-center mb-12">
+                <h2 className="typography-h2 mb-4">Trending Stories</h2>
+                <p className="typography-body text-muted-foreground max-w-2xl mx-auto">
+                  Discover the most popular stories on VineNovel, loved by readers worldwide
+                </p>
+              </div>
+              
+              {/* Story Grid */}
+              <div className="story-grid">
+                {stories.slice(0, 12).map((story) => (
+                  <article key={story.id} className="story-card">
                     {/* Cover Image */}
-                    <div className="aspect-[4/5] bg-secondary/20 rounded-t-lg mb-4 overflow-hidden group-hover:bg-secondary/30 transition-colors">
+                    <div className="story-cover">
                       {story.cover_image_url ? (
                         <img 
                           src={story.cover_image_url} 
                           alt={story.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                          loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="h-12 w-12 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <BookOpen className="h-12 w-12 text-muted-foreground" />
                         </div>
                       )}
                     </div>
                     
-                    {/* Content */}
-                    <div className="px-4 pb-4 space-y-3">
+                    {/* Story Content */}
+                    <div className="story-content">
                       <div className="space-y-2">
-                        <Badge variant="outline" className="text-xs font-medium">{story.genre}</Badge>
-                        <h3 className="font-semibold text-base line-clamp-2 min-h-[3rem] leading-tight">
-                          {story.title}
-                        </h3>
+                        <span className="story-genre">{story.genre}</span>
+                        <h3 className="story-title">{story.title}</h3>
                       </div>
                       
-                      {/* Stats */}
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1">
+                      {/* Story Stats */}
+                      <div className="story-stats">
+                        <div className="flex items-center space-x-4">
+                          <div className="story-stat">
                             <Eye className="h-3 w-3" />
                             <span>{story.view_count}</span>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="story-stat">
                             <Heart className="h-3 w-3" />
                             <span>{story.like_count}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="story-stat">
                           <TrendingUp className="h-3 w-3" />
-                          <span className="text-primary">Popular</span>
+                          <span className="text-primary font-medium">Popular</span>
                         </div>
                       </div>
                       
-                      {/* Action Button */}
-                      <Button size="sm" className="w-full btn-hero text-sm">
-                        <Play className="h-4 w-4 mr-2" />
-                        Read Story
-                      </Button>
+                      {/* Story Actions */}
+                      <div className="story-actions">
+                        <Button className="story-read-btn">
+                          <Play className="h-4 w-4 mr-2" />
+                          Read Story
+                        </Button>
+                        <Button variant="outline" size="icon" className="story-like-btn">
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" className="story-bookmark-btn">
+                          <BookOpen className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>

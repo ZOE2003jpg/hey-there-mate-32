@@ -83,44 +83,45 @@ export function ReaderPanel() {
     <div className="flex min-h-screen w-full">
       {/* Desktop Sidebar Navigation */}
       {!isMobile && (
-        <div className="w-64 bg-card border-r border-border p-6">
-          <div className="flex items-center gap-3 mb-8">
-            <BookOpen className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-bold">Reader Panel</h1>
+        <aside className="sidebar-nav">
+          <div className="sidebar-content">
+            <div className="sidebar-header">
+              <BookOpen className="h-8 w-8 text-primary" />
+              <h1 className="text-xl font-bold">Reader Panel</h1>
+            </div>
+            
+            <nav className="sidebar-menu">
+              {navigationItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavigate(item.id)}
+                    className={`sidebar-item ${currentPage === item.id ? 'active' : ''}`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </button>
+                )
+              })}
+            </nav>
           </div>
-          
-          <nav className="space-y-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Button
-                  key={item.id}
-                  variant={currentPage === item.id ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => handleNavigate(item.id)}
-                >
-                  <Icon className="h-4 w-4 mr-3" />
-                  {item.label}
-                </Button>
-              )
-            })}
-          </nav>
-        </div>
+        </aside>
       )}
 
-      {/* Mobile Navigation - Use sheet/drawer instead of fixed header */}
+      {/* Mobile Navigation */}
       {isMobile && (
-        <div className="fixed top-16 left-4 z-40">
+        <div className="fixed top-20 left-4 z-40">
           <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
+      <main className="main-content">
+        <div className="content-container">
           {renderPage()}
         </div>
-      </div>
+      </main>
     </div>
   )
 }

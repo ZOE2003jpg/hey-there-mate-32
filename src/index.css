@@ -371,178 +371,417 @@
   overflow: hidden;
 }
 
-/* Professional Layout System */
-.main-layout {
+/* ===== PROFESSIONAL LAYOUT SYSTEM ===== */
+
+/* Layout Structure - CSS Grid & Flexbox */
+.app-layout {
   @apply min-h-screen bg-background;
-  padding-top: 4rem; /* Header height */
+  display: flex;
+  flex-direction: column;
 }
 
-.section-spacing {
-  @apply py-8 sm:py-12 lg:py-16 xl:py-20;
+.app-header {
+  @apply fixed top-0 left-0 right-0 z-50;
+  height: 64px; /* Fixed header height */
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(var(--border) / 0.8);
+  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.1);
 }
 
-.container-spacing {
-  @apply px-4 sm:px-6 lg:px-8 xl:px-12;
-  max-width: 1400px;
-  margin: 0 auto;
+.app-main {
+  @apply flex-1;
+  padding-top: 64px; /* Header height offset */
+  display: flex;
 }
 
-.content-spacing {
-  @apply space-y-6 sm:space-y-8 lg:space-y-12;
+/* Container System with Max Widths */
+.container-system {
+  @apply w-full mx-auto px-4;
+  max-width: 1200px;
 }
 
-/* Professional Grid System */
-.responsive-grid {
+@media (min-width: 640px) {
+  .container-system {
+    @apply px-6;
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-system {
+    @apply px-8;
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-system {
+    max-width: 1600px;
+  }
+}
+
+/* Header Layout */
+.header-content {
+  @apply h-16 flex items-center justify-between;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .header-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-content {
+    padding: 0 2rem;
+  }
+}
+
+.header-section {
+  @apply flex items-center;
+  height: 100%;
+}
+
+.header-logo {
+  @apply flex items-center space-x-3 flex-shrink-0;
+}
+
+.header-nav {
+  @apply hidden md:flex items-center space-x-6 flex-1 justify-center;
+}
+
+.header-controls {
+  @apply flex items-center space-x-3;
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  @apply w-64 bg-card border-r border-border flex-shrink-0;
+  background: hsl(var(--sidebar-background));
+  color: hsl(var(--sidebar-foreground));
+}
+
+.sidebar-content {
+  @apply p-6 space-y-6;
+}
+
+.sidebar-header {
+  @apply flex items-center space-x-3 pb-4 border-b border-sidebar-border;
+}
+
+.sidebar-menu {
+  @apply space-y-2;
+}
+
+.sidebar-item {
+  @apply w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200;
+  min-height: 44px; /* Touch-friendly */
+}
+
+.sidebar-item.active {
+  @apply bg-sidebar-accent text-sidebar-accent-foreground;
+}
+
+.sidebar-item:hover:not(.active) {
+  @apply bg-sidebar-accent/50;
+}
+
+/* Main Content Area */
+.main-content {
+  @apply flex-1 overflow-auto;
+  background: hsl(var(--background));
+}
+
+.content-container {
+  @apply p-6;
+}
+
+@media (min-width: 768px) {
+  .content-container {
+    @apply p-8;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-container {
+    @apply p-12;
+  }
+}
+
+/* Story Grid System - Mobile First */
+.story-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* Mobile: 1 column */
 }
 
-/* Mobile: 2x2 grid for cards */
-@media (min-width: 475px) {
-  .responsive-grid {
+/* Mobile 2x2 grid */
+@media (min-width: 480px) {
+  .story-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
   }
 }
 
-/* Tablet: 2-3 columns */
+/* Tablet: 2 columns */
 @media (min-width: 768px) {
-  .responsive-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .story-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
 }
 
-/* Desktop: 3-4 columns */
+/* Desktop: 3 columns */
 @media (min-width: 1024px) {
-  .responsive-grid {
-    grid-template-columns: repeat(4, 1fr);
+  .story-grid {
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
 }
 
-/* Large screens: 4-5 columns */
-@media (min-width: 1280px) {
-  .responsive-grid {
-    grid-template-columns: repeat(5, 1fr);
+/* Large Desktop: 4 columns */
+@media (min-width: 1400px) {
+  .story-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* Extra large: 5-6 columns */
-@media (min-width: 1536px) {
-  .responsive-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
+/* ===== STORY CARD DESIGN ===== */
+
+.story-card {
+  @apply bg-white border border-border rounded-xl overflow-hidden transition-all duration-300;
+  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.08);
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
 }
 
-/* Professional Card System */
-.vine-card {
-  @apply transition-all duration-300 bg-card border border-border rounded-lg;
-  box-shadow: var(--shadow-card);
-  background: var(--gradient-card);
+.story-card:hover {
+  @apply transform -translate-y-1;
+  box-shadow: 0 8px 25px hsl(var(--shadow) / 0.15);
+  border-color: hsl(var(--primary) / 0.2);
 }
 
-.vine-card:hover {
-  box-shadow: var(--shadow-elevation);
-  transform: translateY(-2px);
+.story-cover {
+  @apply relative overflow-hidden;
+  aspect-ratio: 3/4; /* 3:4 aspect ratio */
+  background: hsl(var(--muted) / 0.3);
 }
 
-.vine-card-compact {
-  @apply vine-card p-3 sm:p-4;
+.story-cover img {
+  @apply w-full h-full object-cover transition-transform duration-300;
 }
 
-.vine-card-standard {
-  @apply vine-card p-4 sm:p-6;
+.story-card:hover .story-cover img {
+  @apply scale-105;
 }
 
-.vine-card-featured {
-  @apply vine-card p-6 sm:p-8;
-  box-shadow: var(--shadow-elevation);
+.story-content {
+  @apply p-4 space-y-3;
 }
 
-/* Typography Scale */
-.heading-xl {
-  @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold;
-  line-height: 1.1;
+.story-title {
+  @apply font-semibold text-base leading-tight line-clamp-2;
+  color: hsl(var(--foreground));
+  min-height: 2.5rem; /* Consistent height */
 }
 
-.heading-lg {
-  @apply text-2xl sm:text-3xl lg:text-4xl font-bold;
-  line-height: 1.2;
+.story-author {
+  @apply text-sm text-muted-foreground;
 }
 
-.heading-md {
-  @apply text-xl sm:text-2xl lg:text-3xl font-semibold;
-  line-height: 1.3;
+.story-genre {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
 }
 
-.heading-sm {
-  @apply text-lg sm:text-xl font-semibold;
-  line-height: 1.4;
+.story-stats {
+  @apply flex items-center justify-between text-xs text-muted-foreground;
 }
 
-.body-lg {
-  @apply text-base sm:text-lg;
-  line-height: 1.6;
+.story-stat {
+  @apply flex items-center space-x-1;
 }
 
-.body-md {
-  @apply text-sm sm:text-base;
-  line-height: 1.5;
+.story-actions {
+  @apply flex items-center space-x-2 pt-2;
 }
 
-/* Professional Button Variants */
-.btn-hero {
-  @apply bg-primary text-primary-foreground hover:opacity-90 rounded-lg px-6 py-3 font-medium;
-  background: var(--gradient-primary);
-  transition: var(--transition-smooth);
+.story-read-btn {
+  @apply flex-1 h-9 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium text-sm transition-colors;
   min-height: 44px; /* Touch-friendly */
 }
 
-.btn-hero:hover {
+.story-like-btn, .story-bookmark-btn {
+  @apply w-9 h-9 border border-border rounded-lg hover:bg-muted transition-colors flex items-center justify-center;
+}
+
+/* ===== TYPOGRAPHY SYSTEM ===== */
+
+.typography-display {
+  @apply text-4xl sm:text-5xl lg:text-6xl font-bold;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: hsl(var(--foreground));
+}
+
+.typography-h1 {
+  @apply text-3xl sm:text-4xl lg:text-5xl font-bold;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
+}
+
+.typography-h2 {
+  @apply text-2xl sm:text-3xl lg:text-4xl font-semibold;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: hsl(var(--foreground));
+}
+
+.typography-h3 {
+  @apply text-xl sm:text-2xl font-semibold;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+}
+
+.typography-body-lg {
+  @apply text-base sm:text-lg;
+  line-height: 1.6;
+  color: hsl(var(--foreground));
+}
+
+.typography-body {
+  @apply text-sm sm:text-base;
+  line-height: 1.5;
+  color: hsl(var(--foreground));
+}
+
+.typography-caption {
+  @apply text-xs sm:text-sm;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+}
+
+/* ===== INTERACTIVE ELEMENTS ===== */
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-3 font-medium;
+  background: var(--gradient-primary);
+  transition: var(--transition-smooth);
+  min-height: 44px; /* Touch-friendly */
+  box-shadow: 0 2px 4px hsl(var(--primary) / 0.2);
+}
+
+.btn-primary:hover {
   box-shadow: var(--shadow-glow);
   transform: translateY(-1px);
 }
 
-/* Additional mobile responsive utilities */
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border rounded-lg px-6 py-3 font-medium;
+  min-height: 44px;
+  transition: var(--transition-smooth);
+}
+
+.btn-ghost {
+  @apply hover:bg-muted rounded-lg px-6 py-3 font-medium;
+  min-height: 44px;
+  transition: var(--transition-smooth);
+}
+
+/* Focus States for Accessibility */
+.btn-primary:focus,
+.btn-secondary:focus,
+.btn-ghost:focus {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+/* ===== RESPONSIVE UTILITIES ===== */
+
+/* Mobile-First Breakpoints */
 @media (max-width: 479px) {
-  .xs\:text-xs {
-    font-size: 0.75rem;
-    line-height: 1rem;
+  .mobile-only {
+    display: block;
   }
   
-  .xs\:p-2 {
-    padding: 0.5rem;
+  .tablet-up {
+    display: none;
   }
   
-  .xs\:gap-2 {
-    gap: 0.5rem;
+  .desktop-up {
+    display: none;
   }
   
-  .xs\:grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+  /* Compact spacing on mobile */
+  .story-grid {
+    gap: 0.75rem;
+  }
+  
+  .content-container {
+    @apply p-4;
   }
 }
 
-@media (min-width: 480px) {
-  .xs\:inline {
-    display: inline;
+@media (min-width: 480px) and (max-width: 767px) {
+  .mobile-only {
+    display: none;
   }
   
-  .xs\:hidden {
+  .tablet-up {
+    display: block;
+  }
+  
+  .desktop-up {
     display: none;
   }
 }
 
-/* Ensure proper mobile touch targets */
-@media (max-width: 768px) {
-  button, .button, [role="button"] {
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .tablet-up {
+    display: block;
+  }
+  
+  .desktop-up {
+    display: block;
+  }
+  
+  .sidebar-nav {
+    display: flex;
+  }
+}
+
+/* Touch-Friendly Interactive Elements */
+@media (max-width: 1024px) {
+  button, .button, [role="button"], .interactive {
     min-height: 44px;
     min-width: 44px;
   }
   
-  .vine-card {
+  .story-card {
     padding: 0.75rem;
+  }
+  
+  .sidebar-item {
+    min-height: 48px;
+    padding: 0.75rem;
+  }
+}
+
+/* High-Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .story-card {
+    border-width: 2px;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    border-width: 2px;
   }
 }

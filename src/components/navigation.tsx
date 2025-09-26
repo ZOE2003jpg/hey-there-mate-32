@@ -25,26 +25,25 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
     : []
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="container-spacing">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3 flex-shrink-0 min-w-0">
+    <header className="app-header">
+      <div className="container-system">
+        <div className="header-content">
+          {/* Left: Logo */}
+          <div className="header-section header-logo">
             <button
               onClick={() => onPanelChange("home")}
-              className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-primary hover:opacity-90 transition-all duration-200 flex items-center justify-center shadow-lg"
+              className="h-12 w-12 rounded-xl bg-primary hover:bg-primary/90 transition-all duration-200 flex items-center justify-center shadow-lg"
             >
-              <span className="text-primary-foreground font-bold text-sm sm:text-base">VN</span>
+              <span className="text-primary-foreground font-bold text-base">VN</span>
             </button>
-            <div className="min-w-0 hidden sm:block">
+            <div className="hidden lg:block">
               <h1 className="text-xl font-bold text-primary">VineNovel</h1>
               <p className="text-xs text-muted-foreground">Visual Storytelling</p>
             </div>
           </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex flex-1 items-center justify-between">
-          <div className="flex items-center space-x-4 lg:space-x-6">
+          {/* Center: Navigation (Desktop) */}
+          <div className="header-nav">
             {navItems.map((item) => {
               const Icon = item.icon
               return (
@@ -52,95 +51,70 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   key={item.id}
                   variant={currentPanel === item.id ? "default" : "ghost"}
                   onClick={() => onPanelChange(item.id)}
-                  className="flex items-center space-x-2"
+                  className="h-12 px-4 flex items-center space-x-2 font-medium"
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="text-sm lg:text-base">{item.label}</span>
+                  <span>{item.label}</span>
                 </Button>
               )
             })}
-            
-            {/* Mode switching for admin users */}
-            {user?.profile?.role === 'admin' && (
-              <div className="flex items-center space-x-2 border-l pl-3 ml-2 lg:pl-4 lg:ml-3">
-                <span className="text-xs text-muted-foreground hidden lg:inline">Mode:</span>
-                <Button
-                  size="sm"
-                  variant={currentPanel === 'reader' ? "default" : "ghost"}
-                  onClick={() => onPanelChange('reader')}
-                  className="text-xs lg:text-sm"
-                >
-                  <BookOpen className="h-3 w-3 mr-1" />
-                  <span className="hidden lg:inline">Reader</span>
-                  <span className="lg:hidden">R</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant={currentPanel === 'writer' ? "default" : "ghost"}
-                  onClick={() => onPanelChange('writer')}
-                  className="text-xs lg:text-sm"
-                >
-                  <PenTool className="h-3 w-3 mr-1" />
-                  <span className="hidden lg:inline">Writer</span>
-                  <span className="lg:hidden">W</span>
-                </Button>
-              </div>
-            )}
           </div>
-          <div className="flex items-center space-x-2 lg:space-x-3">
-            {user?.profile && (
-              <>
-                <div className="flex items-center space-x-2 text-sm">
-                  <User className="h-4 w-4" />
-                  <span className="hidden lg:inline">{user.profile.display_name || user.profile.username || user.email}</span>
-                  <span className="text-muted-foreground text-xs lg:text-sm">({user.profile.role})</span>
-                </div>
-                <Button variant="ghost" size="sm" onClick={signOut} className="text-xs lg:text-sm">
-                  <LogOut className="h-4 w-4 mr-1" />
-                  <span className="hidden lg:inline">Logout</span>
-                </Button>
-              </>
-            )}
-            <ThemeToggle />
-          </div>
-        </div>
 
-        {/* Mobile Layout */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-3">
-          {user?.profile && (
-            <div className="flex items-center space-x-2 text-xs min-w-0">
-              <User className="h-4 w-4 flex-shrink-0 text-primary" />
-              <span className="font-medium text-foreground max-w-[80px] truncate">
-                {user.profile.display_name || user.profile.username}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center space-x-2">
-            {user && (
-              <Button variant="ghost" size="sm" onClick={signOut} className="h-10 px-3 text-xs flex-shrink-0">
-                <LogOut className="h-4 w-4" />
-                <span className="sr-only">Logout</span>
-              </Button>
-            )}
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="h-10 w-10 flex-shrink-0"
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
+          {/* Right: User Controls */}
+          <div className="header-section header-controls">
+            {/* Desktop User Info */}
+            <div className="hidden md:flex items-center space-x-3">
+              {user?.profile && (
+                <>
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-muted/50 rounded-lg">
+                    <User className="h-4 w-4 text-primary" />
+                    <div className="text-sm">
+                      <span className="font-medium">
+                        {user.profile.display_name || user.profile.username || "User"}
+                      </span>
+                      <span className="text-muted-foreground ml-2">
+                        ({user.profile.role})
+                      </span>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={signOut} className="h-10">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </>
               )}
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
+              <ThemeToggle />
+            </div>
+
+            {/* Mobile Controls */}
+            <div className="flex md:hidden items-center space-x-2">
+              {user?.profile && (
+                <div className="flex items-center space-x-2 px-2 py-1 bg-muted/30 rounded-lg">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium max-w-[100px] truncate">
+                    {user.profile.display_name || user.profile.username || "User"}
+                  </span>
+                </div>
+              )}
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="h-10 w-10"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* Mobile Menu */}
@@ -149,7 +123,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           id="mobile-menu"
           className="md:hidden border-t bg-background/98 backdrop-blur-xl animate-in slide-in-from-top-1 duration-200 shadow-xl"
         >
-          <div className="container-spacing py-6 space-y-4">
+          <div className="container-system py-6 space-y-4">
             <div className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon
@@ -161,7 +135,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                       onPanelChange(item.id)
                       setIsMobileMenuOpen(false)
                     }}
-                    className="w-full justify-start h-11 text-sm"
+                    className="w-full justify-start h-12 text-sm font-medium"
                   >
                     <Icon className="h-4 w-4 mr-3" />
                     <span>{item.label}</span>
@@ -169,52 +143,33 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 )
               })}
             </div>
-            
-            {/* Mode switching for admin users on mobile */}
-            {user?.profile?.role === 'admin' && (
-              <div className="border-t pt-3 mt-3">
-                <p className="text-xs text-muted-foreground mb-2 px-3 font-medium">Switch Mode:</p>
-                <div className="space-y-2">
-                  <Button
-                    variant={currentPanel === 'reader' ? "default" : "ghost"}
-                    onClick={() => {
-                      onPanelChange('reader')
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="w-full justify-start h-11 text-sm"
-                  >
-                    <BookOpen className="h-4 w-4 mr-3" />
-                    <span>Reader Mode</span>
-                  </Button>
-                  <Button
-                    variant={currentPanel === 'writer' ? "default" : "ghost"}
-                    onClick={() => {
-                      onPanelChange('writer')
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="w-full justify-start h-11 text-sm"
-                  >
-                    <PenTool className="h-4 w-4 mr-3" />
-                    <span>Writer Mode</span>
-                  </Button>
-                </div>
-              </div>
-            )}
 
-            {/* User info section for mobile */}
+            {/* User Actions for Mobile */}
             {user?.profile && (
-              <div className="border-t pt-3 mt-3">
-                <div className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg">
-                  <div className="flex items-center space-x-2 min-w-0">
-                    <User className="h-4 w-4 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{user.profile.display_name || user.profile.username || user.email}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{user.profile.role}</p>
+              <div className="border-t pt-4 mt-4">
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <User className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        {user.profile.display_name || user.profile.username || "User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {user.profile.role}
+                      </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={signOut} className="flex-shrink-0">
-                    <LogOut className="h-4 w-4" />
-                    <span className="sr-only">Logout</span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      signOut()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="h-10"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
                   </Button>
                 </div>
               </div>
@@ -222,6 +177,6 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           </div>
         </div>
       )}
-    </nav>
+    </header>
   )
 }
