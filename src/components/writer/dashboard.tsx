@@ -41,17 +41,19 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     followers: writerStats.total_followers
   }
 
-  // Get recent real-time activities
+  // Get recent real-time activities with auto-refresh data
   const getRecentActivities = () => {
     const activities = []
+    const now = new Date().toISOString()
     
-    // Add recent story stats
+    // Add recent story stats with real-time data
     if (stats.totalReads > 0) {
       activities.push({
         id: 1,
         message: `${stats.totalReads.toLocaleString()} total reads across your stories`,
-        time: "Updated now",
-        type: "reads"
+        time: new Date().toLocaleTimeString(),
+        type: "reads",
+        timestamp: now
       })
     }
     
@@ -59,8 +61,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       activities.push({
         id: 2,
         message: `${stats.totalLikes.toLocaleString()} likes received`,
-        time: "Updated now",
-        type: "likes"
+        time: new Date().toLocaleTimeString(),
+        type: "likes",
+        timestamp: now
       })
     }
     
@@ -68,8 +71,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       activities.push({
         id: 3,
         message: `$${stats.earnings.toFixed(2)} earned from your stories`,
-        time: "Updated now",
-        type: "earnings"
+        time: new Date().toLocaleTimeString(),
+        type: "earnings",
+        timestamp: now
       })
     }
     
@@ -78,12 +82,13 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       activities.push({
         id: 4,
         message: `${stats.totalStories} ${stats.totalStories === 1 ? 'story' : 'stories'} published`,
-        time: "Current",
-        type: "milestone"
+        time: new Date().toLocaleTimeString(),
+        type: "milestone",
+        timestamp: now
       })
     }
     
-    return activities.slice(0, 3) // Show only top 3
+    return activities.slice(0, 5) // Show top 5 activities
   }
   
   const recentNotifications = getRecentActivities()

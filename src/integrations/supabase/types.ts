@@ -577,6 +577,7 @@ export type Database = {
           genre: string | null
           id: string
           like_count: number | null
+          metadata: Json | null
           status: string | null
           title: string
           updated_at: string | null
@@ -591,6 +592,7 @@ export type Database = {
           genre?: string | null
           id?: string
           like_count?: number | null
+          metadata?: Json | null
           status?: string | null
           title: string
           updated_at?: string | null
@@ -605,6 +607,7 @@ export type Database = {
           genre?: string | null
           id?: string
           like_count?: number | null
+          metadata?: Json | null
           status?: string | null
           title?: string
           updated_at?: string | null

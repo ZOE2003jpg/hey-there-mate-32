@@ -52,16 +52,29 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showVolumeControls, setShowVolumeControls] = useState(false)
   const [allSlides, setAllSlides] = useState<any[]>([])
   const [currentChapter, setCurrentChapter] = useState<string | null>(null)
-  const [fontSize, setFontSize] = useState(16)
+  const [fontSize, setFontSize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return parseInt(localStorage.getItem('readerFontSize') || '16')
+    }
+    return 16
+  })
   const [fontFamily, setFontFamily] = useState('serif')
   const [chaptersList, setChaptersList] = useState<any[]>([])
   const [nextChapterId, setNextChapterId] = useState<string | null>(null)
   const [showSoundMenu, setShowSoundMenu] = useState(false)
   const [chapterAudio, setChapterAudio] = useState<HTMLAudioElement | null>(null)
   const [isAtChapterEnd, setIsAtChapterEnd] = useState(false)
-  const [audioVolume, setAudioVolume] = useState(0.5)
+  const [audioVolume, setAudioVolume] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return parseFloat(localStorage.getItem('readerVolume') || '0.5')
+    }
+    return 0.5
+  })
   const [showVolumeControl, setShowVolumeControl] = useState(false)
   const [isAudioPlaying, setIsAudioPlaying] = useState(false)
+  const [showControls, setShowControls] = useState(true)
+  const [controlsTimeoutId, setControlsTimeoutId] = useState<NodeJS.Timeout | null>(null)
+  const [startX, setStartX] = useState<number | null>(null)
   
   const { slides, loading } = useSlides(chapter?.id)
   const { trackProgress, reads, getReadingProgress } = useReads(user?.id)
@@ -443,6 +456,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     if (chapterAudio) {
       chapterAudio.volume = volume
     }
+    // Save to localStorage
+    localStorage.setItem('readerVolume', volume.toString())
   }
 
   const increaseVolume = () => {
@@ -483,6 +498,62 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     } else {
       setShowMenu(!showMenu) // Center 40% - toggle menu
     }
+    
+    // Show controls on interaction
+    showControlsTemporarily()
+  }
+
+  // Auto-hide controls functionality
+  const showControlsTemporarily = () => {
+    setShowControls(true)
+    if (controlsTimeoutId) {
+      clearTimeout(controlsTimeoutId)
+    }
+    const newTimeoutId = setTimeout(() => {
+      setShowControls(false)
+    }, 3000)
+    setControlsTimeoutId(newTimeoutId)
+  }
+
+  // Touch/swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartX(e.touches[0].clientX)
+    showControlsTemporarily()
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!startX) return
+    
+    const endX = e.changedTouches[0].clientX
+    const diff = startX - endX
+    const threshold = 50 // minimum distance for swipe
+    
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        nextSlide() // Swipe left - next slide
+      } else {
+        prevSlide() // Swipe right - previous slide
+      }
+    }
+    
+    setStartX(null)
+  }
+
+  // Font size handlers with persistence
+  const handleFontSizeChange = (delta: number) => {
+    const newSize = Math.max(12, Math.min(24, fontSize + delta))
+    setFontSize(newSize)
+    localStorage.setItem('readerFontSize', newSize.toString())
+  }
+
+  // Volume control handlers with smooth changes
+  const handleVolumeToggle = () => {
+    const newVolume = audioVolume > 0 ? 0 : 0.5
+    setAudioVolume(newVolume)
+    if (chapterAudio) {
+      chapterAudio.volume = newVolume
+    }
+    localStorage.setItem('readerVolume', newVolume.toString())
   }
 
   if (showAd) {
