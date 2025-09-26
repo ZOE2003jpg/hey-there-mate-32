@@ -25,20 +25,20 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
     : []
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 light:bg-background light:border-b-border dark:bg-background/95 dark:backdrop-blur-sm azure:bg-background/95 azure:backdrop-blur-sm border-b shadow-sm">
-      <div className="container mx-auto px-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="container-spacing">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3 flex-shrink-0 min-w-0">
             <button
               onClick={() => onPanelChange("home")}
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary flex items-center justify-center"
+              className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-primary hover:opacity-90 transition-all duration-200 flex items-center justify-center shadow-lg"
             >
-              <span className="text-primary-foreground font-bold text-xs sm:text-sm">VN</span>
+              <span className="text-primary-foreground font-bold text-sm sm:text-base">VN</span>
             </button>
-            <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-primary truncate">VineNovel</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Visual Storytelling Platform</p>
+            <div className="min-w-0 hidden sm:block">
+              <h1 className="text-xl font-bold text-primary">VineNovel</h1>
+              <p className="text-xs text-muted-foreground">Visual Storytelling</p>
             </div>
           </div>
 
@@ -106,35 +106,39 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
 
         {/* Mobile Layout */}
-        <div className="flex md:hidden flex-1 items-center justify-end space-x-2">
+        <div className="flex md:hidden flex-1 items-center justify-end space-x-3">
           {user?.profile && (
-            <div className="flex items-center space-x-2 text-xs min-w-0 max-w-[120px] sm:max-w-[160px]">
-              <User className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">{user.profile.display_name || user.profile.username || user.email}</span>
+            <div className="flex items-center space-x-2 text-xs min-w-0">
+              <User className="h-4 w-4 flex-shrink-0 text-primary" />
+              <span className="font-medium text-foreground max-w-[80px] truncate">
+                {user.profile.display_name || user.profile.username}
+              </span>
             </div>
           )}
-          {user && (
-            <Button variant="ghost" size="sm" onClick={signOut} className="h-9 px-3 text-xs flex-shrink-0">
-              <LogOut className="h-4 w-4" />
-              <span className="sr-only">Logout</span>
-            </Button>
-          )}
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="h-9 w-9 flex-shrink-0"
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-4 w-4" />
-            ) : (
-              <Menu className="h-4 w-4" />
+          <div className="flex items-center space-x-2">
+            {user && (
+              <Button variant="ghost" size="sm" onClick={signOut} className="h-10 px-3 text-xs flex-shrink-0">
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Logout</span>
+              </Button>
             )}
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="h-10 w-10 flex-shrink-0"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+          </div>
         </div>
       </div>
       </div>
@@ -143,9 +147,9 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden border-t bg-background/95 backdrop-blur-sm animate-in slide-in-from-top-1 duration-200 shadow-lg"
+          className="md:hidden border-t bg-background/98 backdrop-blur-xl animate-in slide-in-from-top-1 duration-200 shadow-xl"
         >
-          <div className="container py-4 px-3 sm:px-4 space-y-3">
+          <div className="container-spacing py-6 space-y-4">
             <div className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon

@@ -371,45 +371,34 @@
   overflow: hidden;
 }
 
-/* Responsive container utilities */
-.responsive-container {
-  width: 100%;
-  max-width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* Professional Layout System */
+.main-layout {
+  @apply min-h-screen bg-background;
+  padding-top: 4rem; /* Header height */
 }
 
-@media (min-width: 640px) {
-  .responsive-container {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
+.section-spacing {
+  @apply py-8 sm:py-12 lg:py-16 xl:py-20;
 }
 
-@media (min-width: 1024px) {
-  .responsive-container {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
+.container-spacing {
+  @apply px-4 sm:px-6 lg:px-8 xl:px-12;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Card responsive improvements */
-.vine-card {
-  @apply transition-all duration-300;
+.content-spacing {
+  @apply space-y-6 sm:space-y-8 lg:space-y-12;
 }
 
-.vine-card:hover {
-  @apply shadow-lg;
-  transform: translateY(-1px);
-}
-
-/* Mobile-first responsive grid */
+/* Professional Grid System */
 .responsive-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 1rem;
+  grid-template-columns: 1fr;
 }
 
+/* Mobile: 2x2 grid for cards */
 @media (min-width: 475px) {
   .responsive-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -417,6 +406,7 @@
   }
 }
 
+/* Tablet: 2-3 columns */
 @media (min-width: 768px) {
   .responsive-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -424,22 +414,95 @@
   }
 }
 
+/* Desktop: 3-4 columns */
 @media (min-width: 1024px) {
   .responsive-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
   }
 }
 
+/* Large screens: 4-5 columns */
 @media (min-width: 1280px) {
   .responsive-grid {
     grid-template-columns: repeat(5, 1fr);
   }
 }
 
+/* Extra large: 5-6 columns */
 @media (min-width: 1536px) {
   .responsive-grid {
     grid-template-columns: repeat(6, 1fr);
   }
+}
+
+/* Professional Card System */
+.vine-card {
+  @apply transition-all duration-300 bg-card border border-border rounded-lg;
+  box-shadow: var(--shadow-card);
+  background: var(--gradient-card);
+}
+
+.vine-card:hover {
+  box-shadow: var(--shadow-elevation);
+  transform: translateY(-2px);
+}
+
+.vine-card-compact {
+  @apply vine-card p-3 sm:p-4;
+}
+
+.vine-card-standard {
+  @apply vine-card p-4 sm:p-6;
+}
+
+.vine-card-featured {
+  @apply vine-card p-6 sm:p-8;
+  box-shadow: var(--shadow-elevation);
+}
+
+/* Typography Scale */
+.heading-xl {
+  @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold;
+  line-height: 1.1;
+}
+
+.heading-lg {
+  @apply text-2xl sm:text-3xl lg:text-4xl font-bold;
+  line-height: 1.2;
+}
+
+.heading-md {
+  @apply text-xl sm:text-2xl lg:text-3xl font-semibold;
+  line-height: 1.3;
+}
+
+.heading-sm {
+  @apply text-lg sm:text-xl font-semibold;
+  line-height: 1.4;
+}
+
+.body-lg {
+  @apply text-base sm:text-lg;
+  line-height: 1.6;
+}
+
+.body-md {
+  @apply text-sm sm:text-base;
+  line-height: 1.5;
+}
+
+/* Professional Button Variants */
+.btn-hero {
+  @apply bg-primary text-primary-foreground hover:opacity-90 rounded-lg px-6 py-3 font-medium;
+  background: var(--gradient-primary);
+  transition: var(--transition-smooth);
+  min-height: 44px; /* Touch-friendly */
+}
+
+.btn-hero:hover {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
 }
 
 /* Additional mobile responsive utilities */

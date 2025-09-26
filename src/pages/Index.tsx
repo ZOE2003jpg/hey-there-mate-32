@@ -121,7 +121,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation currentPanel={currentPanel} onPanelChange={setCurrentPanel} />
-      {renderPanel()}
+      <div className="relative">
+        {renderPanel()}
+      </div>
     </div>
   )
 };
