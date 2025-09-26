@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { 
   BookOpen, 
   Eye, 
@@ -32,33 +30,31 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
         {story.cover_image_url ? (
           <img 
             src={story.cover_image_url} 
-            alt={story.title} 
+            alt={`Cover image for ${story.title}`} 
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-muted">
-            <BookOpen className="h-12 w-12 text-muted-foreground" />
+          <div className="w-full h-full flex items-center justify-center">
+            <BookOpen className="h-8 w-8 text-muted-foreground md:h-12 md:w-12" />
           </div>
         )}
       </div>
       
       {/* Story Content */}
       <div className="story-content">
-        <div className="space-y-2">
+        <div className="flex-1 space-y-1">
           {story.genre && (
-            <Badge variant="secondary" className="story-genre">
+            <div className="story-genre">
               {story.genre}
-            </Badge>
+            </div>
           )}
           <h3 className="story-title">{story.title}</h3>
           {story.author && (
             <p className="story-author">by {story.author}</p>
           )}
-        </div>
-        
-        {/* Story Stats */}
-        <div className="story-stats">
-          <div className="flex items-center space-x-4">
+          
+          {/* Story Stats */}
+          <div className="story-stats">
             <div className="story-stat">
               <Eye className="h-3 w-3" />
               <span>{story.view_count || 0}</span>
@@ -72,29 +68,25 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
         
         {/* Story Actions */}
         <div className="story-actions">
-          <Button 
+          <button 
             className="story-read-btn"
             onClick={onRead}
           >
-            <Play className="h-4 w-4 mr-2" />
-            Read Story
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
+            <Play className="h-3 w-3 mr-1 md:h-4 md:w-4 md:mr-2" />
+            <span className="text-xs md:text-sm">Read</span>
+          </button>
+          <button 
             className="story-like-btn"
             onClick={onLike}
           >
-            <Heart className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
+            <Heart className="h-3 w-3 md:h-4 md:w-4" />
+          </button>
+          <button 
             className="story-bookmark-btn"
             onClick={onBookmark}
           >
-            <Bookmark className="h-4 w-4" />
-          </Button>
+            <Bookmark className="h-3 w-3 md:h-4 md:w-4" />
+          </button>
         </div>
       </div>
     </article>

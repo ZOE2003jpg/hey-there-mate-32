@@ -584,6 +584,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.25rem; /* Smaller padding for mobile */
+  border-radius: 8px 8px 0 0; /* Round only top corners */
 }
 
 .story-cover img {
@@ -617,7 +618,7 @@
 }
 
 .story-stats {
-  @apply flex items-center justify-between text-xs text-muted-foreground;
+  @apply flex items-center space-x-3 text-xs text-muted-foreground mt-1;
 }
 
 .story-stat {
