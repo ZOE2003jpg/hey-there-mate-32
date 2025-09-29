@@ -34,14 +34,24 @@ export function useStories() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchStories = async () => {
+  const fetchStories = async (userStoriesOnly = false) => {
     try {
       setLoading(true)
-      // Fetch stories and their authors separately to avoid join issues
-      const { data: storiesData, error: storiesError } = await supabase
-        .from('stories')
-        .select('*')
-        .eq('status', 'published')
+      
+      // Get current user for filtering
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      let query = supabase.from('stories').select('*')
+      
+      if (userStoriesOnly && user) {
+        // For manage stories - fetch all user's stories regardless of status
+        query = query.eq('author_id', user.id)
+      } else {
+        // For public discovery - only published stories
+        query = query.eq('status', 'published')
+      }
+      
+      const { data: storiesData, error: storiesError } = await query
         .order('created_at', { ascending: false })
 
       if (storiesError) throw storiesError
@@ -153,6 +163,7 @@ export function useStories() {
     loading,
     error,
     fetchStories,
+    fetchUserStories: () => fetchStories(true),
     createStory,
     updateStory,
     deleteStory

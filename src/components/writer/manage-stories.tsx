@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -43,11 +43,16 @@ interface ManageStoriesProps {
 
 export function ManageStories({ onNavigate }: ManageStoriesProps) {
   const { user } = useUser()
-  const { stories, loading, deleteStory, updateStory } = useStories()
+  const { stories, loading, deleteStory, updateStory, fetchUserStories } = useStories()
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [storyToDelete, setStoryToDelete] = useState<string | null>(null)
+
+  // Fetch user's stories (including drafts) when component mounts
+  useEffect(() => {
+    fetchUserStories()
+  }, [])
 
   const userStories = stories.filter(story => story.author_id === user?.id)
 
