@@ -31,6 +31,7 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
   })
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null)
   const [newTag, setNewTag] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   const genres = [
     "Romance", "Fantasy", "Mystery", "Sci-Fi", "Horror", "Drama", 
@@ -60,6 +61,7 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
       return
     }
 
+    setSubmitting(true)
     try {
       let coverImageUrl = null
       
@@ -103,6 +105,8 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
     } catch (error) {
       console.error('Create story error:', error)
       toast.error(error instanceof Error ? error.message : "Failed to create story")
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -315,11 +319,11 @@ export function CreateStoryModal({ children, onStoryCreated }: CreateStoryModalP
             <div className="flex flex-col gap-2">
               <Button 
                 onClick={handleSubmit}
-                disabled={loading || !formData.title.trim()}
+                disabled={submitting || !formData.title.trim()}
                 className="vine-button-hero text-sm sm:text-base"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
-                {loading ? "Creating..." : "Create Story"}
+                {submitting ? "Creating..." : "Create Story"}
               </Button>
               <Button variant="outline" onClick={() => setOpen(false)} className="text-sm sm:text-base">
                 Cancel

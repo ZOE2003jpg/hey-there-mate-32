@@ -26,6 +26,7 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
     tags: [] as string[],
     coverImage: null as File | null
   })
+  const [submitting, setSubmitting] = useState(false)
   const [newTag, setNewTag] = useState("")
 
   const genres = [
@@ -44,6 +45,7 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
       return
     }
 
+    setSubmitting(true)
     try {
       const newStory = await createStory({
         title: formData.title.trim(),
@@ -59,6 +61,8 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
     } catch (error) {
       console.error('Create story error:', error)
       toast.error(error instanceof Error ? error.message : "Failed to create story")
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -253,18 +257,18 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
               variant="outline" 
               className="w-full" 
               onClick={handleSubmit}
-              disabled={loading || !formData.title.trim()}
+              disabled={submitting || !formData.title.trim()}
             >
               <Save className="h-4 w-4 mr-2" />
-              {loading ? "Creating..." : "Save as Draft"}
+              {submitting ? "Creating..." : "Save as Draft"}
             </Button>
             <Button 
               className="w-full vine-button-hero"
               onClick={handleSubmit}
-              disabled={loading || !formData.title.trim()}
+              disabled={submitting || !formData.title.trim()}
             >
               <BookOpen className="h-4 w-4 mr-2" />
-              {loading ? "Creating..." : "Create & Start Writing"}
+              {submitting ? "Creating..." : "Create & Start Writing"}
             </Button>
           </div>
         </div>
