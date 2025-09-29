@@ -291,6 +291,35 @@ export function AddChapter({ onNavigate, editData }: AddChapterProps) {
                   Re-split (500 words)
                 </Button>
               </div>
+              {/* Primary actions (visible here for easy access on all screens) */}
+              <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleSaveChapter(false)}
+                  disabled={loading || !chapterData.title.trim() || !chapterData.content.trim() || !chapterData.storyId}
+                  className="text-sm"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {loading ? "Saving..." : "Save Draft"}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handlePreviewReader}
+                  disabled={!chapterData.content.trim()}
+                  className="text-sm"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview Reader Mode
+                </Button>
+                <Button 
+                  className="vine-button-hero text-sm"
+                  onClick={() => handleSaveChapter(true)}
+                  disabled={loading || !chapterData.title.trim() || !chapterData.content.trim() || !chapterData.storyId}
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  {loading ? "Publishing..." : "Publish Chapter"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
