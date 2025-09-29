@@ -36,9 +36,9 @@ export function WriterMobileNav({ currentPage, onNavigate }: WriterMobileNavProp
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background/95 backdrop-blur-sm border-r shadow-lg">
+      <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background border-r shadow-lg z-50">
         <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-6 border-b flex justify-between items-center bg-card/50">
+          <div className="p-4 sm:p-6 border-b flex justify-between items-center bg-card">
             <div className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
               <h2 className="text-base sm:text-lg font-semibold">Writer Menu</h2>
@@ -60,7 +60,7 @@ export function WriterMobileNav({ currentPage, onNavigate }: WriterMobileNavProp
               ))}
             </div>
           </nav>
-          <div className="p-3 sm:p-4 border-t bg-card/30">
+          <div className="p-3 sm:p-4 border-t bg-card">
             <p className="text-xs text-muted-foreground text-center">Writer Panel Navigation</p>
           </div>
         </div>

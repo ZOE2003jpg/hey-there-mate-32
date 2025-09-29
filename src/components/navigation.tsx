@@ -167,12 +167,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200"
-          style={{
-            background: 'rgba(26, 26, 26, 0.95)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)'
-          }}
+          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200 bg-background"
         >
           <div className="container-system py-6 space-y-4 mobile-nav-content">
             <div className="space-y-2">
@@ -258,7 +253,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             {/* User Actions for Mobile */}
             {user?.profile && (
               <div className="border-t border-white/20 pt-4 mt-4">
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg backdrop-blur-sm">
+                <div className="flex items-center justify-between p-4 bg-card rounded-lg">
                   <div className="flex items-center space-x-3">
                     <User className="h-5 w-5 text-primary" />
                     <div>
