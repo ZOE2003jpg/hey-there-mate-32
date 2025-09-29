@@ -175,9 +175,9 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-base sm:text-lg line-clamp-1">{story.title}</h3>
-                         <p className="text-muted-foreground text-sm line-clamp-1">
-                           by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
-                         </p>
+                        <p className="text-muted-foreground text-sm line-clamp-1">
+                          by {story.profiles?.display_name || story.profiles?.username || "Anonymous"}
+                        </p>
                         <div className="flex items-center gap-2 sm:gap-4 mt-2 flex-wrap">
                           <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
                           <div className="flex items-center gap-1 text-xs">

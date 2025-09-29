@@ -72,76 +72,17 @@ export function useBackgroundSound() {
   }, [])
 
   const playSound = (sound: BackgroundSound) => {
-    if (audioRef.current && currentSound) {
-      // Fade out current sound
-      const currentAudio = audioRef.current
-      const fadeOut = setInterval(() => {
-        if (currentAudio.volume > 0.1) {
-          currentAudio.volume -= 0.1
-        } else {
-          currentAudio.volume = 0
-          currentAudio.pause()
-          clearInterval(fadeOut)
-          
-          // Start new sound with fade in
-          setCurrentSound(sound)
-          setTimeout(() => {
-            if (audioRef.current) {
-              audioRef.current.volume = 0
-              audioRef.current.play().then(() => {
-                const fadeIn = setInterval(() => {
-                  if (audioRef.current && audioRef.current.volume < volume - 0.1) {
-                    audioRef.current.volume += 0.1
-                  } else if (audioRef.current) {
-                    audioRef.current.volume = volume
-                    clearInterval(fadeIn)
-                  }
-                }, 100)
-              }).catch(err => console.error('Failed to play sound:', err))
-            }
-          }, 100)
-        }
-      }, 100)
-    } else {
-      setCurrentSound(sound)
-    }
+    setCurrentSound(sound)
     setIsPlaying(true)
   }
 
   const pauseSound = () => {
-    if (audioRef.current) {
-      const fadeOut = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume > 0.1) {
-          audioRef.current.volume -= 0.1
-        } else if (audioRef.current) {
-          audioRef.current.volume = 0
-          audioRef.current.pause()
-          clearInterval(fadeOut)
-          setIsPlaying(false)
-        }
-      }, 100)
-    } else {
-      setIsPlaying(false)
-    }
+    setIsPlaying(false)
   }
 
   const stopSound = () => {
-    if (audioRef.current) {
-      const fadeOut = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume > 0.1) {
-          audioRef.current.volume -= 0.1
-        } else if (audioRef.current) {
-          audioRef.current.volume = 0
-          audioRef.current.pause()
-          clearInterval(fadeOut)
-          setIsPlaying(false)
-          setCurrentSound(null)
-        }
-      }, 100)
-    } else {
-      setIsPlaying(false)
-      setCurrentSound(null)
-    }
+    setIsPlaying(false)
+    setCurrentSound(null)
   }
 
   const changeVolume = (newVolume: number) => {

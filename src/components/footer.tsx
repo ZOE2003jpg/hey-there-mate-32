@@ -39,28 +39,19 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => window.location.href = "/?panel=reader&page=discover"} 
-                    className="typography-body text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
+                  <a href="#discover" className="typography-body text-muted-foreground hover:text-primary transition-colors">
                     Discover
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => window.location.href = "/?panel=reader&page=featured"} 
-                    className="typography-body text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
+                  <a href="#featured" className="typography-body text-muted-foreground hover:text-primary transition-colors">
                     Featured
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => window.location.href = "/?panel=reader&page=trending"} 
-                    className="typography-body text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
+                  <a href="#trending" className="typography-body text-muted-foreground hover:text-primary transition-colors">
                     Trending
-                  </button>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -75,8 +66,13 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a href="mailto:olaoluhephzibah3@gmail.com" className="typography-body text-muted-foreground hover:text-primary transition-colors">
-                    Contact: olaoluhephzibah3@gmail.com
+                  <a href="#blog" className="typography-body text-muted-foreground hover:text-primary transition-colors">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="typography-body text-muted-foreground hover:text-primary transition-colors">
+                    Contact
                   </a>
                 </li>
               </ul>
@@ -97,14 +93,14 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/cookies" className="typography-body text-muted-foreground hover:text-primary transition-colors">
+                  <a href="#cookies" className="typography-body text-muted-foreground hover:text-primary transition-colors">
                     Cookie Policy
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link to="/dmca" className="typography-body text-muted-foreground hover:text-primary transition-colors">
+                  <a href="#dmca" className="typography-body text-muted-foreground hover:text-primary transition-colors">
                     DMCA
-                  </Link>
+                  </a>
                 </li>
               </ul>
             </div>

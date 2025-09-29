@@ -10,8 +10,6 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
-import Cookies from "./pages/Cookies";
-import DMCA from "./pages/DMCA";
 
 const queryClient = new QueryClient();
 
@@ -28,8 +26,6 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/dmca" element={<DMCA />} />
               <Route path="/discover" element={<Index />} />
               <Route path="/featured" element={<Index />} />
               <Route path="/trending" element={<Index />} />
