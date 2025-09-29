@@ -161,13 +161,18 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Navigation Overlay with Glassmorphism */}
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden border-t bg-background/98 backdrop-blur-xl animate-in slide-in-from-top-1 duration-200 shadow-xl"
+          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200"
+          style={{
+            background: 'rgba(26, 26, 26, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)'
+          }}
         >
-          <div className="container-system py-6 space-y-4">
+          <div className="container-system py-6 space-y-4 mobile-nav-content">
             <div className="space-y-2">
               {/* Public Navigation */}
               {publicNavItems.map((item) => {
@@ -177,7 +182,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                     <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start h-12 text-sm font-medium"
+                        className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10"
                       >
                         <Icon className="h-4 w-4 mr-3" />
                         <span>{item.label}</span>
@@ -193,7 +198,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                       item.action?.()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="w-full justify-start h-12 text-sm font-medium"
+                    className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10"
                   >
                     <Icon className="h-4 w-4 mr-3" />
                     <span>{item.label}</span>
@@ -203,7 +208,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               
               {/* About Link */}
               <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium">
+                <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10">
                   <Info className="h-4 w-4 mr-3" />
                   <span>About</span>
                 </Button>
@@ -215,12 +220,16 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 return (
                   <Button
                     key={item.id}
-                    variant={currentPanel === item.id ? "default" : "ghost"}
+                    variant="ghost"
                     onClick={() => {
                       onPanelChange(item.id)
                       setIsMobileMenuOpen(false)
                     }}
-                    className="w-full justify-start h-12 text-sm font-medium"
+                    className={`w-full justify-start h-12 text-sm font-medium mobile-nav-item ${
+                      currentPanel === item.id 
+                        ? 'mobile-nav-item active bg-primary/20 text-primary-foreground' 
+                        : 'text-white hover:bg-white/10'
+                    }`}
                   >
                     <Icon className="h-4 w-4 mr-3" />
                     <span>{item.label}</span>
@@ -229,15 +238,15 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               })}
 
               {/* Legal Links */}
-              <div className="border-t pt-4 space-y-2">
-                <p className="text-xs text-muted-foreground px-3 mb-2">Legal</p>
+              <div className="border-t border-white/20 pt-4 space-y-2">
+                <p className="text-xs text-white/60 px-3 mb-2">Legal</p>
                 <Link to="/privacy" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start h-10 text-sm">
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item text-white hover:bg-white/10">
                     Privacy Policy
                   </Button>
                 </Link>
                 <Link to="/terms" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start h-10 text-sm">
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item text-white hover:bg-white/10">
                     Terms & Conditions
                   </Button>
                 </Link>
@@ -246,15 +255,15 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
             {/* User Actions for Mobile */}
             {user?.profile && (
-              <div className="border-t pt-4 mt-4">
-                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="border-t border-white/20 pt-4 mt-4">
+                <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg backdrop-blur-sm">
                   <div className="flex items-center space-x-3">
                     <User className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm font-medium">
+                      <p className="text-sm font-medium text-white">
                         {user.profile.display_name || user.profile.username || "User"}
                       </p>
-                      <p className="text-xs text-muted-foreground capitalize">
+                      <p className="text-xs text-white/60 capitalize">
                         {user.profile.role}
                       </p>
                     </div>
@@ -266,7 +275,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                       signOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="h-10"
+                    className="h-10 bg-white/10 border-white/20 text-white hover:bg-white/20"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout

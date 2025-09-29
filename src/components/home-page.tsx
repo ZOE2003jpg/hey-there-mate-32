@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge"
 import { LoginModal } from "@/components/login-modal"
 import { useUser } from "@/components/user-context"
 import { useStories } from "@/hooks/useStories"
-import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { 
   BookOpen, 
@@ -13,8 +12,7 @@ import {
   Eye,
   Heart,
   Play,
-  TrendingUp,
-  Database
+  TrendingUp
 } from "lucide-react"
 import heroImage from "@/assets/hero-books.jpg"
 
@@ -26,8 +24,6 @@ export function HomePage({ onPanelChange }: HomePageProps) {
   const { user } = useUser()
   const { stories } = useStories()
   const [showLogin, setShowLogin] = useState(false)
-  const [creatingTestUsers, setCreatingTestUsers] = useState(false)
-  const { toast } = useToast()
 
   const handleGetStarted = () => {
     // Always allow access to reader panel for browsing
@@ -44,36 +40,6 @@ export function HomePage({ onPanelChange }: HomePageProps) {
       }
     } else {
       setShowLogin(true)
-    }
-  }
-
-  const createTestUsers = async () => {
-    setCreatingTestUsers(true)
-    try {
-      const { data, error } = await supabase.functions.invoke('create-test-users')
-      
-      if (error) {
-        console.error('Error creating test users:', error)
-        toast({
-          title: "Error",
-          description: "Failed to create test users. Check console for details.",
-          variant: "destructive"
-        })
-      } else {
-        toast({
-          title: "Success!",
-          description: "Test users created! You can now login with: testwriter@example.com, testreader@example.com, or testadmin@example.com (password: password123)"
-        })
-      }
-    } catch (err) {
-      console.error('Error:', err)
-      toast({
-        title: "Error", 
-        description: "Failed to create test users.",
-        variant: "destructive"
-      })
-    } finally {
-      setCreatingTestUsers(false)
     }
   }
 
@@ -111,20 +77,6 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                   </Button>
                 </div>
 
-                {/* Test Users Section */}
-                <div className="pt-6 border-t border-border">
-                  <p className="typography-caption mb-3">Need test accounts? Create them first:</p>
-                  <Button 
-                    variant="secondary" 
-                    onClick={createTestUsers}
-                    disabled={creatingTestUsers}
-                    size="sm"
-                    className="btn-ghost"
-                  >
-                    <Database className="h-4 w-4 mr-2" />
-                    {creatingTestUsers ? "Creating..." : "Create Test Users"}
-                  </Button>
-                </div>
               </div>
 
               <div className="relative">

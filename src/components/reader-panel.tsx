@@ -8,7 +8,6 @@ import { SearchPage } from "@/components/reader/search-page"
 import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
 import { PreviewReader } from "@/components/reader/preview-reader"
-import { MobileNav } from "@/components/mobile-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -19,7 +18,8 @@ import {
   Search, 
   Settings as SettingsIcon,
   Star,
-  TrendingUp
+  TrendingUp,
+  ArrowLeft
 } from "lucide-react"
 
 export function ReaderPanel() {
@@ -119,15 +119,21 @@ export function ReaderPanel() {
         </aside>
       )}
 
-      {/* Mobile Navigation */}
-      {isMobile && (
-        <div className="fixed top-20 left-4 z-40">
-          <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
-        </div>
-      )}
-
       {/* Main Content */}
       <main className="main-content">
+        {/* Back Button for Inner Pages */}
+        {currentPage !== "discover" && (
+          <div className="p-4 border-b border-border">
+            <button 
+              onClick={() => handleNavigate("discover")} 
+              className="back-button"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Discover</span>
+            </button>
+          </div>
+        )}
+        
         <div className="content-container">
           {renderPage()}
         </div>

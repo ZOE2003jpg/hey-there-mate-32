@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Footer } from "@/components/footer"
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container-system">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="container-system flex-1">
         <div className="content-container py-16">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
@@ -140,6 +141,7 @@ export default function Privacy() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

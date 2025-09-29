@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { Footer } from "@/components/footer"
 import { BookOpen, Users, Target, Heart } from "lucide-react"
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container-system">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="container-system flex-1">
         <div className="content-container py-16">
           {/* Hero Section */}
           <div className="text-center mb-16">
@@ -113,6 +114,7 @@ export default function About() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
