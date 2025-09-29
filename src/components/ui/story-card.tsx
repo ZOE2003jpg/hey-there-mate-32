@@ -23,15 +23,22 @@ interface StoryCardProps {
 }
 
 export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps) {
+  // Get author name from profiles or fallback to author field
+  const authorName = (story as any)?.profiles?.display_name || 
+                    (story as any)?.profiles?.username || 
+                    story.author || 
+                    'Anonymous'
+
   return (
-    <article className="story-card">
-      {/* Cover Image - 2:3 Aspect Ratio */}
-      <div className="story-cover">
+    <article className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex flex-col h-full">
+      {/* Cover Image Container - Fixed Aspect Ratio */}
+      <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
         {story.cover_image_url ? (
           <img 
             src={story.cover_image_url} 
             alt={`Cover image for ${story.title}`} 
             loading="lazy"
+            className="w-full h-full object-contain"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">
@@ -40,50 +47,52 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
         )}
       </div>
       
-      {/* Story Content */}
-      <div className="story-content">
+      {/* Story Content - Flex grow to fill space */}
+      <div className="p-4 flex-1 flex flex-col space-y-3">
         {/* Genre Pill */}
         {story.genre && (
-          <div className="story-genre">
+          <span className="inline-block px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full w-fit">
             {story.genre}
-          </div>
+          </span>
         )}
         
         {/* Title */}
-        <h3 className="story-title">{story.title}</h3>
+        <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+          {story.title}
+        </h3>
         
         {/* Author */}
-        {story.author && (
-          <p className="story-author">by {story.author}</p>
-        )}
+        <p className="text-xs text-muted-foreground">
+          by {authorName}
+        </p>
         
         {/* Story Stats Row */}
-        <div className="story-stats">
-          <div className="story-stat">
-            <Eye className="h-4 w-4" />
+        <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+          <div className="flex items-center space-x-1">
+            <Eye className="h-3 w-3" />
             <span>{story.view_count || 0}</span>
           </div>
-          <div className="story-stat">
-            <Heart className="h-4 w-4" />
+          <div className="flex items-center space-x-1">
+            <Heart className="h-3 w-3" />
             <span>{story.like_count || 0}</span>
           </div>
         </div>
         
-        {/* Action Buttons */}
-        <div className="story-actions">
+        {/* Action Buttons - Auto margin top to push to bottom */}
+        <div className="flex items-center space-x-2 mt-auto pt-2">
           <button 
-            className="story-read-btn"
+            className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-primary text-primary-foreground text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
             onClick={onRead}
           >
-            <Play className="h-4 w-4" />
+            <Play className="h-3 w-3" />
             <span>Read</span>
           </button>
           <button 
-            className="story-bookmark-btn"
+            className="flex items-center justify-center w-8 h-8 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
             onClick={onBookmark}
             title="Save to Library"
           >
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className="h-3 w-3" />
           </button>
         </div>
       </div>

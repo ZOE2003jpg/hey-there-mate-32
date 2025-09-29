@@ -37,10 +37,16 @@ export function useStories() {
   const fetchStories = async () => {
     try {
       setLoading(true)
-      // Simplified query without relationships to avoid the database error
       const { data, error } = await supabase
         .from('stories')
-        .select('*')
+        .select(`
+          *,
+          profiles:author_id (
+            display_name,
+            username
+          )
+        `)
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
 
       if (error) throw error

@@ -511,13 +511,24 @@
   }
 }
 
-/* Stories Grid System */
-.stories-grid {
-  @apply grid gap-6;
-  /* Mobile: 2 columns */
+/* Story Grid System */
+.story-grid {
+  @apply grid gap-4;
   grid-template-columns: repeat(2, 1fr);
-  
-  /* Tablet: 3 columns */
+}
+
+@media (min-width: 768px) {
+  .story-grid {
+    grid-template-columns: repeat(3, 1fr);
+    @apply gap-6;
+  }
+}
+
+@media (min-width: 1024px) {
+  .story-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }

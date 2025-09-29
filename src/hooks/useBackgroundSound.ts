@@ -11,7 +11,9 @@ export function useBackgroundSound() {
   const [currentSound, setCurrentSound] = useState<BackgroundSound | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(0.3)
+  const [isFading, setIsFading] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Default background sounds
   const defaultSounds: BackgroundSound[] = [
@@ -38,16 +40,17 @@ export function useBackgroundSound() {
   useEffect(() => {
     if (currentSound && audioRef.current) {
       audioRef.current.src = currentSound.url
-      audioRef.current.volume = volume
       audioRef.current.loop = true
       
       if (isPlaying) {
-        audioRef.current.play().catch(err => {
+        audioRef.current.play().then(() => {
+          if (audioRef.current) {
+            fadeIn(audioRef.current, volume)
+          }
+        }).catch(err => {
           console.error('Failed to play background sound:', err)
           setIsPlaying(false)
         })
-      } else {
-        audioRef.current.pause()
       }
     }
   }, [currentSound, isPlaying])
@@ -71,28 +74,88 @@ export function useBackgroundSound() {
     }
   }, [])
 
+  const fadeIn = async (audio: HTMLAudioElement, targetVolume: number) => {
+    setIsFading(true)
+    audio.volume = 0
+    const fadeStep = targetVolume / 20
+    
+    for (let i = 0; i <= 20; i++) {
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      fadeTimeoutRef.current = setTimeout(() => {
+        audio.volume = Math.min(fadeStep * i, targetVolume)
+        if (i === 20) setIsFading(false)
+      }, i * 50)
+    }
+  }
+
+  const fadeOut = async (audio: HTMLAudioElement) => {
+    setIsFading(true)
+    const currentVol = audio.volume
+    const fadeStep = currentVol / 20
+    
+    for (let i = 20; i >= 0; i--) {
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      fadeTimeoutRef.current = setTimeout(() => {
+        audio.volume = Math.max(fadeStep * i, 0)
+        if (i === 0) {
+          audio.pause()
+          setIsFading(false)
+        }
+      }, (20 - i) * 50)
+    }
+  }
+
   const playSound = (sound: BackgroundSound) => {
-    setCurrentSound(sound)
-    setIsPlaying(true)
+    if (audioRef.current && isPlaying) {
+      fadeOut(audioRef.current).then(() => {
+        setCurrentSound(sound)
+        setIsPlaying(true)
+      })
+    } else {
+      setCurrentSound(sound)
+      setIsPlaying(true)
+    }
   }
 
   const pauseSound = () => {
-    setIsPlaying(false)
+    if (audioRef.current && isPlaying) {
+      fadeOut(audioRef.current).then(() => {
+        setIsPlaying(false)
+      })
+    } else {
+      setIsPlaying(false)
+    }
   }
 
   const stopSound = () => {
-    setIsPlaying(false)
-    setCurrentSound(null)
+    if (audioRef.current && isPlaying) {
+      fadeOut(audioRef.current).then(() => {
+        setIsPlaying(false)
+        setCurrentSound(null)
+      })
+    } else {
+      setIsPlaying(false)
+      setCurrentSound(null)
+    }
   }
 
   const changeVolume = (newVolume: number) => {
     setVolume(Math.max(0, Math.min(1, newVolume)))
   }
 
+  useEffect(() => {
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current)
+      }
+    }
+  }, [])
+
   return {
     currentSound,
     isPlaying,
     volume,
+    isFading,
     defaultSounds,
     playSound,
     pauseSound,
