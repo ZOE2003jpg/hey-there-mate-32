@@ -57,7 +57,8 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
       // Navigate to manage chapters with the new story data
       onNavigate("manage-chapters", { story: newStory })
     } catch (error) {
-      toast.error("Failed to create story")
+      console.error('Create story error:', error)
+      toast.error(error instanceof Error ? error.message : "Failed to create story")
     }
   }
 
@@ -252,7 +253,7 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
               variant="outline" 
               className="w-full" 
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || !formData.title.trim()}
             >
               <Save className="h-4 w-4 mr-2" />
               {loading ? "Creating..." : "Save as Draft"}
@@ -260,7 +261,7 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
             <Button 
               className="w-full vine-button-hero"
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || !formData.title.trim()}
             >
               <BookOpen className="h-4 w-4 mr-2" />
               {loading ? "Creating..." : "Create & Start Writing"}
