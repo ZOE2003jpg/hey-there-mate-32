@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
 export interface Story {
@@ -33,10 +33,14 @@ export function useStories() {
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const requestIdRef = useRef(0)
 
   const fetchStories = async (userStoriesOnly = false) => {
+    const currentRequestId = ++requestIdRef.current
+    
     try {
       setLoading(true)
+      setError(null) // Clear any previous errors
       
       // Get current user for filtering
       const { data: { user } } = await supabase.auth.getUser()
@@ -56,6 +60,11 @@ export function useStories() {
 
       if (storiesError) throw storiesError
 
+      // Check if this is still the latest request before proceeding
+      if (currentRequestId !== requestIdRef.current) {
+        return // Ignore this response as a newer request has been made
+      }
+
       // Fetch author profiles for these stories
       const authorIds = storiesData?.map(story => story.author_id) || []
       const { data: profilesData, error: profilesError } = await supabase
@@ -64,6 +73,11 @@ export function useStories() {
         .in('user_id', authorIds)
 
       if (profilesError) console.warn('Error fetching profiles:', profilesError)
+
+      // Check again if this is still the latest request
+      if (currentRequestId !== requestIdRef.current) {
+        return // Ignore this response as a newer request has been made
+      }
 
       // Merge stories with their author profiles
       const storiesWithAuthors = storiesData?.map(story => {
@@ -155,14 +169,23 @@ export function useStories() {
   }
 
   const fetchAllStories = async () => {
+    const currentRequestId = ++requestIdRef.current
+    
     try {
       setLoading(true)
+      setError(null)
+      
       const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
         .select('*')
         .order('created_at', { ascending: false })
 
       if (storiesError) throw storiesError
+
+      // Check if this is still the latest request
+      if (currentRequestId !== requestIdRef.current) {
+        return // Ignore this response as a newer request has been made
+      }
 
       const authorIds = storiesData?.map(story => story.author_id) || []
       const { data: profilesData, error: profilesError } = await supabase
@@ -171,6 +194,11 @@ export function useStories() {
         .in('user_id', authorIds)
 
       if (profilesError) console.warn('Error fetching profiles:', profilesError)
+
+      // Check again if this is still the latest request
+      if (currentRequestId !== requestIdRef.current) {
+        return // Ignore this response as a newer request has been made
+      }
 
       const storiesWithAuthors = storiesData?.map(story => {
         const profile = profilesData?.find(p => p.user_id === story.author_id)
