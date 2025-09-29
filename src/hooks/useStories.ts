@@ -154,6 +154,40 @@ export function useStories() {
     }
   }
 
+  const fetchAllStories = async () => {
+    try {
+      setLoading(true)
+      const { data: storiesData, error: storiesError } = await supabase
+        .from('stories')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (storiesError) throw storiesError
+
+      const authorIds = storiesData?.map(story => story.author_id) || []
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, username')
+        .in('user_id', authorIds)
+
+      if (profilesError) console.warn('Error fetching profiles:', profilesError)
+
+      const storiesWithAuthors = storiesData?.map(story => {
+        const profile = profilesData?.find(p => p.user_id === story.author_id)
+        return {
+          ...story,
+          profiles: profile || null
+        }
+      }) || []
+
+      setStories(storiesWithAuthors as any)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch stories')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     fetchStories()
   }, [])
@@ -164,6 +198,7 @@ export function useStories() {
     error,
     fetchStories,
     fetchUserStories: () => fetchStories(true),
+    fetchAllStories,
     createStory,
     updateStory,
     deleteStory

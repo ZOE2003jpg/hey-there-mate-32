@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useStories } from "@/hooks/useStories"
-import { useUser } from "@/components/user-context"
+
 import { toast } from "sonner"
 import { CreateStoryModal } from "./create-story-modal"
 import { EditStoryModal } from "./edit-story-modal"
@@ -42,21 +42,18 @@ interface ManageStoriesProps {
 }
 
 export function ManageStories({ onNavigate }: ManageStoriesProps) {
-  const { user } = useUser()
-  const { stories, loading, deleteStory, updateStory, fetchUserStories } = useStories()
+  const { stories, loading, deleteStory, updateStory, fetchAllStories } = useStories()
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [storyToDelete, setStoryToDelete] = useState<string | null>(null)
 
-  // Fetch user's stories (including drafts) when component mounts
+  // Fetch all visible stories for all users (own drafts + everyone's published)
   useEffect(() => {
-    fetchUserStories()
+    fetchAllStories()
   }, [])
 
-  const userStories = stories.filter(story => story.author_id === user?.id)
-
-  const filteredStories = userStories.filter(story => {
+  const filteredStories = stories.filter(story => {
     const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter = filterStatus === "all" || story.status === filterStatus
     return matchesSearch && matchesFilter
