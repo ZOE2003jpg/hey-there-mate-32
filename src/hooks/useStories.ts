@@ -138,7 +138,7 @@ export function useStories() {
     }
   }
 
-  const updateStory = async (id: string, updates: Partial<Story>) => {
+  const updateStory = async (id: string, updates: Partial<Story>, refetchAll = false) => {
     try {
       const { error } = await supabase
         .from('stories')
@@ -146,14 +146,20 @@ export function useStories() {
         .eq('id', id)
 
       if (error) throw error
-      await fetchStories()
+      
+      // Refetch the appropriate data based on context
+      if (refetchAll) {
+        await fetchAllStories()
+      } else {
+        await fetchStories()
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update story')
       throw err
     }
   }
 
-  const deleteStory = async (id: string) => {
+  const deleteStory = async (id: string, refetchAll = false) => {
     try {
       const { error } = await supabase
         .from('stories')
@@ -161,7 +167,13 @@ export function useStories() {
         .eq('id', id)
 
       if (error) throw error
-      await fetchStories()
+      
+      // Refetch the appropriate data based on context
+      if (refetchAll) {
+        await fetchAllStories()
+      } else {
+        await fetchStories()
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete story')
       throw err

@@ -77,7 +77,7 @@ export function ManageStories({ onNavigate }: ManageStoriesProps) {
     if (!storyToDelete) return
     
     try {
-      await deleteStory(storyToDelete)
+      await deleteStory(storyToDelete, true) // Pass true to refetch all stories
       toast.success("Story deleted successfully")
     } catch (error) {
       toast.error("Failed to delete story")
