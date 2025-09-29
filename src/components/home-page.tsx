@@ -26,7 +26,7 @@ export function HomePage({ onPanelChange }: HomePageProps) {
   const [showLogin, setShowLogin] = useState(false)
 
   const handleGetStarted = () => {
-    // Always allow access to reader panel for browsing
+    // Redirect to Discover page in reader panel
     onPanelChange('reader')
   }
 
@@ -65,15 +65,6 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                   <Button size="lg" className="btn-primary" onClick={handleGetStarted}>
                     <Play className="h-5 w-5 mr-2" />
                     Start Reading
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    onClick={handleStartWriting} 
-                    className="btn-secondary"
-                  >
-                    <BookOpen className="h-5 w-5 mr-2" />
-                    Start Writing
                   </Button>
                 </div>
 

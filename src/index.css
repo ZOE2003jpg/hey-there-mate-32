@@ -653,9 +653,16 @@
 .story-cover img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Cover the entire area while maintaining aspect ratio */
+  object-fit: contain; /* Desktop: show full image without cropping */
   transition: transform 0.3s ease;
   border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Mobile: use cover for better visual appearance */
+@media (max-width: 767px) {
+  .story-cover img {
+    object-fit: cover;
+  }
 }
 
 .story-card:hover .story-cover img {
