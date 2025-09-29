@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { BackButton } from "@/components/back-button"
 import { Link } from "react-router-dom"
 
 export default function DMCA() {
@@ -9,6 +10,7 @@ export default function DMCA() {
       <main className="app-main">
         <div className="container-system">
           <div className="content-container py-12">
+            <BackButton />
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="text-center space-y-4">
                 <h1 className="text-4xl font-bold">DMCA Policy</h1>

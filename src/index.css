@@ -422,39 +422,30 @@
   }
 }
 
-/* Header Layout */
+/* Header Components */
+.app-header {
+  @apply sticky top-0 z-50 w-full border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60;
+  background: #1a1a1a;
+}
+
 .header-content {
-  @apply h-16 flex items-center justify-between;
-  padding: 0 1rem;
-}
-
-@media (min-width: 640px) {
-  .header-content {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .header-content {
-    padding: 0 2rem;
-  }
+  @apply flex h-16 items-center justify-between;
 }
 
 .header-section {
-  @apply flex items-center;
-  height: 100%;
+  @apply flex items-center space-x-3;
 }
 
 .header-logo {
-  @apply flex items-center space-x-3 flex-shrink-0;
+  @apply flex-shrink-0;
 }
 
 .header-nav {
-  @apply hidden md:flex items-center space-x-6 flex-1 justify-center;
+  @apply hidden md:flex items-center space-x-1;
 }
 
 .header-controls {
-  @apply flex items-center space-x-3;
+  @apply flex-shrink-0;
 }
 
 /* Sidebar Navigation */
@@ -511,22 +502,26 @@
   }
 }
 
-/* Story Grid System */
+/* Story Card Grid */
 .story-grid {
   @apply grid gap-4;
+  
+  /* Mobile: 2x2 grid */
   grid-template-columns: repeat(2, 1fr);
-}
-
-@media (min-width: 768px) {
-  .story-grid {
+  
+  /* Tablet: 3 columns */
+  @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
-    @apply gap-6;
+    gap: 1.5rem;
   }
-}
-
-@media (min-width: 1024px) {
-  .story-grid {
+  
+  /* Desktop: 4+ columns */
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
+  }
+  
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 

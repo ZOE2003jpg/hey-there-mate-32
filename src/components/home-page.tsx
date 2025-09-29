@@ -69,11 +69,11 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    onClick={handleStartWriting} 
+                    onClick={() => onPanelChange("reader")} 
                     className="btn-secondary"
                   >
                     <BookOpen className="h-5 w-5 mr-2" />
-                    Start Writing
+                    Start Reading
                   </Button>
                 </div>
 

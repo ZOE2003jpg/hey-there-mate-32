@@ -31,8 +31,8 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
 
   return (
     <article className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex flex-col h-full">
-      {/* Cover Image Container - Fixed Aspect Ratio */}
-      <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+      {/* Cover Image Container - Square Aspect Ratio */}
+      <div className="relative aspect-square w-full overflow-hidden bg-muted">
         {story.cover_image_url ? (
           <img 
             src={story.cover_image_url} 
@@ -48,26 +48,26 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
       </div>
       
       {/* Story Content - Flex grow to fill space */}
-      <div className="p-4 flex-1 flex flex-col space-y-3">
+      <div className="p-3 flex-1 flex flex-col space-y-2 text-center">
         {/* Genre Pill */}
         {story.genre && (
-          <span className="inline-block px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full w-fit">
+          <span className="inline-block px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full w-fit mx-auto">
             {story.genre}
           </span>
         )}
         
         {/* Title */}
-        <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
           {story.title}
         </h3>
         
         {/* Author */}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground break-words">
           by {authorName}
         </p>
         
         {/* Story Stats Row */}
-        <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+        <div className="flex items-center justify-center space-x-3 text-xs text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Eye className="h-3 w-3" />
             <span>{story.view_count || 0}</span>
@@ -79,16 +79,16 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
         </div>
         
         {/* Action Buttons - Auto margin top to push to bottom */}
-        <div className="flex items-center space-x-2 mt-auto pt-2">
+        <div className="flex items-center space-x-1 mt-auto pt-2">
           <button 
-            className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-primary text-primary-foreground text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
+            className="flex-1 flex items-center justify-center space-x-1 px-2 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
             onClick={onRead}
           >
             <Play className="h-3 w-3" />
             <span>Read</span>
           </button>
           <button 
-            className="flex items-center justify-center w-8 h-8 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+            className="flex items-center justify-center w-7 h-7 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
             onClick={onBookmark}
             title="Save to Library"
           >

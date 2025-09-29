@@ -56,13 +56,13 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               if (item.path) {
                 return (
                   <Link key={item.id} to={item.path}>
-                    <Button
-                      variant="ghost"
-                      className="h-12 px-4 flex items-center space-x-2 font-medium"
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                    </Button>
+                <Button
+                  variant="ghost"
+                  className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </Button>
                   </Link>
                 )
               }
@@ -71,7 +71,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   key={item.id}
                   variant="ghost"
                   onClick={item.action}
-                  className="h-12 px-4 flex items-center space-x-2 font-medium"
+                  className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10"
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
@@ -81,7 +81,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             
             {/* About Link */}
             <Link to="/about">
-              <Button variant="ghost" className="h-12 px-4 flex items-center space-x-2 font-medium">
+              <Button variant="ghost" className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10">
                 <Info className="h-4 w-4" />
                 <span>About</span>
               </Button>
@@ -95,7 +95,9 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   key={item.id}
                   variant={currentPanel === item.id ? "default" : "ghost"}
                   onClick={() => onPanelChange(item.id)}
-                  className="h-12 px-4 flex items-center space-x-2 font-medium"
+                  className={`h-12 px-4 flex items-center space-x-2 font-medium ${
+                    currentPanel === item.id ? "" : "text-white hover:bg-white/10"
+                  }`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>

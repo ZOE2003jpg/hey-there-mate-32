@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { BackButton } from "@/components/back-button"
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container-system">
         <div className="content-container py-16">
+          <BackButton />
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">

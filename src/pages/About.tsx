@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Footer } from "@/components/footer"
+import { BackButton } from "@/components/back-button"
 import { BookOpen, Users, Target, Heart } from "lucide-react"
 
 export default function About() {
@@ -7,6 +8,7 @@ export default function About() {
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container-system flex-1">
         <div className="content-container py-16">
+          <BackButton />
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="typography-display mb-6">About VineNovel</h1>
@@ -106,7 +108,7 @@ export default function About() {
                     href="/" 
                     className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium"
                   >
-                    Start Writing
+                    Start Reading
                   </a>
                 </div>
               </CardContent>

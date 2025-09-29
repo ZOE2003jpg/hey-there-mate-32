@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { BackButton } from "@/components/back-button"
 import { Footer } from "@/components/footer"
 
 export default function Privacy() {
@@ -6,6 +7,7 @@ export default function Privacy() {
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container-system flex-1">
         <div className="content-container py-16">
+          <BackButton />
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
