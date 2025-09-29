@@ -5,6 +5,7 @@ import { WriterPanel } from "@/components/writer-panel"
 import { ReaderPanel } from "@/components/reader-panel"
 import { AdminPanel } from "@/components/admin-panel"
 import { SplashScreen } from "@/components/splash-screen"
+import { Footer } from "@/components/footer"
 import { useUser } from "@/components/user-context"
 
 const Index = () => {
@@ -17,30 +18,11 @@ const Index = () => {
     setShowSplash(false)
   }
 
-  // Redirect to appropriate panel based on user role after login
+  // Handle panel access with optional login
   useEffect(() => {
     if (loading) return
 
-    if (!user && currentPanel !== "home") {
-      setCurrentPanel("home")
-      return
-    }
-
-    if (user?.profile) {
-      // Auto-redirect to appropriate panel based on role
-      const userRole = user.profile.role
-      if (userRole === "reader" && currentPanel !== "reader") {
-        setCurrentPanel("reader")
-        return
-      } else if (userRole === "writer" && currentPanel !== "writer") {
-        setCurrentPanel("writer")
-        return
-      } else if (userRole === "admin" && currentPanel === "home") {
-        setCurrentPanel("admin")
-        return
-      }
-    }
-
+    // Only check access for protected panels when user is trying to access them
     if (user?.profile && currentPanel !== "home") {
       const userRole = user.profile.role
       const hasAccess = 
@@ -49,7 +31,7 @@ const Index = () => {
         (currentPanel === "admin" && userRole === "admin")
       
       if (!hasAccess) {
-        // Redirect to appropriate panel based on role instead of home
+        // Redirect to appropriate panel based on role
         if (userRole === "reader") {
           setCurrentPanel("reader")
         } else if (userRole === "writer") {
@@ -75,8 +57,13 @@ const Index = () => {
       )
     }
 
-    // Additional security check
-    if (!user && currentPanel !== "home") {
+    // Allow browsing without login, show reader panel for discovery
+    if (!user && (currentPanel === "reader" || currentPanel === "writer" || currentPanel === "admin")) {
+      // For reader panel, allow browsing without login
+      if (currentPanel === "reader") {
+        return <ReaderPanel />
+      }
+      // For writer/admin panels, redirect to home if not logged in
       return <HomePage onPanelChange={setCurrentPanel} />
     }
 
@@ -124,6 +111,7 @@ const Index = () => {
       <main className="app-main">
         {renderPanel()}
       </main>
+      <Footer />
     </div>
   )
 };

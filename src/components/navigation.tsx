@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { PenTool, BookOpen, Shield, Menu, X, LogOut, User } from "lucide-react"
+import { PenTool, BookOpen, Shield, Menu, X, LogOut, User, Compass, TrendingUp, Star, Library, Info } from "lucide-react"
 import { useUser } from "@/components/user-context"
+import { Link } from "react-router-dom"
 
 interface NavigationProps {
   currentPanel: "home" | "writer" | "reader" | "admin"
@@ -13,16 +14,20 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { user, signOut } = useUser()
 
-  // Filter nav items based on user role
-  const allNavItems = [
+  // Public navigation items (always visible)
+  const publicNavItems = [
+    { id: "discover", label: "Discover", icon: Compass, action: () => onPanelChange("reader") },
+    { id: "featured", label: "Featured", icon: Star, action: () => onPanelChange("reader") },
+    { id: "trending", label: "Trending", icon: TrendingUp, action: () => onPanelChange("reader") },
+    { id: "library", label: "Library", icon: Library, action: () => onPanelChange("reader") },
+  ]
+
+  // User panel items (only visible when logged in)
+  const userPanelItems = user?.profile ? [
     { id: "reader" as const, label: "Reader Panel", icon: BookOpen, roles: ["reader", "admin"] },
     { id: "writer" as const, label: "Writer Panel", icon: PenTool, roles: ["writer", "admin"] },
     { id: "admin" as const, label: "Admin Panel", icon: Shield, roles: ["admin"] },
-  ]
-
-  const navItems = user?.profile 
-    ? allNavItems.filter(item => item.roles.includes(user.profile!.role))
-    : []
+  ].filter(item => item.roles.includes(user.profile!.role)) : []
 
   return (
     <header className="app-header">
@@ -44,7 +49,32 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
           {/* Center: Navigation (Desktop) */}
           <div className="header-nav">
-            {navItems.map((item) => {
+            {/* Public Navigation */}
+            {publicNavItems.map((item) => {
+              const Icon = item.icon
+              return (
+                <Button
+                  key={item.id}
+                  variant="ghost"
+                  onClick={item.action}
+                  className="h-12 px-4 flex items-center space-x-2 font-medium"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </Button>
+              )
+            })}
+            
+            {/* About Link */}
+            <Link to="/about">
+              <Button variant="ghost" className="h-12 px-4 flex items-center space-x-2 font-medium">
+                <Info className="h-4 w-4" />
+                <span>About</span>
+              </Button>
+            </Link>
+
+            {/* User Panel Items (when logged in) */}
+            {userPanelItems.map((item) => {
               const Icon = item.icon
               return (
                 <Button
@@ -125,7 +155,35 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         >
           <div className="container-system py-6 space-y-4">
             <div className="space-y-2">
-              {navItems.map((item) => {
+              {/* Public Navigation */}
+              {publicNavItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Button
+                    key={item.id}
+                    variant="ghost"
+                    onClick={() => {
+                      item.action()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="w-full justify-start h-12 text-sm font-medium"
+                  >
+                    <Icon className="h-4 w-4 mr-3" />
+                    <span>{item.label}</span>
+                  </Button>
+                )
+              })}
+              
+              {/* About Link */}
+              <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium">
+                  <Info className="h-4 w-4 mr-3" />
+                  <span>About</span>
+                </Button>
+              </Link>
+
+              {/* User Panel Items (when logged in) */}
+              {userPanelItems.map((item) => {
                 const Icon = item.icon
                 return (
                   <Button
@@ -142,6 +200,21 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   </Button>
                 )
               })}
+
+              {/* Legal Links */}
+              <div className="border-t pt-4 space-y-2">
+                <p className="text-xs text-muted-foreground px-3 mb-2">Legal</p>
+                <Link to="/privacy" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm">
+                    Privacy Policy
+                  </Button>
+                </Link>
+                <Link to="/terms" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm">
+                    Terms & Conditions
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* User Actions for Mobile */}

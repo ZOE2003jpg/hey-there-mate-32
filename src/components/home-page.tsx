@@ -30,17 +30,17 @@ export function HomePage({ onPanelChange }: HomePageProps) {
   const { toast } = useToast()
 
   const handleGetStarted = () => {
+    // Always allow access to reader panel for browsing
+    onPanelChange('reader')
+  }
+
+  const handleStartWriting = () => {
     if (user) {
-      // Redirect to appropriate panel based on user role
       const userRole = user.profile?.role
-      if (userRole === "reader") {
-        onPanelChange('reader')
-      } else if (userRole === "writer") {
+      if (userRole === "writer" || userRole === "admin") {
         onPanelChange('writer')
-      } else if (userRole === "admin") {
-        onPanelChange('admin')
       } else {
-        onPanelChange('reader') // default to reader
+        onPanelChange('reader')
       }
     } else {
       setShowLogin(true)
@@ -103,7 +103,7 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    onClick={() => user ? onPanelChange('writer') : setShowLogin(true)} 
+                    onClick={handleStartWriting} 
                     className="btn-secondary"
                   >
                     <BookOpen className="h-5 w-5 mr-2" />
@@ -200,14 +200,27 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                       
                       {/* Story Actions */}
                       <div className="story-actions">
-                        <Button className="story-read-btn">
+                        <Button 
+                          className="story-read-btn"
+                          onClick={() => onPanelChange('reader')}
+                        >
                           <Play className="h-4 w-4 mr-2" />
                           Read Story
                         </Button>
-                        <Button variant="outline" size="icon" className="story-like-btn">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="story-like-btn"
+                          onClick={() => user ? null : setShowLogin(true)}
+                        >
                           <Heart className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" className="story-bookmark-btn">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="story-bookmark-btn"
+                          onClick={() => user ? null : setShowLogin(true)}
+                        >
                           <BookOpen className="h-4 w-4" />
                         </Button>
                       </div>
