@@ -23,6 +23,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/terms" element={<Terms />} />
           <Route path="/cookies" element={<Cookies />} />
           <Route path="/dmca" element={<DMCA />} />
+          <Route path="/writer/login" element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
