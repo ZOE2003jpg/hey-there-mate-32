@@ -37,20 +37,34 @@ export function useStories() {
   const fetchStories = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      // Fetch stories and their authors separately to avoid join issues
+      const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
-        .select(`
-          *,
-          profiles:author_id (
-            display_name,
-            username
-          )
-        `)
+        .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
-      setStories((data || []) as any)
+      if (storiesError) throw storiesError
+
+      // Fetch author profiles for these stories
+      const authorIds = storiesData?.map(story => story.author_id) || []
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, username')
+        .in('user_id', authorIds)
+
+      if (profilesError) console.warn('Error fetching profiles:', profilesError)
+
+      // Merge stories with their author profiles
+      const storiesWithAuthors = storiesData?.map(story => {
+        const profile = profilesData?.find(p => p.user_id === story.author_id)
+        return {
+          ...story,
+          profiles: profile || null
+        }
+      }) || []
+
+      setStories(storiesWithAuthors as any)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch stories')
     } finally {
