@@ -386,13 +386,14 @@
   background: hsl(var(--background) / 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid hsl(var(--border) / 0.8);
-  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.1);
+  box-shadow: 0 2px 8px hsl(var(--foreground) / 0.1);
 }
 
 .app-main {
   @apply flex-1;
   padding-top: 64px; /* Header height offset */
   display: flex;
+  flex-direction: column;
 }
 
 /* Container System with Max Widths */
@@ -510,12 +511,65 @@
   }
 }
 
-/* Story Grid System - Mobile First with 2x2 Grid */
-.story-grid {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(2, 1fr); /* Mobile: 2 columns */
-  padding: 0 0.5rem; /* Add container padding for mobile */
+/* Stories Grid System */
+.stories-grid {
+  @apply grid gap-6;
+  /* Mobile: 2 columns */
+  grid-template-columns: repeat(2, 1fr);
+  
+  /* Tablet: 3 columns */
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Desktop: 4 columns */
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  /* Large desktop: 5 columns */
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Page Layout Components */
+.page-header {
+  @apply bg-gradient-to-b from-background to-muted/20 border-b border-border;
+}
+
+.filters-section {
+  @apply py-6 border-b border-border bg-card/50;
+}
+
+.search-container {
+  @apply mb-6;
+}
+
+.filter-tabs {
+  @apply flex flex-wrap justify-center gap-2 mb-6;
+}
+
+.filter-tab {
+  @apply h-12 px-4 text-sm font-medium;
+  min-height: 44px;
+}
+
+.genre-filters {
+  @apply flex flex-wrap justify-center gap-2;
+}
+
+.genre-chip {
+  @apply h-10 px-4 text-sm;
+  min-height: 44px;
+}
+
+.stories-section {
+  @apply py-8;
+}
+
+.empty-state {
+  @apply py-16 text-center;
 }
 
 /* Small Mobile: Maintain 2x2 grid with tighter spacing */

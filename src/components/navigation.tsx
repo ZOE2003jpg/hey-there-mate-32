@@ -16,6 +16,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
   // Public navigation items (always visible)
   const publicNavItems = [
+    { id: "home", label: "Home", icon: Compass, path: "/" },
     { id: "discover", label: "Discover", icon: Compass, action: () => onPanelChange("reader") },
     { id: "featured", label: "Featured", icon: Star, action: () => onPanelChange("reader") },
     { id: "trending", label: "Trending", icon: TrendingUp, action: () => onPanelChange("reader") },
@@ -52,6 +53,19 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             {/* Public Navigation */}
             {publicNavItems.map((item) => {
               const Icon = item.icon
+              if (item.path) {
+                return (
+                  <Link key={item.id} to={item.path}>
+                    <Button
+                      variant="ghost"
+                      className="h-12 px-4 flex items-center space-x-2 font-medium"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Button>
+                  </Link>
+                )
+              }
               return (
                 <Button
                   key={item.id}
@@ -158,12 +172,25 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               {/* Public Navigation */}
               {publicNavItems.map((item) => {
                 const Icon = item.icon
+                if (item.path) {
+                  return (
+                    <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start h-12 text-sm font-medium"
+                      >
+                        <Icon className="h-4 w-4 mr-3" />
+                        <span>{item.label}</span>
+                      </Button>
+                    </Link>
+                  )
+                }
                 return (
                   <Button
                     key={item.id}
                     variant="ghost"
                     onClick={() => {
-                      item.action()
+                      item.action?.()
                       setIsMobileMenuOpen(false)
                     }}
                     className="w-full justify-start h-12 text-sm font-medium"

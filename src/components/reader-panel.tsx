@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { DiscoverPage } from "@/components/reader/discover-page"
+import { FeaturedPage } from "@/components/reader/featured-page"
+import { TrendingPage } from "@/components/reader/trending-page"
 import { SlideReader } from "@/components/reader/slide-reader"
 import { LibraryPage } from "@/components/reader/library-page"
 import { SearchPage } from "@/components/reader/search-page"
@@ -15,7 +17,9 @@ import {
   BookOpen, 
   Library, 
   Search, 
-  Settings as SettingsIcon 
+  Settings as SettingsIcon,
+  Star,
+  TrendingUp
 } from "lucide-react"
 
 export function ReaderPanel() {
@@ -32,6 +36,8 @@ export function ReaderPanel() {
 
   const navigationItems = [
     { id: "discover", label: "Discover", icon: Compass },
+    { id: "featured", label: "Featured", icon: Star },
+    { id: "trending", label: "Trending", icon: TrendingUp },
     { id: "library", label: "My Library", icon: Library },
     { id: "search", label: "Search", icon: Search },
     { id: "settings", label: "Settings", icon: SettingsIcon }
@@ -41,6 +47,10 @@ export function ReaderPanel() {
     switch (currentPage) {
       case "discover":
         return <DiscoverPage onNavigate={handleNavigate} />
+      case "featured":
+        return <FeaturedPage onNavigate={handleNavigate} />
+      case "trending":
+        return <TrendingPage onNavigate={handleNavigate} />
       case "details":
         return <StoryChapters story={currentStory} onNavigate={handleNavigate} />
       case "story-chapters":
