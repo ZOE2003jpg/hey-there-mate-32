@@ -6,6 +6,7 @@ import { LoginModal } from "@/components/login-modal"
 import { useUser } from "@/components/user-context"
 import { useStories } from "@/hooks/useStories"
 import { useToast } from "@/hooks/use-toast"
+import { StoryCard } from "@/components/ui/story-card"
 import { 
   BookOpen, 
   Play
@@ -105,39 +106,11 @@ export function HomePage({ onPanelChange }: HomePageProps) {
               {/* Story Grid */}
               <div className="story-grid">
                 {stories.slice(0, 8).map((story) => (
-                  <article key={story.id} className="story-card">
-                    {/* Cover Image */}
-                    <div className="story-cover">
-                      {story.cover_image_url ? (
-                        <img 
-                          src={story.cover_image_url} 
-                          alt={story.title} 
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted">
-                          <BookOpen className="h-12 w-12 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Story Content */}
-                    <div className="story-content">
-                      <div className="space-y-3">
-                        <span className="story-genre">{story.genre}</span>
-                        <h3 className="story-title">{story.title}</h3>
-                      </div>
-                      
-                      {/* Story Action */}
-                      <button 
-                        className="story-read-btn w-full mt-auto"
-                        onClick={() => onPanelChange('reader')}
-                      >
-                        <Play className="h-4 w-4" />
-                        <span>Read</span>
-                      </button>
-                    </div>
-                  </article>
+                  <StoryCard 
+                    key={story.id} 
+                    story={story} 
+                    onRead={() => onPanelChange('reader')}
+                  />
                 ))}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { FloatingElements } from "@/components/floating-elements"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -25,6 +26,7 @@ export function Layout({ children, currentPanel, onPanelChange, showBackButton =
 
   return (
     <div className="app-layout">
+      <FloatingElements />
       <Navigation currentPanel={currentPanel} onPanelChange={onPanelChange} />
       
       <main className="app-main">
