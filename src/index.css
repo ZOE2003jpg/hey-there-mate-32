@@ -381,12 +381,14 @@
 }
 
 .app-header {
-  @apply fixed top-0 left-0 right-0 z-50;
-  height: 64px; /* Fixed header height */
-  background: hsl(var(--background) / 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid hsl(var(--border) / 0.8);
-  box-shadow: 0 2px 8px hsl(var(--foreground) / 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 64px;
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .app-main {
@@ -423,10 +425,6 @@
 }
 
 /* Header Components */
-.app-header {
-  @apply sticky top-0 z-50 w-full border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60;
-  background: #1a1a1a;
-}
 
 .header-content {
   @apply flex h-16 items-center justify-between;
