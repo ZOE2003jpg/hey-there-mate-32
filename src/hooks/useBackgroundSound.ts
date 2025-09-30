@@ -43,14 +43,17 @@ export function useBackgroundSound() {
       audioRef.current.loop = true
       
       if (isPlaying) {
-        audioRef.current.play().then(() => {
-          if (audioRef.current) {
-            fadeIn(audioRef.current, volume)
-          }
-        }).catch(err => {
-          console.error('Failed to play background sound:', err)
-          setIsPlaying(false)
-        })
+        // Start only if not already playing (avoids double-start when playSound handles it)
+        if (audioRef.current.paused) {
+          audioRef.current.play().then(() => {
+            if (audioRef.current) {
+              fadeIn(audioRef.current, volume)
+            }
+          }).catch(err => {
+            console.error('Failed to play background sound:', err)
+            setIsPlaying(false)
+          })
+        }
       }
     }
   }, [currentSound, isPlaying])
@@ -76,15 +79,15 @@ export function useBackgroundSound() {
 
   const fadeIn = async (audio: HTMLAudioElement, targetVolume: number) => {
     setIsFading(true)
-    audio.volume = 0
-    const fadeStep = targetVolume / 10
-    
-    for (let i = 0; i <= 10; i++) {
+    const startVol = Math.max(0, Math.min(1, audio.volume))
+    const steps = 8
+    const diff = Math.max(0, Math.min(1, targetVolume)) - startVol
+    for (let i = 0; i <= steps; i++) {
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
       fadeTimeoutRef.current = setTimeout(() => {
-        audio.volume = Math.min(fadeStep * i, targetVolume)
-        if (i === 10) setIsFading(false)
-      }, i * 30)
+        audio.volume = Math.max(0, Math.min(1, startVol + (diff * i) / steps))
+        if (i === steps) setIsFading(false)
+      }, i * 20)
     }
   }
 
@@ -106,14 +109,22 @@ export function useBackgroundSound() {
   }
 
   const playSound = (sound: BackgroundSound) => {
-    if (audioRef.current && isPlaying) {
-      fadeOut(audioRef.current).then(() => {
-        setCurrentSound(sound)
-        setIsPlaying(true)
+    const audio = audioRef.current
+    setCurrentSound(sound)
+    setIsPlaying(true)
+
+    if (audio) {
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      audio.src = sound.url
+      audio.loop = true
+      // Ensure immediate audibility across devices, then gently ramp to target
+      audio.volume = Math.max(0.01, Math.min(1, volume))
+      audio.play().then(() => {
+        fadeIn(audio, volume)
+      }).catch(err => {
+        console.error('Failed to play background sound:', err)
+        setIsPlaying(false)
       })
-    } else {
-      setCurrentSound(sound)
-      setIsPlaying(true)
     }
   }
 
