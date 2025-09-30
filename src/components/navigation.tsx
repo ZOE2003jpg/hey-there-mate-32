@@ -161,12 +161,27 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
       </div>
 
-      {/* Mobile Navigation Overlay with Solid Background */}
+      {/* Mobile Navigation Overlay - Full Screen */}
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200 bg-card"
+          className="mobile-nav-overlay"
         >
+          {/* Close button fixed at top */}
+          <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+            <div className="container-system flex items-center justify-between h-16 px-4">
+              <h2 className="text-lg font-semibold">Menu</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="h-10 w-10"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
           <div className="container-system py-6 space-y-4 mobile-nav-content">
             <div className="space-y-2">
               {/* Public Navigation */}
