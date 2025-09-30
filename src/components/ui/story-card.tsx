@@ -1,6 +1,5 @@
 import { 
   BookOpen, 
-  Eye, 
   Heart, 
   Play,
   Bookmark
@@ -68,10 +67,6 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
         
         {/* Story Stats Row */}
         <div className="flex items-center justify-center space-x-3 text-xs text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Eye className="h-3 w-3" />
-            <span>{story.view_count || 0}</span>
-          </div>
           <div className="flex items-center space-x-1">
             <Heart className="h-3 w-3" />
             <span>{story.like_count || 0}</span>

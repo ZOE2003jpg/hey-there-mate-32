@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useReads } from "@/hooks/useReads"
 import { useUser } from "@/components/user-context"
+import { SignupPromptDialog } from "@/components/signup-prompt-dialog"
 import { toast } from "sonner"
 import { 
   BookOpen, 
@@ -32,6 +33,19 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   const { reads } = useReads(user?.id)
   const [sortBy, setSortBy] = useState<"recent" | "alphabetical">("recent")
   const [searchTerm, setSearchTerm] = useState("")
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false)
+
+  // Check if user is logged in when accessing library
+  useEffect(() => {
+    if (!user && !loading) {
+      setShowSignupPrompt(true)
+    }
+  }, [user, loading])
+
+  const handleSignup = () => {
+    setShowSignupPrompt(false)
+    window.location.href = "/"
+  }
 
   const filteredLibrary = library
     .filter(item => 
@@ -76,7 +90,20 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   const stats = getReadingStats()
 
   return (
-    <div className="space-y-8">
+    <>
+      <SignupPromptDialog
+        open={showSignupPrompt}
+        onOpenChange={(open) => {
+          setShowSignupPrompt(open)
+          if (!open && !user) {
+            // Redirect back to discover if they close without signing up
+            onNavigate("discover")
+          }
+        }}
+        onSignup={handleSignup}
+        feature="access your library"
+      />
+      <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div className="flex items-center gap-2 sm:gap-4">
@@ -283,5 +310,6 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
         </div>
       )}
     </div>
+    </>
   )
 }

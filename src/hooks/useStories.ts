@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
+import { getStoredStories, setStoredStories, appendStoredStories } from '@/lib/localStorage'
 
 export interface Story {
   id: string
@@ -34,24 +35,32 @@ export function useStories() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const requestIdRef = useRef(0)
+  const [initialLoadDone, setInitialLoadDone] = useState(false)
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const cached = getStoredStories()
+    if (cached.length > 0) {
+      // Use cached data immediately while fetching fresh data
+      setStories(cached as any)
+      setLoading(false)
+    }
+  }, [])
 
   const fetchStories = async (userStoriesOnly = false) => {
     const currentRequestId = ++requestIdRef.current
     
     try {
       setLoading(true)
-      setError(null) // Clear any previous errors
+      setError(null)
       
-      // Get current user for filtering
       const { data: { user } } = await supabase.auth.getUser()
       
       let query = supabase.from('stories').select('*')
       
       if (userStoriesOnly && user) {
-        // For manage stories - fetch all user's stories regardless of status
         query = query.eq('author_id', user.id)
       } else {
-        // For public discovery - only published stories
         query = query.eq('status', 'published')
       }
       
@@ -60,12 +69,10 @@ export function useStories() {
 
       if (storiesError) throw storiesError
 
-      // Check if this is still the latest request before proceeding
       if (currentRequestId !== requestIdRef.current) {
-        return // Ignore this response as a newer request has been made
+        return
       }
 
-      // Fetch author profiles for these stories
       const authorIds = storiesData?.map(story => story.author_id) || []
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
@@ -74,12 +81,10 @@ export function useStories() {
 
       if (profilesError) console.warn('Error fetching profiles:', profilesError)
 
-      // Check again if this is still the latest request
       if (currentRequestId !== requestIdRef.current) {
-        return // Ignore this response as a newer request has been made
+        return
       }
 
-      // Merge stories with their author profiles
       const storiesWithAuthors = storiesData?.map(story => {
         const profile = profilesData?.find(p => p.user_id === story.author_id)
         return {
@@ -88,11 +93,36 @@ export function useStories() {
         }
       }) || []
 
-      setStories(storiesWithAuthors as any)
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
+
+      const newStories = storiesWithAuthors
+      
+      // Check if this is initial load or refresh
+      if (!initialLoadDone) {
+        setStories(newStories as any)
+        setStoredStories(newStories)
+        setInitialLoadDone(true)
+      } else {
+        // Append new stories to existing ones
+        setStories(prev => {
+          const existingIds = new Set(prev.map(s => s.id))
+          const toAdd = newStories.filter((s: any) => !existingIds.has(s.id))
+          const updated = [...prev, ...toAdd]
+          appendStoredStories(toAdd)
+          return updated as any
+        })
+      }
     } catch (err) {
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
       setError(err instanceof Error ? err.message : 'Failed to fetch stories')
     } finally {
-      setLoading(false)
+      if (currentRequestId === requestIdRef.current) {
+        setLoading(false)
+      }
     }
   }
 
@@ -120,7 +150,6 @@ export function useStories() {
 
       if (error) throw error
 
-      // Add tags if provided
       if (storyData.tags && storyData.tags.length > 0) {
         const tagInserts = storyData.tags.map(tag => ({
           story_id: story.id,
@@ -138,6 +167,63 @@ export function useStories() {
     }
   }
 
+  const fetchAllStories = async () => {
+    const currentRequestId = ++requestIdRef.current
+    
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const { data: storiesData, error: storiesError } = await supabase
+        .from('stories')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (storiesError) throw storiesError
+
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
+
+      const authorIds = storiesData?.map(story => story.author_id) || []
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, username')
+        .in('user_id', authorIds)
+
+      if (profilesError) console.warn('Error fetching profiles:', profilesError)
+
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
+
+      const storiesWithAuthors = storiesData?.map(story => {
+        const profile = profilesData?.find(p => p.user_id === story.author_id)
+        return {
+          ...story,
+          profiles: profile || null
+        }
+      }) || []
+
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
+
+      const newStories = storiesWithAuthors
+      setStories(newStories as any)
+      setStoredStories(newStories)
+    } catch (err) {
+      if (currentRequestId !== requestIdRef.current) {
+        return
+      }
+      setError(err instanceof Error ? err.message : 'Failed to fetch all stories')
+    } finally {
+      if (currentRequestId === requestIdRef.current) {
+        setLoading(false)
+      }
+    }
+  }
+
   const updateStory = async (id: string, updates: Partial<Story>, refetchAll = false) => {
     try {
       const { error } = await supabase
@@ -147,7 +233,6 @@ export function useStories() {
 
       if (error) throw error
       
-      // Refetch the appropriate data based on context
       if (refetchAll) {
         await fetchAllStories()
       } else {
@@ -168,7 +253,6 @@ export function useStories() {
 
       if (error) throw error
       
-      // Refetch the appropriate data based on context
       if (refetchAll) {
         await fetchAllStories()
       } else {
@@ -177,54 +261,6 @@ export function useStories() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete story')
       throw err
-    }
-  }
-
-  const fetchAllStories = async () => {
-    const currentRequestId = ++requestIdRef.current
-    
-    try {
-      setLoading(true)
-      setError(null)
-      
-      const { data: storiesData, error: storiesError } = await supabase
-        .from('stories')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (storiesError) throw storiesError
-
-      // Check if this is still the latest request
-      if (currentRequestId !== requestIdRef.current) {
-        return // Ignore this response as a newer request has been made
-      }
-
-      const authorIds = storiesData?.map(story => story.author_id) || []
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, username')
-        .in('user_id', authorIds)
-
-      if (profilesError) console.warn('Error fetching profiles:', profilesError)
-
-      // Check again if this is still the latest request
-      if (currentRequestId !== requestIdRef.current) {
-        return // Ignore this response as a newer request has been made
-      }
-
-      const storiesWithAuthors = storiesData?.map(story => {
-        const profile = profilesData?.find(p => p.user_id === story.author_id)
-        return {
-          ...story,
-          profiles: profile || null
-        }
-      }) || []
-
-      setStories(storiesWithAuthors as any)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch stories')
-    } finally {
-      setLoading(false)
     }
   }
 

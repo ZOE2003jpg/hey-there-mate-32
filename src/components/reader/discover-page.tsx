@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StoryCard } from "@/components/ui/story-card"
+import { SignupPromptDialog } from "@/components/signup-prompt-dialog"
 import { 
   BookOpen, 
   Star,
-  Eye,
   Bookmark,
   TrendingUp,
   Heart,
@@ -26,6 +26,8 @@ interface DiscoverPageProps {
 
 export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
   const [selectedGenre, setSelectedGenre] = useState("all")
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false)
+  const [signupFeature, setSignupFeature] = useState("save stories to your library")
   const { stories, loading } = useStories()
   const { user } = useUser()
   const { toggleLike, isLiked } = useLikes(user?.id)
@@ -49,7 +51,8 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
   const handleAddToLibrary = async (storyId: string, e: React.MouseEvent) => {
     e.stopPropagation()
     if (!user) {
-      toast.error("Please login to save stories")
+      setSignupFeature("save stories to your library")
+      setShowSignupPrompt(true)
       return
     }
     if (isInLibrary(storyId)) {
@@ -65,6 +68,12 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
     }
   }
 
+  const handleSignup = () => {
+    setShowSignupPrompt(false)
+    // Navigate to home which will trigger the login modal
+    window.location.href = "/"
+  }
+
   const filteredStories = stories.filter(story => 
     selectedGenre === "all" || story.genre === selectedGenre
   )
@@ -77,7 +86,14 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
   const genres = ["all", ...Array.from(new Set(stories.map(story => story.genre).filter(Boolean)))]
 
   return (
-    <div className="space-y-8">
+    <>
+      <SignupPromptDialog
+        open={showSignupPrompt}
+        onOpenChange={setShowSignupPrompt}
+        onSignup={handleSignup}
+        feature={signupFeature}
+      />
+      <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
@@ -181,10 +197,6 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                         <div className="flex items-center gap-2 sm:gap-4 mt-2 flex-wrap">
                           <Badge variant="outline" className="text-xs">{story.genre || "General"}</Badge>
                           <div className="flex items-center gap-1 text-xs">
-                            <Eye className="h-3 w-3" />
-                            {story.view_count}
-                          </div>
-                          <div className="flex items-center gap-1 text-xs">
                             <Heart className="h-3 w-3 text-primary" />
                             {story.like_count}
                           </div>
@@ -247,5 +259,6 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
         ))}
       </div>
     </div>
+    </>
   )
 }

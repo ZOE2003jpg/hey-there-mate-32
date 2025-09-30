@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
+import { getReadingProgress, setReadingProgress, getAllReadingProgress } from '@/lib/localStorage'
 
 export interface Read {
   id: string
@@ -43,6 +44,17 @@ export function useReads(readerId?: string) {
 
   const trackProgress = async (readerId: string, storyId: string, chapterId?: string, slideId?: string, progress = 0) => {
     try {
+      // Save to localStorage immediately for offline access
+      if (chapterId) {
+        setReadingProgress({
+          storyId,
+          chapterId,
+          slideId,
+          slideIndex: progress,
+          lastReadAt: new Date().toISOString()
+        })
+      }
+
       const { data, error } = await supabase.functions.invoke('track-progress', {
         body: {
           readerId,
@@ -63,8 +75,25 @@ export function useReads(readerId?: string) {
   }
 
   const getReadingProgress = (storyId: string, chapterId?: string) => {
+    // Try to get from database first
     if (chapterId) {
-      return reads.find(r => r.story_id === storyId && r.chapter_id === chapterId)
+      const dbProgress = reads.find(r => r.story_id === storyId && r.chapter_id === chapterId)
+      if (dbProgress) return dbProgress
+      
+      // Fallback to localStorage
+      const localProgress = getReadingProgress(storyId)
+      if (localProgress && localProgress.chapterId === chapterId) {
+        return {
+          id: 'local',
+          user_id: readerId || '',
+          story_id: storyId,
+          chapter_id: chapterId,
+          slide_id: localProgress.slideId || null,
+          progress: localProgress.slideIndex,
+          last_read_at: localProgress.lastReadAt,
+          created_at: localProgress.lastReadAt
+        }
+      }
     }
     return reads.filter(r => r.story_id === storyId)
   }

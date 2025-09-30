@@ -5,8 +5,29 @@ export function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-auto">
       <div className="container-system">
-        <div className="content-container py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Mobile-optimized footer */}
+        <div className="content-container py-6 md:py-12">
+          {/* Mobile: Compact single column */}
+          <div className="md:hidden space-y-4">
+            <div className="flex items-center justify-center space-x-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <span className="font-bold">VineNovel</span>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Where stories come alive through immersive, visual storytelling.
+            </p>
+            <div className="flex justify-center space-x-4 text-xs">
+              <Link to="/privacy" className="text-muted-foreground hover:text-primary">Privacy</Link>
+              <Link to="/terms" className="text-muted-foreground hover:text-primary">Terms</Link>
+              <Link to="/about" className="text-muted-foreground hover:text-primary">About</Link>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              © {new Date().getFullYear()} VineNovel. All rights reserved.
+            </p>
+          </div>
+
+          {/* Desktop: Full grid layout */}
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* VineNovel Brand */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
@@ -110,7 +131,8 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="border-t border-border mt-8 pt-8">
+          {/* Desktop bottom bar */}
+          <div className="hidden md:block border-t border-border mt-8 pt-8">
             <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
               <p className="typography-caption text-muted-foreground">
                 © {new Date().getFullYear()} VineNovel. All rights reserved.

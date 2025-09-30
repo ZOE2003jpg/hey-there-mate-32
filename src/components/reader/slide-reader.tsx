@@ -40,6 +40,8 @@ import { useSoundsLibrary } from "@/hooks/useSoundsLibrary"
 import { useUser } from "@/components/user-context"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
+import { OnboardingTutorial } from "@/components/onboarding-tutorial"
+import { getReadingProgress as getLocalProgress } from "@/lib/localStorage"
 
 interface SlideReaderProps {
   story: any
@@ -50,6 +52,7 @@ interface SlideReaderProps {
 export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { user } = useUser()
   const [currentSlide, setCurrentSlide] = useState(1)
+  const [showTutorial, setShowTutorial] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [showAd, setShowAd] = useState(false)
   const [adCountdown, setAdCountdown] = useState(6)
@@ -769,6 +772,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
           />
         </div>
       </div>
+
+      <OnboardingTutorial onComplete={() => setShowTutorial(false)} />
 
       {/* Mobile Progress Bar - Top */}
       <div className="absolute top-20 left-4 right-4 z-50 md:hidden">
