@@ -77,14 +77,14 @@ export function useBackgroundSound() {
   const fadeIn = async (audio: HTMLAudioElement, targetVolume: number) => {
     setIsFading(true)
     audio.volume = 0
-    const fadeStep = targetVolume / 20
+    const fadeStep = targetVolume / 10
     
-    for (let i = 0; i <= 20; i++) {
+    for (let i = 0; i <= 10; i++) {
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
       fadeTimeoutRef.current = setTimeout(() => {
         audio.volume = Math.min(fadeStep * i, targetVolume)
-        if (i === 20) setIsFading(false)
-      }, i * 50)
+        if (i === 10) setIsFading(false)
+      }, i * 30)
     }
   }
 
