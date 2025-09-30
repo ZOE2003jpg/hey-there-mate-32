@@ -168,7 +168,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           className="mobile-nav-overlay"
         >
           {/* Close button fixed at top */}
-          <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+          <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
             <div className="container-system flex items-center justify-between h-16 px-4">
               <h2 className="text-lg font-semibold">Menu</h2>
               <Button

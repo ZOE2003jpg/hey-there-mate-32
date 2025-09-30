@@ -152,29 +152,25 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                       
                       {/* Story Actions */}
                       <div className="story-actions">
-                        <Button 
+                        <button 
                           className="story-read-btn"
                           onClick={() => onPanelChange('reader')}
                         >
                           <Play className="h-4 w-4" />
                           <span>Read</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        </button>
+                        <button 
                           className="story-like-btn"
                           onClick={() => user ? null : setShowLogin(true)}
                         >
                           <Heart className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        </button>
+                        <button 
                           className="story-bookmark-btn"
                           onClick={() => user ? null : setShowLogin(true)}
                         >
                           <BookOpen className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   </article>
