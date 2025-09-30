@@ -57,9 +57,9 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 return (
                   <Link key={item.id} to={item.path}>
                 <Button
-                  variant="ghost"
-                  className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10"
-                >
+              variant="ghost"
+              className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10"
+            >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Button>
@@ -67,12 +67,12 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 )
               }
               return (
-                <Button
-                  key={item.id}
-                  variant="ghost"
-                  onClick={item.action}
-                  className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10"
-                >
+              <Button
+                key={item.id}
+                variant="ghost"
+                onClick={item.action}
+                className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10"
+              >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Button>
@@ -81,7 +81,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             
             {/* About Link */}
             <Link to="/about">
-              <Button variant="ghost" className="h-12 px-4 flex items-center space-x-2 font-medium text-white hover:bg-white/10">
+              <Button variant="ghost" className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10">
                 <Info className="h-4 w-4" />
                 <span>About</span>
               </Button>
@@ -95,9 +95,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   key={item.id}
                   variant={currentPanel === item.id ? "default" : "ghost"}
                   onClick={() => onPanelChange(item.id)}
-                  className={`h-12 px-4 flex items-center space-x-2 font-medium ${
-                    currentPanel === item.id ? "" : "text-white hover:bg-white/10"
-                  }`}
+                  className="h-12 px-4 flex items-center space-x-2 font-medium"
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
@@ -163,11 +161,11 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
         </div>
       </div>
 
-      {/* Mobile Navigation Overlay with Glassmorphism */}
+      {/* Mobile Navigation Overlay with Solid Background */}
       {isMobileMenuOpen && (
         <div 
           id="mobile-menu"
-          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200 bg-background"
+          className="md:hidden fixed inset-0 z-50 mobile-nav-overlay animate-in fade-in-0 duration-200 bg-card"
         >
           <div className="container-system py-6 space-y-4 mobile-nav-content">
             <div className="space-y-2">
@@ -176,10 +174,10 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 const Icon = item.icon
                 if (item.path) {
                   return (
-                    <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10"
+                        className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent"
                       >
                         <Icon className="h-4 w-4 mr-3" />
                         <span>{item.label}</span>
@@ -195,7 +193,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                       item.action?.()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10"
+                    className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent"
                   >
                     <Icon className="h-4 w-4 mr-3" />
                     <span>{item.label}</span>
@@ -205,7 +203,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               
               {/* About Link */}
               <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium mobile-nav-item text-white hover:bg-white/10">
+                <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent">
                   <Info className="h-4 w-4 mr-3" />
                   <span>About</span>
                 </Button>
@@ -217,16 +215,12 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                 return (
                   <Button
                     key={item.id}
-                    variant="ghost"
+                    variant={currentPanel === item.id ? "default" : "ghost"}
                     onClick={() => {
                       onPanelChange(item.id)
                       setIsMobileMenuOpen(false)
                     }}
-                    className={`w-full justify-start h-12 text-sm font-medium mobile-nav-item ${
-                      currentPanel === item.id 
-                        ? 'mobile-nav-item active bg-primary/20 text-primary-foreground' 
-                        : 'text-white hover:bg-white/10'
-                    }`}
+                    className="w-full justify-start h-12 text-sm font-medium mobile-nav-item"
                   >
                     <Icon className="h-4 w-4 mr-3" />
                     <span>{item.label}</span>
@@ -235,15 +229,15 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               })}
 
               {/* Legal Links */}
-              <div className="border-t border-white/20 pt-4 space-y-2">
-                <p className="text-xs text-white/60 px-3 mb-2">Legal</p>
+              <div className="border-t border-border pt-4 space-y-2">
+                <p className="text-xs text-muted-foreground px-3 mb-2">Legal</p>
                 <Link to="/privacy" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item text-white hover:bg-white/10">
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item hover:bg-accent">
                     Privacy Policy
                   </Button>
                 </Link>
                 <Link to="/terms" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item text-white hover:bg-white/10">
+                  <Button variant="ghost" className="w-full justify-start h-10 text-sm mobile-nav-item hover:bg-accent">
                     Terms & Conditions
                   </Button>
                 </Link>
@@ -252,15 +246,15 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
             {/* User Actions for Mobile */}
             {user?.profile && (
-              <div className="border-t border-white/20 pt-4 mt-4">
-                <div className="flex items-center justify-between p-4 bg-card rounded-lg">
+              <div className="border-t border-border pt-4 mt-4">
+                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                   <div className="flex items-center space-x-3">
                     <User className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium">
                         {user.profile.display_name || user.profile.username || "User"}
                       </p>
-                      <p className="text-xs text-white/60 capitalize">
+                      <p className="text-xs text-muted-foreground capitalize">
                         {user.profile.role}
                       </p>
                     </div>
@@ -272,7 +266,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                       signOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="h-10 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    className="h-10"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
