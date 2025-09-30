@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
@@ -88,6 +88,10 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [controlsTimeoutId, setControlsTimeoutId] = useState<NodeJS.Timeout | null>(null)
   const [startX, setStartX] = useState<number | null>(null)
   
+  // Unlock flag for autoplay policies
+  const audioUnlockNeededRef = useRef(false)
+  const removeAudioUnlockListenersRef = useRef<(() => void) | null>(null)
+
   const { slides, loading } = useSlides(chapter?.id)
   const { trackProgress, reads, getReadingProgress } = useReads(user?.id)
   const { chapters } = useChapters(story?.id)
@@ -211,6 +215,33 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     loadSlides()
   }, [story, chapter])
 
+  // Helpers to unlock audio playback on user interaction
+  const attachAudioUnlockListeners = (audio: HTMLAudioElement) => {
+    const attempt = () => {
+      audio.play().then(() => {
+        removeAudioUnlockListeners()
+      }).catch(() => {})
+    }
+    const onFirstInteraction = () => attempt()
+    document.addEventListener('pointerdown', onFirstInteraction, { once: true })
+    document.addEventListener('touchend', onFirstInteraction, { once: true })
+    document.addEventListener('click', onFirstInteraction, { once: true })
+    removeAudioUnlockListenersRef.current = () => {
+      document.removeEventListener('pointerdown', onFirstInteraction)
+      document.removeEventListener('touchend', onFirstInteraction)
+      document.removeEventListener('click', onFirstInteraction)
+    }
+    audioUnlockNeededRef.current = true
+  }
+
+  const removeAudioUnlockListeners = () => {
+    if (removeAudioUnlockListenersRef.current) {
+      removeAudioUnlockListenersRef.current()
+      removeAudioUnlockListenersRef.current = null
+    }
+    audioUnlockNeededRef.current = false
+  }
+
   // Load chapter audio
   const loadChapterAudio = async (chapterId: string) => {
     try {
@@ -221,24 +252,30 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
           chapterAudio.pause()
           chapterAudio.currentTime = 0
         }
-        
+
         // Load first sound (could be enhanced to support multiple sounds)
         const sound = chapterSounds[0]
         if (sound.sound?.file_url) {
           const audio = new Audio(sound.sound.file_url)
+          audio.preload = 'auto'
           audio.volume = audioVolume
           audio.loop = sound.loop_sound
           setChapterAudio(audio)
-          
+
           // Add event listeners
-          audio.onplay = () => setIsAudioPlaying(true)
+          audio.onplay = () => {
+            setIsAudioPlaying(true)
+            // Once playing, no need for unlock listeners
+            removeAudioUnlockListeners()
+          }
           audio.onpause = () => setIsAudioPlaying(false)
           audio.onended = () => setIsAudioPlaying(false)
-          
-          // Auto-play after a short delay
-          setTimeout(() => {
-            audio.play().catch(console.error)
-          }, 1000)
+
+          // Try to play immediately (required behavior)
+          audio.play().catch((_err) => {
+            // Likely blocked by autoplay policy - resume on first user interaction
+            attachAudioUnlockListeners(audio)
+          })
         }
       } else {
         setChapterAudio(null)
@@ -257,6 +294,8 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   // Cleanup audio when component unmounts or navigating away
   useEffect(() => {
     return () => {
+      // Clean unlock listeners if any
+      removeAudioUnlockListeners()
       if (chapterAudio) {
         chapterAudio.pause()
         chapterAudio.currentTime = 0
@@ -499,6 +538,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   }
 
   const handleSlideNavigation = (e: React.MouseEvent) => {
+    // Any tap/click should try to resume audio if blocked
+    if (chapterAudio && chapterAudio.paused) {
+      chapterAudio.play().then(() => removeAudioUnlockListeners()).catch(() => {})
+    }
+
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const width = rect.width
