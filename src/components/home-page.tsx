@@ -8,11 +8,7 @@ import { useStories } from "@/hooks/useStories"
 import { useToast } from "@/hooks/use-toast"
 import { 
   BookOpen, 
-  Star, 
-  Eye,
-  Heart,
-  Play,
-  TrendingUp
+  Play
 } from "lucide-react"
 import heroImage from "@/assets/hero-books.jpg"
 
@@ -127,51 +123,19 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                     
                     {/* Story Content */}
                     <div className="story-content">
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <span className="story-genre">{story.genre}</span>
                         <h3 className="story-title">{story.title}</h3>
                       </div>
                       
-                      {/* Story Stats */}
-                      <div className="story-stats">
-                        <div className="flex items-center space-x-4">
-                          <div className="story-stat">
-                            <Eye className="h-3 w-3" />
-                            <span>{story.view_count}</span>
-                          </div>
-                          <div className="story-stat">
-                            <Heart className="h-3 w-3" />
-                            <span>{story.like_count}</span>
-                          </div>
-                        </div>
-                        <div className="story-stat">
-                          <TrendingUp className="h-3 w-3" />
-                          <span className="text-primary font-medium">Popular</span>
-                        </div>
-                      </div>
-                      
-                      {/* Story Actions */}
-                      <div className="story-actions">
-                        <button 
-                          className="story-read-btn"
-                          onClick={() => onPanelChange('reader')}
-                        >
-                          <Play className="h-4 w-4" />
-                          <span>Read</span>
-                        </button>
-                        <button 
-                          className="story-like-btn"
-                          onClick={() => user ? null : setShowLogin(true)}
-                        >
-                          <Heart className="h-4 w-4" />
-                        </button>
-                        <button 
-                          className="story-bookmark-btn"
-                          onClick={() => user ? null : setShowLogin(true)}
-                        >
-                          <BookOpen className="h-4 w-4" />
-                        </button>
-                      </div>
+                      {/* Story Action */}
+                      <button 
+                        className="story-read-btn w-full mt-auto"
+                        onClick={() => onPanelChange('reader')}
+                      >
+                        <Play className="h-4 w-4" />
+                        <span>Read</span>
+                      </button>
                     </div>
                   </article>
                 ))}
