@@ -82,8 +82,6 @@ export function FeaturedPage({ onNavigate }: FeaturedPageProps) {
                 key={story.id}
                 story={story}
                 onRead={() => handleReadStory(story)}
-                onLike={() => handleLikeStory(story)}
-                onBookmark={() => handleBookmarkStory(story)}
               />
             ))}
           </div>

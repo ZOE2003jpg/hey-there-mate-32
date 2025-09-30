@@ -1,8 +1,6 @@
 import { 
   BookOpen, 
-  Heart, 
-  Play,
-  Bookmark
+  Play
 } from "lucide-react"
 
 interface StoryCardProps {
@@ -17,17 +15,9 @@ interface StoryCardProps {
     description?: string
   }
   onRead?: () => void
-  onLike?: (e?: any) => void
-  onBookmark?: (e?: any) => void
 }
 
-export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps) {
-  // Get author name from profiles or fallback to author field
-  const authorName = (story as any)?.profiles?.display_name || 
-                    (story as any)?.profiles?.username || 
-                    story.author || 
-                    'Anonymous'
-
+export function StoryCard({ story, onRead }: StoryCardProps) {
   return (
     <article className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex flex-col h-full">
       {/* Cover Image Container - Square Aspect Ratio */}
@@ -60,36 +50,14 @@ export function StoryCard({ story, onRead, onLike, onBookmark }: StoryCardProps)
           {story.title}
         </h3>
         
-        {/* Author */}
-        <p className="text-xs text-muted-foreground break-words">
-          by {authorName}
-        </p>
-        
-        {/* Story Stats Row */}
-        <div className="flex items-center justify-center space-x-3 text-xs text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Heart className="h-3 w-3" />
-            <span>{story.like_count || 0}</span>
-          </div>
-        </div>
-        
-        {/* Action Buttons - Auto margin top to push to bottom */}
-        <div className="flex items-center space-x-1 mt-auto pt-2">
-          <button 
-            className="flex-1 flex items-center justify-center space-x-1 px-2 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
-            onClick={onRead}
-          >
-            <Play className="h-3 w-3" />
-            <span>Read</span>
-          </button>
-          <button 
-            className="flex items-center justify-center w-7 h-7 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-            onClick={onBookmark}
-            title="Save to Library"
-          >
-            <Bookmark className="h-3 w-3" />
-          </button>
-        </div>
+        {/* Action Button - Auto margin top to push to bottom */}
+        <button 
+          className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity mt-auto"
+          onClick={onRead}
+        >
+          <Play className="h-4 w-4" />
+          <span>Read</span>
+        </button>
       </div>
     </article>
   )

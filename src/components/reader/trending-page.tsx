@@ -92,8 +92,6 @@ export function TrendingPage({ onNavigate }: TrendingPageProps) {
                   <StoryCard
                     story={story}
                     onRead={() => handleReadStory(story)}
-                    onLike={() => handleLikeStory(story)}
-                    onBookmark={() => handleBookmarkStory(story)}
                   />
                 </div>
               </div>
@@ -113,8 +111,6 @@ export function TrendingPage({ onNavigate }: TrendingPageProps) {
                 <StoryCard
                   story={story}
                   onRead={() => handleReadStory(story)}
-                  onLike={() => handleLikeStory(story)}
-                  onBookmark={() => handleBookmarkStory(story)}
                 />
               </div>
             ))}

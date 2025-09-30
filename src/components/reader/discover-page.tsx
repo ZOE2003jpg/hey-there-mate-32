@@ -157,14 +157,6 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
                   author: story.profiles?.display_name || story.profiles?.username || "Anonymous"
                 }}
                 onRead={() => onNavigate("story-chapters", story)}
-                onLike={(e) => {
-                  e?.stopPropagation();
-                  handleLike(story.id, e as React.MouseEvent);
-                }}
-                onBookmark={(e) => {
-                  e?.stopPropagation();
-                  handleAddToLibrary(story.id, e as React.MouseEvent);
-                }}
               />
             ))}
           </div>

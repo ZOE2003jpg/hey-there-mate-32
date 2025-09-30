@@ -108,7 +108,7 @@ export function HomePage({ onPanelChange }: HomePageProps) {
               
               {/* Story Grid */}
               <div className="story-grid">
-                {stories.slice(0, 12).map((story) => (
+                {stories.slice(0, 8).map((story) => (
                   <article key={story.id} className="story-card">
                     {/* Cover Image */}
                     <div className="story-cover">
