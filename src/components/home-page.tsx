@@ -156,8 +156,8 @@ export function HomePage({ onPanelChange }: HomePageProps) {
                           className="story-read-btn"
                           onClick={() => onPanelChange('reader')}
                         >
-                          <Play className="h-4 w-4" />
-                          <span>Read</span>
+                          <Play className="h-4 w-4 mr-2" />
+                          Read Story
                         </Button>
                         <Button 
                           variant="outline" 
