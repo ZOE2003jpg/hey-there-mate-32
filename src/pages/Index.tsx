@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import { Navigation } from "@/components/navigation"
 import { HomePage } from "@/components/home-page"
 import { WriterPanel } from "@/components/writer-panel"
@@ -10,8 +11,38 @@ import { useUser } from "@/components/user-context"
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(true)
-  const [currentPanel, setCurrentPanel] = useState<"home" | "writer" | "reader" | "admin">("home")
+  const navigate = useNavigate()
+  const location = useLocation()
   const { user, loading } = useUser()
+  
+  // Get current panel from URL
+  const getCurrentPanel = (): "home" | "writer" | "reader" | "admin" => {
+    const params = new URLSearchParams(location.search)
+    const panel = params.get('panel')
+    if (panel === 'writer' || panel === 'reader' || panel === 'admin') {
+      return panel
+    }
+    return 'home'
+  }
+  
+  const [currentPanel, setCurrentPanel] = useState<"home" | "writer" | "reader" | "admin">(getCurrentPanel())
+
+  // Update URL when panel changes
+  useEffect(() => {
+    if (currentPanel === 'home') {
+      navigate('/', { replace: true })
+    } else {
+      navigate(`/?panel=${currentPanel}`, { replace: true })
+    }
+  }, [currentPanel, navigate])
+  
+  // Update panel when URL changes
+  useEffect(() => {
+    const newPanel = getCurrentPanel()
+    if (newPanel !== currentPanel) {
+      setCurrentPanel(newPanel)
+    }
+  }, [location.search])
 
   // Handle splash screen completion
   const handleSplashComplete = () => {
