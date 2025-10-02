@@ -76,12 +76,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showSoundMenu, setShowSoundMenu] = useState(false)
   const [chapterAudio, setChapterAudio] = useState<HTMLAudioElement | null>(null)
   const [isAtChapterEnd, setIsAtChapterEnd] = useState(false)
-  const [audioVolume, setAudioVolume] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return parseFloat(localStorage.getItem('readerVolume') || '0.5')
-    }
-    return 0.5
-  })
+  const [audioVolume, setAudioVolume] = useState(0.5)
   const [showVolumeControl, setShowVolumeControl] = useState(false)
   const [isAudioPlaying, setIsAudioPlaying] = useState(false)
   const [showControls, setShowControls] = useState(true)
@@ -258,9 +253,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
         if (sound.sound?.file_url) {
           const audio = new Audio(sound.sound.file_url)
           audio.preload = 'auto'
-          audio.volume = audioVolume
+          const startingVolume = typeof sound.volume === 'number' ? Math.max(0, Math.min(1, sound.volume)) : 0.5
+          audio.volume = startingVolume
           audio.loop = sound.loop_sound
           setChapterAudio(audio)
+          setAudioVolume(startingVolume)
 
           // Add event listeners
           audio.onplay = () => {
@@ -507,8 +504,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     if (chapterAudio) {
       chapterAudio.volume = volume
     }
-    // Save to localStorage
-    localStorage.setItem('readerVolume', volume.toString())
+    // Persist volume only within current chapter (no localStorage)
   }
 
   const increaseVolume = () => {
@@ -609,7 +605,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     if (chapterAudio) {
       chapterAudio.volume = newVolume
     }
-    localStorage.setItem('readerVolume', newVolume.toString())
+    // Persist volume only within current chapter (no localStorage)
   }
 
   // Auto-hide bottom controls after 5 seconds

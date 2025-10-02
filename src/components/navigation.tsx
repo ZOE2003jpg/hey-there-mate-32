@@ -127,6 +127,20 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   </Button>
                 </>
               )}
+              {!user?.profile && (
+                <>
+                  <Link to="/writer/login">
+                    <Button variant="outline" size="sm" className="h-10">
+                      Writer Login
+                    </Button>
+                  </Link>
+                  <Link to="/admin/login">
+                    <Button variant="outline" size="sm" className="h-10">
+                      Admin Login
+                    </Button>
+                  </Link>
+                </>
+              )}
               <ThemeToggle />
             </div>
 
@@ -223,6 +237,24 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                   <span>About</span>
                 </Button>
               </Link>
+
+              {/* Login Links (when logged out) */}
+              {!user?.profile && (
+                <div className="space-y-2">
+                  <Link to="/writer/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent">
+                      <PenTool className="h-4 w-4 mr-3" />
+                      <span>Writer Login</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent">
+                      <Shield className="h-4 w-4 mr-3" />
+                      <span>Admin Login</span>
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               {/* User Panel Items (when logged in) */}
               {userPanelItems.map((item) => {
