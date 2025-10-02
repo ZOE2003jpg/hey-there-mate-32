@@ -23,21 +23,21 @@ const Index = () => {
     if (loading) return
 
     // Only check access for protected panels when user is trying to access them
-    if (user?.profile && currentPanel !== "home") {
-      const userRole = user.profile.role
+    if (user && currentPanel !== "home") {
+      const userRoles = user.roles || []
       const hasAccess = 
-        (currentPanel === "reader" && (userRole === "reader" || userRole === "admin")) ||
-        (currentPanel === "writer" && (userRole === "writer" || userRole === "admin")) ||
-        (currentPanel === "admin" && userRole === "admin")
+        (currentPanel === "reader" && (userRoles.includes("reader") || userRoles.includes("admin"))) ||
+        (currentPanel === "writer" && (userRoles.includes("writer") || userRoles.includes("admin"))) ||
+        (currentPanel === "admin" && userRoles.includes("admin"))
       
       if (!hasAccess) {
         // Redirect to appropriate panel based on role
-        if (userRole === "reader") {
-          setCurrentPanel("reader")
-        } else if (userRole === "writer") {
-          setCurrentPanel("writer")  
-        } else if (userRole === "admin") {
+        if (userRoles.includes("admin")) {
           setCurrentPanel("admin")
+        } else if (userRoles.includes("writer")) {
+          setCurrentPanel("writer")  
+        } else if (userRoles.includes("reader")) {
+          setCurrentPanel("reader")
         } else {
           setCurrentPanel("home")
         }
@@ -67,21 +67,21 @@ const Index = () => {
       return <HomePage onPanelChange={setCurrentPanel} />
     }
 
-    if (user?.profile && currentPanel !== "home") {
-      const userRole = user.profile.role
+    if (user && currentPanel !== "home") {
+      const userRoles = user.roles || []
       const hasAccess = 
-        (currentPanel === "reader" && (userRole === "reader" || userRole === "admin")) ||
-        (currentPanel === "writer" && (userRole === "writer" || userRole === "admin")) ||
-        (currentPanel === "admin" && userRole === "admin")
+        (currentPanel === "reader" && (userRoles.includes("reader") || userRoles.includes("admin"))) ||
+        (currentPanel === "writer" && (userRoles.includes("writer") || userRoles.includes("admin"))) ||
+        (currentPanel === "admin" && userRoles.includes("admin"))
       
       if (!hasAccess) {
         // Redirect to appropriate panel based on role
-        if (userRole === "reader") {
-          return <ReaderPanel />
-        } else if (userRole === "writer") {
-          return <WriterPanel />
-        } else if (userRole === "admin") {
+        if (userRoles.includes("admin")) {
           return <AdminPanel />
+        } else if (userRoles.includes("writer")) {
+          return <WriterPanel />
+        } else if (userRoles.includes("reader")) {
+          return <ReaderPanel />
         } else {
           return <HomePage onPanelChange={setCurrentPanel} />
         }

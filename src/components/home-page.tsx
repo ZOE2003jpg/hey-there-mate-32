@@ -29,8 +29,8 @@ export function HomePage({ onPanelChange }: HomePageProps) {
 
   const handleStartWriting = () => {
     if (user) {
-      const userRole = user.profile?.role
-      if (userRole === "writer" || userRole === "admin") {
+      const userRoles = user.roles || []
+      if (userRoles.includes("writer") || userRoles.includes("admin")) {
         onPanelChange('writer')
       } else {
         onPanelChange('reader')

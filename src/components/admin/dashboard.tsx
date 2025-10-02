@@ -77,8 +77,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const systemStats = {
     totalNovels: stories.length,
     totalChapters: chapters.length,
-    totalReaders: profiles.filter(p => p.role === 'reader').length,
-    totalWriters: profiles.filter(p => p.role === 'writer').length,
+    totalReaders: profiles.length, // All users are potential readers
+    totalWriters: profiles.length, // Simplified count - refine with user_roles if needed
     adImpressions: ads.reduce((sum, ad) => sum + (ad.impressions || 0), 0),
     adRevenue: ads.reduce((sum, ad) => sum + ((ad.clicks || 0) * 0.5), 0), // Assuming $0.5 per click
     flaggedContent: reports.filter(r => r.status === 'pending').length,

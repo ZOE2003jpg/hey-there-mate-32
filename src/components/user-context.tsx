@@ -11,7 +11,6 @@ export interface Profile {
   display_name: string | null
   bio: string | null
   avatar_url: string | null
-  role: UserRole
   status: string | null
   created_at: string
   updated_at: string
@@ -21,6 +20,7 @@ export interface User {
   id: string
   email: string
   profile: Profile | null
+  roles: UserRole[]
 }
 
 interface UserContextType {
@@ -52,40 +52,43 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setSession(session)
         
         if (session?.user) {
-          // Fetch user profile asynchronously without blocking
+          // Fetch user profile and roles asynchronously without blocking
           setTimeout(async () => {
             if (!mounted) return
             
             try {
-              const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .single()
+              // Fetch profile and roles in parallel
+              const [profileResult, rolesResult] = await Promise.all([
+                supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('user_id', session.user.id)
+                  .single(),
+                supabase
+                  .from('user_roles')
+                  .select('role')
+                  .eq('user_id', session.user.id)
+              ])
 
               if (!mounted) return
 
-              if (error) {
-                console.log('Profile fetch error:', error)
-                setUser({
-                  id: session.user.id,
-                  email: session.user.email || '',
-                  profile: null
-                })
-              } else {
-                setUser({
-                  id: session.user.id,
-                  email: session.user.email || '',
-                  profile
-                })
-              }
+              const profile = profileResult.error ? null : profileResult.data
+              const roles = rolesResult.error ? [] : rolesResult.data.map(r => r.role as UserRole)
+
+              setUser({
+                id: session.user.id,
+                email: session.user.email || '',
+                profile,
+                roles
+              })
             } catch (error) {
-              console.error('Profile fetch failed:', error)
+              console.error('Profile/roles fetch failed:', error)
               if (mounted) {
                 setUser({
                   id: session.user.id,
                   email: session.user.email || '',
-                  profile: null
+                  profile: null,
+                  roles: []
                 })
               }
             }
@@ -166,16 +169,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const createProfile = async (role: UserRole) => {
     if (!session?.user) return
 
-    const { error } = await supabase
+    // Create profile without role
+    const { error: profileError } = await supabase
       .from('profiles')
       .insert({
         user_id: session.user.id,
-        role,
         status: 'active'
       })
 
-    if (error) {
-      console.error('Error creating profile:', error)
+    if (profileError) {
+      console.error('Error creating profile:', profileError)
+      return
+    }
+
+    // Assign role in user_roles table
+    const { error: roleError } = await supabase
+      .from('user_roles')
+      .insert({
+        user_id: session.user.id,
+        role
+      })
+
+    if (roleError) {
+      console.error('Error assigning role:', roleError)
     }
   }
 

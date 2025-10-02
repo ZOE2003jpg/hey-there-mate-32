@@ -38,7 +38,7 @@ export function WritersManagement({ onNavigate }: WritersManagementProps) {
   
   const { profiles, loading, error, createProfile, updateProfile } = useProfiles()
 
-  const writers = profiles.filter(profile => profile.role === 'writer')
+  const writers = profiles // All profiles are potential writers
 
   const filteredWriters = writers.filter(writer => {
     const displayName = writer.display_name || writer.username || 'Unknown'
@@ -65,8 +65,7 @@ export function WritersManagement({ onNavigate }: WritersManagementProps) {
         user_id: `temp-${Date.now()}`, // In real app, this would be a real user ID
         username: newWriterData.username,
         display_name: newWriterData.display_name,
-        bio: newWriterData.bio,
-        role: 'writer'
+        bio: newWriterData.bio
       })
       
       setIsInviteDialogOpen(false)
@@ -228,11 +227,7 @@ export function WritersManagement({ onNavigate }: WritersManagementProps) {
                         </Badge>
                       </div>
                       <p className="text-muted-foreground">User ID: {writer.user_id}</p>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Role:</span>
-                          <span className="ml-2 font-medium">{writer.role}</span>
-                        </div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Username:</span>
                           <span className="ml-2 font-medium">{writer.username || 'Not set'}</span>

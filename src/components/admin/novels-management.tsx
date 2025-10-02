@@ -370,7 +370,7 @@ export function NovelsManagement({ onNavigate }: NovelsManagementProps) {
                   <SelectValue placeholder="Select author" />
                 </SelectTrigger>
                 <SelectContent>
-                  {profiles?.filter(p => p.role === 'writer').map(writer => (
+                  {profiles?.map(writer => (
                     <SelectItem key={writer.id} value={writer.id}>
                       {writer.display_name || writer.username}
                     </SelectItem>

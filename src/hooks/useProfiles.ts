@@ -8,7 +8,6 @@ export interface Profile {
   display_name: string | null
   bio: string | null
   avatar_url: string | null
-  role: 'reader' | 'writer' | 'admin'
   status: string | null
   created_at: string
   updated_at: string
@@ -58,15 +57,11 @@ export function useProfiles() {
     display_name?: string
     bio?: string
     avatar_url?: string
-    role?: 'reader' | 'writer' | 'admin'
   }) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .insert({
-          ...profileData,
-          role: profileData.role || 'reader'
-        })
+        .insert(profileData)
         .select()
         .single()
 

@@ -412,7 +412,6 @@ export type Database = {
           created_at: string | null
           display_name: string | null
           id: string
-          role: Database["public"]["Enums"]["user_role"] | null
           status: string | null
           updated_at: string | null
           user_id: string
@@ -424,7 +423,6 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["user_role"] | null
           status?: string | null
           updated_at?: string | null
           user_id: string
@@ -436,7 +434,6 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["user_role"] | null
           status?: string | null
           updated_at?: string | null
           user_id?: string
@@ -673,6 +670,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       writer_stats: {
         Row: {
           avg_reading_time: number | null
@@ -727,6 +745,13 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

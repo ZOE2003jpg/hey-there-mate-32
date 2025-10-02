@@ -24,11 +24,12 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
   ]
 
   // User panel items (only visible when logged in)
-  const userPanelItems = user?.profile ? [
-    { id: "reader" as const, label: "Reader Panel", icon: BookOpen, roles: ["reader", "admin"] },
-    { id: "writer" as const, label: "Writer Panel", icon: PenTool, roles: ["writer", "admin"] },
-    { id: "admin" as const, label: "Admin Panel", icon: Shield, roles: ["admin"] },
-  ].filter(item => item.roles.includes(user.profile!.role)) : []
+  const userRoles = user?.roles || []
+  const userPanelItems = user ? [
+    { id: "reader" as const, label: "Reader Panel", icon: BookOpen, roles: ["reader" as const, "admin" as const] },
+    { id: "writer" as const, label: "Writer Panel", icon: PenTool, roles: ["writer" as const, "admin" as const] },
+    { id: "admin" as const, label: "Admin Panel", icon: Shield, roles: ["admin" as const] },
+  ].filter(item => item.roles.some((role) => userRoles.includes(role))) : []
 
   return (
     <header className="app-header">
@@ -117,7 +118,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                         {user.profile.display_name || user.profile.username || "User"}
                       </span>
                       <span className="text-muted-foreground ml-2">
-                        ({user.profile.role})
+                        ({userRoles.join(", ")})
                       </span>
                     </div>
                   </div>
@@ -302,7 +303,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
                         {user.profile.display_name || user.profile.username || "User"}
                       </p>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {user.profile.role}
+                        {userRoles.join(", ")}
                       </p>
                     </div>
                   </div>

@@ -145,8 +145,7 @@ export function Profile({ onNavigate }: ProfileProps) {
         } else {
           await createProfile({
             user_id: user.id,
-            avatar_url: avatarUrl,
-            role: 'writer'
+            avatar_url: avatarUrl
           })
         }
         
@@ -188,8 +187,7 @@ export function Profile({ onNavigate }: ProfileProps) {
         // Create new profile
         await createProfile({
           user_id: user.id,
-          ...profileUpdates,
-          role: 'writer'
+          ...profileUpdates
         })
       }
       

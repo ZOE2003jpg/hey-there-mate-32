@@ -31,7 +31,7 @@ export function ReadersManagement({ onNavigate }: ReadersManagementProps) {
   const [currentReader, setCurrentReader] = useState<any>(null)
   const { profiles, loading, error, updateProfile } = useProfiles()
 
-  const readers = profiles.filter(profile => profile.role === 'reader')
+  const readers = profiles // All profiles are potential readers
 
   const filteredReaders = readers.filter(reader => {
     const displayName = reader.display_name || reader.username || 'Unknown'
@@ -177,11 +177,7 @@ export function ReadersManagement({ onNavigate }: ReadersManagementProps) {
                         </Badge>
                       </div>
                       <p className="text-muted-foreground">User ID: {reader.user_id}</p>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Role:</span>
-                          <span className="ml-2 font-medium">{reader.role}</span>
-                        </div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Username:</span>
                           <span className="ml-2 font-medium">{reader.username || 'Not set'}</span>
