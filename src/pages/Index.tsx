@@ -53,11 +53,13 @@ const Index = () => {
   useEffect(() => {
     if (loading) return
 
-    // Only check access for protected panels when user is trying to access them
+    // Reader panel is public for everyone (logged in or not)
+    if (currentPanel === "reader") return
+
+    // Enforce access only for protected panels
     if (user && currentPanel !== "home") {
       const userRoles = user.roles || []
       const hasAccess = 
-        (currentPanel === "reader" && (userRoles.includes("reader") || userRoles.includes("admin"))) ||
         (currentPanel === "writer" && (userRoles.includes("writer") || userRoles.includes("admin"))) ||
         (currentPanel === "admin" && userRoles.includes("admin"))
       
@@ -67,8 +69,6 @@ const Index = () => {
           setCurrentPanel("admin")
         } else if (userRoles.includes("writer")) {
           setCurrentPanel("writer")  
-        } else if (userRoles.includes("reader")) {
-          setCurrentPanel("reader")
         } else {
           setCurrentPanel("home")
         }
@@ -101,7 +101,7 @@ const Index = () => {
     if (user && currentPanel !== "home") {
       const userRoles = user.roles || []
       const hasAccess = 
-        (currentPanel === "reader" && (userRoles.includes("reader") || userRoles.includes("admin"))) ||
+        currentPanel === "reader" ||
         (currentPanel === "writer" && (userRoles.includes("writer") || userRoles.includes("admin"))) ||
         (currentPanel === "admin" && userRoles.includes("admin"))
       
