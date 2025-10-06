@@ -5,6 +5,7 @@ import { NotificationBell } from "@/components/notification-bell"
 import { PenTool, BookOpen, Shield, Menu, X, LogOut, User, Compass, TrendingUp, Star, Library, Info } from "lucide-react"
 import { useUser } from "@/components/user-context"
 import { Link } from "react-router-dom"
+import logo from "@/assets/vinenovel-logo-original.jpg"
 
 interface NavigationProps {
   currentPanel: "home" | "writer" | "reader" | "admin"
@@ -43,7 +44,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               className="h-12 w-12 rounded-xl bg-background hover:bg-muted transition-all duration-200 flex items-center justify-center"
             >
               <img 
-                src="/assets/vinenovel-logo-original.jpg" 
+                src={logo} 
                 alt="VineNovel Logo" 
                 className="h-10 w-10 object-contain rounded-lg"
               />

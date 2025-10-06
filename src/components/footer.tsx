@@ -1,5 +1,6 @@
 import { BookOpen, Twitter, Github, Mail } from "lucide-react"
 import { Link } from "react-router-dom"
+import logo from "@/assets/vinenovel-logo-original.jpg"
 
 export function Footer() {
   return (
@@ -11,7 +12,7 @@ export function Footer() {
           <div className="md:hidden space-y-4">
             <div className="flex items-center justify-center space-x-2">
               <img 
-                src="/src/assets/vinenovel-logo-original.jpg" 
+                src={logo} 
                 alt="VineNovel Logo" 
                 className="h-5 w-5 object-contain rounded"
               />
@@ -36,7 +37,7 @@ export function Footer() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <img 
-                  src="/src/assets/vinenovel-logo-original.jpg" 
+                  src={logo} 
                   alt="VineNovel Logo" 
                   className="h-6 w-6 object-contain rounded"
                 />

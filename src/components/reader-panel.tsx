@@ -9,6 +9,8 @@ import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
 import { PreviewReader } from "@/components/reader/preview-reader"
 import { ProfilePage } from "@/components/reader/profile-page"
+import { ClubsPage } from "@/components/reader/clubs-page"
+import { ClubPage } from "@/components/reader/club-page"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -20,7 +22,8 @@ import {
   Settings as SettingsIcon,
   Star,
   TrendingUp,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from "lucide-react"
 
 export function ReaderPanel() {
@@ -40,6 +43,7 @@ export function ReaderPanel() {
     { id: "featured", label: "Featured", icon: Star },
     { id: "trending", label: "Trending", icon: TrendingUp },
     { id: "library", label: "My Library", icon: Library },
+    { id: "clubs", label: "Clubs", icon: Users },
     { id: "search", label: "Search", icon: Search },
     { id: "settings", label: "Settings", icon: SettingsIcon }
   ]
@@ -62,6 +66,10 @@ export function ReaderPanel() {
         return <PreviewReader chapter={currentStory?.chapter || currentStory} onNavigate={handleNavigate} />
       case "library":
         return <LibraryPage onNavigate={handleNavigate} />
+      case "clubs":
+        return <ClubsPage onNavigate={handleNavigate} />
+      case "club":
+        return <ClubPage clubId={currentStory?.clubId} onNavigate={handleNavigate} />
       case "search":
         return <SearchPage onNavigate={handleNavigate} />
       case "settings":
