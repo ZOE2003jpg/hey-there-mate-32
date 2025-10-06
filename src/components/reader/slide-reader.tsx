@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider"
 import { ReactionBar } from "@/components/reader/reaction-bar"
 import { FloatingEmoji } from "@/components/reader/floating-emoji"
 import { EngagementBadge } from "@/components/reader/engagement-badge"
+import { SlideComments } from "@/components/reader/slide-comments"
 import { 
   ChevronLeft,
   ChevronRight,
@@ -80,6 +81,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [showControls, setShowControls] = useState(true)
   const [controlsTimeoutId, setControlsTimeoutId] = useState<NodeJS.Timeout | null>(null)
   const [startX, setStartX] = useState<number | null>(null)
+  const [showComments, setShowComments] = useState(false)
   
   // Unlock flag for autoplay policies
   const audioUnlockNeededRef = useRef(false)
@@ -853,7 +855,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
                 <Bookmark className="h-4 w-4 mr-2" />
                 {story?.id && isInLibrary(story.id) ? 'In Library' : 'Add to Library'}
               </Button>
-              <Button size="sm" variant="outline">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  setShowComments(!showComments)
+                  setShowMenu(false)
+                }}
+              >
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Comment
               </Button>
@@ -1095,6 +1104,16 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       <div className="absolute top-16 right-4 z-10 bg-background/80 rounded-full px-2 py-1 text-xs md:hidden">
         {currentSlide} / {totalSlides}
       </div>
+
+      {/* Slide Comments */}
+      {currentSlideId && story?.id && (
+        <SlideComments
+          slideId={currentSlideId}
+          storyId={story.id}
+          isOpen={showComments}
+          onClose={() => setShowComments(false)}
+        />
+      )}
     </div>
   )
 }

@@ -29,12 +29,12 @@ export function EngagementBadge({ slideId }: EngagementBadgeProps) {
     <div className="absolute top-4 right-4 z-10">
       <Badge 
         variant="secondary" 
-        className="bg-background/80 backdrop-blur-sm border border-primary/20 px-3 py-1.5 flex items-center gap-2 animate-fade-in"
+        className="bg-background/80 backdrop-blur-sm border border-primary/20 px-2 md:px-3 py-1 md:py-1.5 flex items-center gap-1 md:gap-2 animate-fade-in text-xs md:text-sm"
       >
-        <span className="text-lg">{emoji}</span>
+        <span className="text-base md:text-lg">{emoji}</span>
         <Eye className="h-3 w-3" />
         <span className="font-medium">{stats.totalReactions}</span>
-        <span className="text-xs text-muted-foreground">readers reacted</span>
+        <span className="hidden md:inline text-xs text-muted-foreground">readers reacted</span>
       </Badge>
     </div>
   )

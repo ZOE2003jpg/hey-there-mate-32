@@ -133,6 +133,7 @@ export function useStories() {
     author_id: string
     tags?: string[]
     cover_image_url?: string | null
+    mood?: string
   }) => {
     try {
       const { data: story, error } = await supabase
@@ -143,7 +144,8 @@ export function useStories() {
           genre: storyData.genre,
           author_id: storyData.author_id,
           cover_image_url: storyData.cover_image_url,
-          status: 'draft'
+          status: 'draft',
+          metadata: storyData.mood ? { mood: storyData.mood } : {}
         })
         .select()
         .single()

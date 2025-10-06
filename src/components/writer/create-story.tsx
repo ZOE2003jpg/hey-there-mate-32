@@ -10,6 +10,7 @@ import { ArrowLeft, Upload, Save, BookOpen, Eye, Tags, Plus, X } from "lucide-re
 import { useStories } from "@/hooks/useStories"
 import { useUser } from "@/components/user-context"
 import { toast } from "sonner"
+import { StoryMoodSelector, StoryMood } from "./story-mood-selector"
 
 interface CreateStoryProps {
   onNavigate: (page: string, data?: any) => void
@@ -24,7 +25,8 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
     description: "",
     genre: "",
     tags: [] as string[],
-    coverImage: null as File | null
+    coverImage: null as File | null,
+    mood: 'default' as StoryMood
   })
   const [submitting, setSubmitting] = useState(false)
   const [newTag, setNewTag] = useState("")
@@ -52,7 +54,8 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
         description: formData.description.trim(),
         genre: formData.genre,
         author_id: user.id,
-        tags: formData.tags
+        tags: formData.tags,
+        mood: formData.mood
       })
       
       toast.success("Story created successfully!")
@@ -179,6 +182,11 @@ export function CreateStory({ onNavigate }: CreateStoryProps) {
                   )}
                 </div>
               </div>
+
+              <StoryMoodSelector 
+                value={formData.mood} 
+                onChange={(mood) => setFormData({...formData, mood})} 
+              />
             </CardContent>
           </Card>
 
