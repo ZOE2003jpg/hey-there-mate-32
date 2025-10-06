@@ -23,17 +23,21 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
   const { reactionCounts, userReactions, toggleReaction } = useReactions(slideId, user?.id);
   const { broadcastReaction } = useRealtimeReactions(slideId, user?.id);
 
-  const handleReactionClick = async (reactionType: ReactionType) => {
+  const handleReactionClick = async (e: React.MouseEvent, reactionType: ReactionType) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!user) {
       toast.error('Please login to react');
       return;
     }
     
-    console.log('Reaction clicked:', reactionType);
+    console.log('Reaction clicked:', { reactionType, userId: user.id, slideId });
     
     try {
       await toggleReaction(reactionType);
       await broadcastReaction(reactionType);
+      console.log('Reaction added successfully');
     } catch (error) {
       console.error('Error reacting:', error);
       toast.error('Failed to react');
@@ -55,16 +59,23 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
             <Button
               variant={isActive ? 'default' : 'ghost'}
               size="sm"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleReactionClick(reactionType);
-              }}
-              className="flex items-center gap-1 h-7 md:h-8 px-1.5 md:px-2 min-w-0"
+              onClick={(e) => handleReactionClick(e, reactionType)}
+              className={`
+                flex items-center gap-1 h-7 md:h-8 px-1.5 md:px-2 min-w-0
+                touch-manipulation cursor-pointer
+                transition-all duration-300
+                ${isActive ? 'scale-105 shadow-lg shadow-primary/20' : ''}
+              `}
+              style={{ zIndex: 50 }}
+              type="button"
             >
-              <span className="text-base md:text-lg">{reactionEmojis[reactionType]}</span>
+              <span className={`text-base md:text-lg transition-transform ${isActive ? 'animate-bounce' : ''}`}>
+                {reactionEmojis[reactionType]}
+              </span>
               {count > 0 && (
-                <span className="text-xs font-medium">{count}</span>
+                <span className={`text-xs font-medium ${isActive ? 'font-bold' : ''}`}>
+                  +{count}
+                </span>
               )}
             </Button>
           </motion.div>

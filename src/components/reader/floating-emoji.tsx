@@ -25,14 +25,21 @@ export function FloatingEmoji({ emoji, id, onComplete }: FloatingEmojiProps) {
         opacity: 0, 
         y: 0, 
         x: 0,
-        scale: 0.5 
+        scale: 0.5,
+        filter: 'drop-shadow(0 0 0px rgba(255,255,255,0))'
       }}
       animate={{ 
         opacity: [0, 1, 1, 0], 
         y: -150, 
         x: xOffset,
-        scale: [0.5, 1.2, 1, 0.8],
-        rotate: [0, 10, -10, 0]
+        scale: [0.5, 1.3, 1.1, 0.8],
+        rotate: [0, 10, -10, 0],
+        filter: [
+          'drop-shadow(0 0 0px rgba(255,255,255,0))',
+          'drop-shadow(0 0 15px rgba(255,255,255,0.6))',
+          'drop-shadow(0 0 10px rgba(255,255,255,0.4))',
+          'drop-shadow(0 0 0px rgba(255,255,255,0))'
+        ]
       }}
       transition={{ 
         duration: 3,
@@ -40,6 +47,10 @@ export function FloatingEmoji({ emoji, id, onComplete }: FloatingEmojiProps) {
         ease: "easeOut",
         opacity: {
           times: [0, 0.1, 0.8, 1],
+          duration: 3
+        },
+        scale: {
+          times: [0, 0.2, 0.4, 1],
           duration: 3
         }
       }}

@@ -51,17 +51,12 @@ export function StoryCard({ story, onRead }: StoryCardProps) {
           {story.title}
         </h3>
         
-        {/* Author and Follow Button */}
-        <div className="flex items-center justify-between gap-2">
-          {story.author && (
-            <p className="text-xs text-muted-foreground truncate">
-              by {story.author}
-            </p>
-          )}
-          {story.author_id && (
+        {/* Follow Button - Centered on Mobile */}
+        {story.author_id && (
+          <div className="flex justify-center">
             <FollowButton authorId={story.author_id} size="sm" variant="outline" />
-          )}
-        </div>
+          </div>
+        )}
         
         {/* Action Button - Auto margin top to push to bottom */}
         <button 

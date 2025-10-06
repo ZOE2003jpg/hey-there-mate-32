@@ -46,21 +46,52 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
   useEffect(() => {
     if (!isOpen) return
 
+    console.log('Setting up realtime for comments:', { slideId, storyId })
+
     const channel = supabase
       .channel(`comments-${slideId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'comments',
           filter: `chapter_id=eq.${slideId}`
         },
-        () => {
+        (payload) => {
+          console.log('New comment received:', payload)
           fetchComments()
         }
       )
-      .subscribe()
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'comments',
+          filter: `chapter_id=eq.${slideId}`
+        },
+        (payload) => {
+          console.log('Comment updated:', payload)
+          fetchComments()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'comments',
+          filter: `chapter_id=eq.${slideId}`
+        },
+        (payload) => {
+          console.log('Comment deleted:', payload)
+          fetchComments()
+        }
+      )
+      .subscribe((status) => {
+        console.log('Comment subscription status:', status)
+      })
 
     return () => {
       supabase.removeChannel(channel)
@@ -131,26 +162,41 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
       toast.error('Please login to comment')
       return
     }
-    if (!newComment.trim()) return
+    
+    if (!newComment.trim()) {
+      toast.error('Comment cannot be empty')
+      return
+    }
+
+    console.log('Submitting comment:', { userId: user.id, storyId, slideId, content: newComment.trim() })
 
     try {
-      const { error } = await supabase
+      setLoading(true)
+      const { data, error } = await supabase
         .from('comments')
         .insert({
-          content: newComment,
+          content: newComment.trim(),
           user_id: user.id,
           story_id: storyId,
           chapter_id: slideId,
           depth: 0
         })
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase insert error:', error)
+        throw error
+      }
+      
+      console.log('Comment inserted:', data)
       setNewComment('')
-      fetchComments()
-      toast.success('Comment added!')
+      await fetchComments()
+      toast.success('💫 Comment posted!')
     } catch (error) {
       console.error('Error adding comment:', error)
-      toast.error('Failed to add comment')
+      toast.error('Failed to add comment. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
