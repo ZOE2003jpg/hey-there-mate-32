@@ -39,9 +39,13 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
           <div className="header-section header-logo">
             <button
               onClick={() => onPanelChange("home")}
-              className="h-12 w-12 rounded-xl bg-primary hover:bg-primary/90 transition-all duration-200 flex items-center justify-center shadow-lg"
+              className="h-12 w-12 rounded-xl bg-background hover:bg-muted transition-all duration-200 flex items-center justify-center"
             >
-              <span className="text-primary-foreground font-bold text-base">VN</span>
+              <img 
+                src="/src/assets/vinenovel-logo-original.jpg" 
+                alt="VineNovel Logo" 
+                className="h-10 w-10 object-contain rounded-lg"
+              />
             </button>
             <div className="hidden lg:block">
               <h1 className="text-xl font-bold text-primary">VineNovel</h1>

@@ -10,7 +10,11 @@ export function Footer() {
           {/* Mobile: Compact single column */}
           <div className="md:hidden space-y-4">
             <div className="flex items-center justify-center space-x-2">
-              <BookOpen className="h-5 w-5 text-primary" />
+              <img 
+                src="/src/assets/vinenovel-logo-original.jpg" 
+                alt="VineNovel Logo" 
+                className="h-5 w-5 object-contain rounded"
+              />
               <span className="font-bold">VineNovel</span>
             </div>
             <p className="text-xs text-muted-foreground text-center">
@@ -31,7 +35,11 @@ export function Footer() {
             {/* VineNovel Brand */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <BookOpen className="h-6 w-6 text-primary" />
+                <img 
+                  src="/src/assets/vinenovel-logo-original.jpg" 
+                  alt="VineNovel Logo" 
+                  className="h-6 w-6 object-contain rounded"
+                />
                 <span className="text-lg font-bold">VineNovel</span>
               </div>
               <p className="typography-body text-muted-foreground">

@@ -2,12 +2,14 @@ import {
   BookOpen, 
   Play
 } from "lucide-react"
+import { FollowButton } from "@/components/reader/follow-button"
 
 interface StoryCardProps {
   story: {
     id: string
     title: string
     author?: string
+    author_id?: string
     genre?: string
     cover_image_url?: string
     view_count?: number
@@ -49,6 +51,13 @@ export function StoryCard({ story, onRead }: StoryCardProps) {
         <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
           {story.title}
         </h3>
+        
+        {/* Author and Follow Button */}
+        {story.author_id && (
+          <div className="flex items-center justify-center gap-2">
+            <FollowButton authorId={story.author_id} size="sm" variant="outline" />
+          </div>
+        )}
         
         {/* Action Button - Auto margin top to push to bottom */}
         <button 

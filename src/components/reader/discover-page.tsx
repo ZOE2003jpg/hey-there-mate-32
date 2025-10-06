@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StoryCard } from "@/components/ui/story-card"
 import { SignupPromptDialog } from "@/components/signup-prompt-dialog"
+import { StreakDisplay } from "@/components/reader/streak-display"
 import { 
   BookOpen, 
   Star,
@@ -94,6 +95,13 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
         feature={signupFeature}
       />
       <div className="space-y-8">
+      {/* Streak Display */}
+      {user && (
+        <div className="mb-6">
+          <StreakDisplay />
+        </div>
+      )}
+      
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>

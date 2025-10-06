@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
+import { ReactionBar } from "@/components/reader/reaction-bar"
 import { 
   ChevronLeft,
   ChevronRight,
@@ -1147,6 +1148,13 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
                   >
                     {allSlides[currentSlide - 1]?.content || 'Loading slide content...'}
                   </div>
+                  
+                  {/* Reaction Bar */}
+                  {allSlides[currentSlide - 1]?.id && (
+                    <div className="mt-6">
+                      <ReactionBar slideId={allSlides[currentSlide - 1].id} />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

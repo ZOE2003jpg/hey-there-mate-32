@@ -172,12 +172,45 @@ export type Database = {
           },
         ]
       }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           chapter_id: string | null
           content: string
           created_at: string | null
+          depth: number | null
+          edited: boolean | null
           id: string
+          like_count: number | null
+          parent_comment_id: string | null
           story_id: string | null
           updated_at: string | null
           user_id: string
@@ -186,7 +219,11 @@ export type Database = {
           chapter_id?: string | null
           content: string
           created_at?: string | null
+          depth?: number | null
+          edited?: boolean | null
           id?: string
+          like_count?: number | null
+          parent_comment_id?: string | null
           story_id?: string | null
           updated_at?: string | null
           user_id: string
@@ -195,7 +232,11 @@ export type Database = {
           chapter_id?: string | null
           content?: string
           created_at?: string | null
+          depth?: number | null
+          edited?: boolean | null
           id?: string
+          like_count?: number | null
+          parent_comment_id?: string | null
           story_id?: string | null
           updated_at?: string | null
           user_id?: string
@@ -206,6 +247,13 @@ export type Database = {
             columns: ["chapter_id"]
             isOneToOne: false
             referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
             referencedColumns: ["id"]
           },
           {
@@ -264,6 +312,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      followers: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
       }
       library: {
         Row: {
@@ -371,6 +440,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      paragraph_reactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          reaction_type: string
+          slide_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          reaction_type: string
+          slide_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          reaction_type?: string
+          slide_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paragraph_reactions_slide_id_fkey"
+            columns: ["slide_id"]
+            isOneToOne: false
+            referencedRelation: "slides"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payouts: {
         Row: {
@@ -691,6 +792,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_streaks: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          id: string
+          last_read_date: string | null
+          longest_streak: number | null
+          streak_freeze_count: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_read_date?: string | null
+          longest_streak?: number | null
+          streak_freeze_count?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_read_date?: string | null
+          longest_streak?: number | null
+          streak_freeze_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       writer_stats: {
         Row: {
           avg_reading_time: number | null
@@ -752,6 +886,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      update_reading_streak: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
