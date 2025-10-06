@@ -52,11 +52,11 @@ export function StoryCard({ story, onRead }: StoryCardProps) {
           {story.title}
         </h3>
         
-        {/* Author and Follow Button */}
-        {story.author_id && (
-          <div className="flex items-center justify-center gap-2">
-            <FollowButton authorId={story.author_id} size="sm" variant="outline" />
-          </div>
+        {/* Author - Follow button is in profile page */}
+        {story.author && (
+          <p className="text-xs text-muted-foreground">
+            by {story.author}
+          </p>
         )}
         
         {/* Action Button - Auto margin top to push to bottom */}

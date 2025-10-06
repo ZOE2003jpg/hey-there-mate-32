@@ -43,7 +43,7 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               className="h-12 w-12 rounded-xl bg-background hover:bg-muted transition-all duration-200 flex items-center justify-center"
             >
               <img 
-                src="/src/assets/vinenovel-logo-original.jpg" 
+                src="/assets/vinenovel-logo-original.jpg" 
                 alt="VineNovel Logo" 
                 className="h-10 w-10 object-contain rounded-lg"
               />
