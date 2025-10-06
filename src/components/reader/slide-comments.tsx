@@ -42,6 +42,31 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
     }
   }, [slideId, isOpen])
 
+  // Real-time subscription for new comments
+  useEffect(() => {
+    if (!isOpen) return
+
+    const channel = supabase
+      .channel(`comments-${slideId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'comments',
+          filter: `chapter_id=eq.${slideId}`
+        },
+        () => {
+          fetchComments()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [slideId, isOpen])
+
   const fetchComments = async () => {
     try {
       setLoading(true)

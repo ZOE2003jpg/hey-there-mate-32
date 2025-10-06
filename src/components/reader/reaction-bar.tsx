@@ -28,8 +28,16 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
       toast.error('Please login to react');
       return;
     }
-    await toggleReaction(reactionType);
-    await broadcastReaction(reactionType);
+    
+    console.log('Reaction clicked:', reactionType);
+    
+    try {
+      await toggleReaction(reactionType);
+      await broadcastReaction(reactionType);
+    } catch (error) {
+      console.error('Error reacting:', error);
+      toast.error('Failed to react');
+    }
   };
 
   return (
@@ -47,9 +55,12 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
             <Button
               variant={isActive ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => handleReactionClick(reactionType)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleReactionClick(reactionType);
+              }}
               className="flex items-center gap-1 h-7 md:h-8 px-1.5 md:px-2 min-w-0"
-              disabled={!user}
             >
               <span className="text-base md:text-lg">{reactionEmojis[reactionType]}</span>
               {count > 0 && (

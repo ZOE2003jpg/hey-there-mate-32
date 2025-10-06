@@ -6,6 +6,7 @@ import { ReactionBar } from "@/components/reader/reaction-bar"
 import { FloatingEmoji } from "@/components/reader/floating-emoji"
 import { EngagementBadge } from "@/components/reader/engagement-badge"
 import { SlideComments } from "@/components/reader/slide-comments"
+import { LiveCommentsOverlay } from "@/components/reader/live-comments-overlay"
 import { 
   ChevronLeft,
   ChevronRight,
@@ -627,7 +628,7 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
               <Share className="h-4 w-4 mr-2" />
               Share Story
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowComments(true)}>
               <MessageCircle className="h-4 w-4 mr-2" />
               Comments
             </DropdownMenuItem>
@@ -1104,6 +1105,14 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       <div className="absolute top-16 right-4 z-10 bg-background/80 rounded-full px-2 py-1 text-xs md:hidden">
         {currentSlide} / {totalSlides}
       </div>
+
+      {/* Live Comments Overlay (YouTube-style) */}
+      {currentSlideId && story?.id && (
+        <LiveCommentsOverlay
+          slideId={currentSlideId}
+          storyId={story.id}
+        />
+      )}
 
       {/* Slide Comments */}
       {currentSlideId && story?.id && (
