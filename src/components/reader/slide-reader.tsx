@@ -1107,17 +1107,17 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       </div>
 
       {/* Live Comments Overlay (YouTube-style) */}
-      {currentSlideId && story?.id && (
+      {currentChapter && story?.id && (
         <LiveCommentsOverlay
-          slideId={currentSlideId}
+          slideId={currentChapter}
           storyId={story.id}
         />
       )}
 
       {/* Slide Comments */}
-      {currentSlideId && story?.id && (
+      {currentChapter && story?.id && (
         <SlideComments
-          slideId={currentSlideId}
+          slideId={currentChapter}
           storyId={story.id}
           isOpen={showComments}
           onClose={() => setShowComments(false)}
