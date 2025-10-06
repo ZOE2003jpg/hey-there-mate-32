@@ -11,6 +11,7 @@ import { CategoriesTags } from "@/components/admin/categories-tags"
 import { Settings } from "@/components/admin/settings"
 import { AdminConfig } from "@/components/admin/admin-config"
 import { TestDataSetup } from "@/components/admin/test-data-setup"
+import { UserManagement } from "@/components/admin/user-management"
 import { AdminMobileNav } from "./admin-mobile-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
@@ -45,6 +46,7 @@ export function AdminPanel() {
 
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+    { id: "user-management", label: "User Management", icon: UserCheck },
     { id: "novels", label: "Novels", icon: BookOpen },
     { id: "chapters", label: "Chapters", icon: FileText },
     { id: "writers", label: "Writers", icon: Users },
@@ -54,7 +56,7 @@ export function AdminPanel() {
     { id: "comments", label: "Comments", icon: MessageSquare },
     { id: "categories", label: "Categories", icon: Tag },
     { id: "settings", label: "Settings", icon: SettingsIcon },
-    { id: "admin-config", label: "Admin Config", icon: UserCheck },
+    { id: "admin-config", label: "Admin Config", icon: Shield },
     { id: "test-data", label: "Test Data Setup", icon: Database }
   ]
 
@@ -62,6 +64,8 @@ export function AdminPanel() {
     switch (currentPage) {
       case "dashboard":
         return <Dashboard onNavigate={handleNavigate} />
+      case "user-management":
+        return <UserManagement onNavigate={handleNavigate} />
       case "novels":
         return <NovelsManagement onNavigate={handleNavigate} />
       case "chapters":

@@ -10,6 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, LogIn, UserPlus, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { z } from "zod"
+
+const authSchema = z.object({
+  email: z.string().email("Invalid email address").max(255, "Email is too long"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(100, "Password is too long")
+})
 
 interface LoginModalProps {
   open: boolean
@@ -31,11 +37,14 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
     setError("")
 
     try {
+      // Validate input with Zod
+      const validated = authSchema.parse({ email, password })
+      
       let result
       if (mode === "signin") {
-        result = await signIn(email, password)
+        result = await signIn(validated.email, validated.password)
       } else {
-        result = await signUp(email, password, role)
+        result = await signUp(validated.email, validated.password, role)
       }
 
       if (result.error) {
@@ -45,11 +54,18 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
         setEmail("")
         setPassword("")
         if (mode === "signup") {
-          setError("Check your email for the confirmation link!")
+          toast.success("Account created! You can now sign in.")
+        } else {
+          toast.success("Welcome back!")
         }
       }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
+    } catch (err: any) {
+      if (err.errors && Array.isArray(err.errors)) {
+        // Zod validation error
+        setError(err.errors[0]?.message || "Validation error")
+      } else {
+        setError(err.message || "An unexpected error occurred. Please try again.")
+      }
     } finally {
       setIsLoading(false)
     }
