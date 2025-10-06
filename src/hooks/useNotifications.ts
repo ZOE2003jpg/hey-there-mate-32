@@ -87,6 +87,29 @@ export function useNotifications(userId?: string) {
 
   useEffect(() => {
     fetchNotifications()
+
+    // Set up real-time subscription
+    if (!userId) return
+
+    const channel = supabase
+      .channel('notifications-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          fetchNotifications()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [userId])
 
   return {

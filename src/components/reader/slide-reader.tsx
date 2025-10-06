@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Slider } from "@/components/ui/slider"
 import { ReactionBar } from "@/components/reader/reaction-bar"
+import { FloatingEmoji } from "@/components/reader/floating-emoji"
+import { EngagementBadge } from "@/components/reader/engagement-badge"
 import { 
   ChevronLeft,
   ChevronRight,
@@ -37,6 +39,7 @@ import { useRealtimeLikes } from "@/hooks/useRealtimeLikes"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useBackgroundSound } from "@/hooks/useBackgroundSound"
 import { useSoundsLibrary } from "@/hooks/useSoundsLibrary"
+import { useRealtimeReactions } from "@/hooks/useRealtimeReactions"
 import { useUser } from "@/components/user-context"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
@@ -92,6 +95,11 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
   const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
   const { getChapterSounds } = useSoundsLibrary()
+  
+  // Get current slide ID for reactions
+  const currentSlideData = allSlides[currentSlide - 1]
+  const currentSlideId = currentSlideData?.id || `${currentChapter}-${currentSlide}`
+  const { floatingReactions, removeReaction } = useRealtimeReactions(currentSlideId, user?.id)
 
   const totalSlides = allSlides.length
   const progress = totalSlides > 0 ? Math.round((currentSlide / totalSlides) * 100) : 0
@@ -952,11 +960,24 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
 
       {/* Main Reading Area */}
       <div 
-        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-8 lg:px-12 py-24 pb-32 md:pb-24 overflow-y-auto"
+        className="h-full w-full flex items-center justify-center cursor-pointer select-none px-4 sm:px-8 lg:px-12 py-24 pb-32 md:pb-24 overflow-y-auto relative"
         onClick={handleSlideNavigation}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Engagement Badge */}
+        {currentSlideId && <EngagementBadge slideId={currentSlideId} />}
+        
+        {/* Floating Reactions */}
+        {floatingReactions.map((reaction) => (
+          <FloatingEmoji
+            key={reaction.id}
+            emoji={reaction.emoji}
+            id={reaction.id}
+            onComplete={removeReaction}
+          />
+        ))}
+        
         <div className="w-full max-w-7xl mx-auto px-1 sm:px-4 lg:px-6">
           <div className="vine-slide-reader border-2 border-primary/20 rounded-lg p-3 sm:p-8 bg-card/50 backdrop-blur-sm min-h-[60vh] md:min-h-[70vh] flex flex-col mt-12 md:mt-0">
             
@@ -1017,11 +1038,9 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
                   </div>
                   
                   {/* Reaction Bar */}
-                  {allSlides[currentSlide - 1]?.id && (
-                    <div className="mt-6">
-                      <ReactionBar slideId={allSlides[currentSlide - 1].id} />
-                    </div>
-                  )}
+                  <div className="mt-6">
+                    <ReactionBar slideId={currentSlideId} />
+                  </div>
                 </div>
               )}
             </div>

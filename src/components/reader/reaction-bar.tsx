@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useReactions, ReactionType } from '@/hooks/useReactions';
+import { useRealtimeReactions } from '@/hooks/useRealtimeReactions';
 import { motion } from 'framer-motion';
 import { useUser } from '@/components/user-context';
+import { toast } from 'sonner';
 
 interface ReactionBarProps {
   slideId: string;
@@ -19,10 +21,15 @@ const reactionEmojis: Record<ReactionType, string> = {
 export function ReactionBar({ slideId }: ReactionBarProps) {
   const { user } = useUser();
   const { reactionCounts, userReactions, toggleReaction } = useReactions(slideId, user?.id);
+  const { broadcastReaction } = useRealtimeReactions(slideId, user?.id);
 
-  const handleReactionClick = (reactionType: ReactionType) => {
-    if (!user) return;
-    toggleReaction(reactionType);
+  const handleReactionClick = async (reactionType: ReactionType) => {
+    if (!user) {
+      toast.error('Please login to react');
+      return;
+    }
+    await toggleReaction(reactionType);
+    await broadcastReaction(reactionType);
   };
 
   return (

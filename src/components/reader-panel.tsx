@@ -8,6 +8,7 @@ import { SearchPage } from "@/components/reader/search-page"
 import { SettingsPage } from "@/components/reader/settings-page"
 import { StoryChapters } from "@/components/reader/story-chapters"
 import { PreviewReader } from "@/components/reader/preview-reader"
+import { ProfilePage } from "@/components/reader/profile-page"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -65,6 +66,8 @@ export function ReaderPanel() {
         return <SearchPage onNavigate={handleNavigate} />
       case "settings":
         return <SettingsPage onNavigate={handleNavigate} />
+      case "profile":
+        return <ProfilePage userId={currentStory?.userId} onNavigate={handleNavigate} />
       default:
         return <DiscoverPage onNavigate={handleNavigate} />
     }

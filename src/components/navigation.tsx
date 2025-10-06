@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { NotificationBell } from "@/components/notification-bell"
 import { PenTool, BookOpen, Shield, Menu, X, LogOut, User, Compass, TrendingUp, Star, Library, Info } from "lucide-react"
 import { useUser } from "@/components/user-context"
 import { Link } from "react-router-dom"
@@ -111,8 +112,9 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
 
           {/* Right: User Controls */}
           <div className="header-section header-controls">
-            {/* Desktop User Info */}
+          {/* Desktop User Info */}
             <div className="hidden md:flex items-center space-x-3">
+              {user?.profile && <NotificationBell />}
               {user?.profile && (
                 <>
                   <div className="flex items-center space-x-2 px-3 py-2 bg-muted/50 rounded-lg">

@@ -2,9 +2,12 @@ import { Button } from "@/components/ui/button"
 import { useStories } from "@/hooks/useStories"
 import { useAnalytics } from "@/hooks/useAnalytics"
 import { useEarnings } from "@/hooks/useEarnings"
+import { useFollowers } from "@/hooks/useFollowers"
+import { useProfile } from "@/hooks/useProfile"
 import { useUser } from "@/components/user-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Avatar } from "@/components/ui/avatar"
 import { CreateStoryModal } from "./create-story-modal"
 import { 
   PenTool, 
@@ -29,6 +32,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const { stories, loading: storiesLoading } = useStories()
   const { writerStats, loading: analyticsLoading } = useAnalytics(user?.id)
   const { stats: earningsStats } = useEarnings(user?.id)
+  const { followers } = useFollowers(user?.id)
 
   const userStories = stories.filter(story => story.author_id === user?.id)
   
@@ -213,6 +217,29 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         </Card>
       </div>
 
+      {/* Recent Followers */}
+      <Card className="vine-card">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Recent Followers ({followers.length})
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {followers.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">No followers yet</p>
+          ) : (
+            <div className="flex flex-wrap gap-4">
+              {followers.slice(0, 8).map((follower) => (
+                <FollowerAvatar key={follower.follower_id} userId={follower.follower_id} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Notifications Preview */}
       <Card className="vine-card">
         <CardHeader>
@@ -240,6 +267,26 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function FollowerAvatar({ userId }: { userId: string }) {
+  const { profile } = useProfile(userId)
+
+  if (!profile) return null
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <Avatar className="h-12 w-12">
+        <img 
+          src={profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`}
+          alt={profile.display_name || profile.username || 'User'}
+        />
+      </Avatar>
+      <span className="text-xs text-muted-foreground truncate max-w-[80px]">
+        {profile.display_name || profile.username || 'User'}
+      </span>
     </div>
   )
 }
