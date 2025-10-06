@@ -36,7 +36,6 @@ import { useChapters } from "@/hooks/useChapters"
 import { useRealtimeLikes } from "@/hooks/useRealtimeLikes"
 import { useLibrary } from "@/hooks/useLibrary"
 import { useBackgroundSound } from "@/hooks/useBackgroundSound"
-import { useAds } from "@/hooks/useAds"
 import { useSoundsLibrary } from "@/hooks/useSoundsLibrary"
 import { useUser } from "@/components/user-context"
 import { supabase } from "@/integrations/supabase/client"
@@ -55,11 +54,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const [currentSlide, setCurrentSlide] = useState(1)
   const [showTutorial, setShowTutorial] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
-  const [showAd, setShowAd] = useState(false)
-  const [adCountdown, setAdCountdown] = useState(6)
-  const [currentAd, setCurrentAd] = useState<any>(null)
-  const [videoWatched, setVideoWatched] = useState(false)
-  const [adVideoRef, setAdVideoRef] = useState<HTMLVideoElement | null>(null)
   const [showFontControls, setShowFontControls] = useState(false)
   const [showVolumeControls, setShowVolumeControls] = useState(false)
   const [showBottomControls, setShowBottomControls] = useState(false)
@@ -97,7 +91,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
   const { toggleLike, isLiked } = useRealtimeLikes(user?.id)
   const { addToLibrary, isInLibrary } = useLibrary(user?.id)
   const { currentSound, isPlaying, volume, defaultSounds, playSound, pauseSound, changeVolume } = useBackgroundSound()
-  const { ads, incrementImpressions, incrementClicks } = useAds()
   const { getChapterSounds } = useSoundsLibrary()
 
   const totalSlides = allSlides.length
@@ -338,49 +331,9 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     return () => clearTimeout(timeoutId)
   }, [currentSlide, user?.id, story?.id, currentChapter, totalSlides])
 
-  // Handle video end event
-  const handleVideoEnd = () => {
-    setVideoWatched(true)
-    setAdCountdown(0)
-  }
-
-  // Set up video ref when ad changes
-  useEffect(() => {
-    if (showAd && adVideoRef && currentAd) {
-      adVideoRef.onended = handleVideoEnd
-      adVideoRef.onloadedmetadata = () => {
-        // Reset states when video loads
-        setVideoWatched(false)
-        setAdCountdown(Math.max(6, Math.floor(adVideoRef.duration || 6)))
-      }
-    }
-  }, [showAd, adVideoRef, currentAd])
-
-  // Ad countdown
-  useEffect(() => {
-    if (showAd && adCountdown > 0) {
-      const timer = setTimeout(() => setAdCountdown(adCountdown - 1), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [showAd, adCountdown])
-
   const nextSlide = () => {
     if (currentSlide < totalSlides) {
-      // Check if we need to show an ad (every 5 slides)
-      const nextSlideNum = currentSlide + 1
-      if (nextSlideNum % 5 === 0 && ads.length > 0) {
-        // Show ad before proceeding to next slide
-        const randomAd = ads[Math.floor(Math.random() * ads.length)]
-        setCurrentAd(randomAd)
-        setShowAd(true)
-        setVideoWatched(false)
-        setAdCountdown(6)
-        
-        // Track ad impression
-        incrementImpressions(randomAd.id)
-      } else {
-        setCurrentSlide(nextSlideNum)
-      }
+      setCurrentSlide(currentSlide + 1)
     }
   }
 
@@ -444,25 +397,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
     if (currentSlide > 1) {
       setCurrentSlide(currentSlide - 1)
     }
-  }
-
-  const skipAd = () => {
-    if (videoWatched || adCountdown === 0) {
-      setShowAd(false)
-      setAdCountdown(6)
-      setCurrentAd(null)
-      setVideoWatched(false)
-      // Continue to the next slide
-      setCurrentSlide(currentSlide + 1)
-    }
-  }
-
-  const handleAdClick = () => {
-    if (currentAd?.id) {
-      incrementClicks(currentAd.id)
-    }
-    // Handle ad click action
-    toast.info('Ad clicked!')
   }
 
   const handleLikeToggle = async () => {
@@ -628,73 +562,6 @@ export function SlideReader({ story, chapter, onNavigate }: SlideReaderProps) {
       return () => clearTimeout(timer)
     }
   }, [showVolumeControl])
-
-  if (showAd) {
-    return (
-      <div className="fixed inset-0 bg-background/90 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="relative max-w-4xl w-full mx-4">
-          <div className="bg-background border rounded-lg p-8 text-center space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Video Advertisement</h3>
-              <p className="text-muted-foreground">
-                Please watch this short ad to continue reading
-              </p>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-6">
-              {currentAd && currentAd.video_url ? (
-                <div className="space-y-4">
-                  <video 
-                    ref={setAdVideoRef}
-                    src={currentAd.video_url} 
-                    className="w-full max-h-96 object-contain rounded"
-                    controls
-                    autoPlay
-                    playsInline
-                  />
-                  <div className="text-sm text-muted-foreground">
-                    {!videoWatched && adCountdown > 0 && (
-                      <p>You can skip in {adCountdown} seconds or wait for the video to finish</p>
-                    )}
-                    {videoWatched && (
-                      <p className="text-green-600">✓ Video completed! You can now continue.</p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                    <Play className="h-12 w-12 text-primary" />
-                  </div>
-                  <p className="text-lg font-medium">Discover amazing stories on VineNovel Premium</p>
-                  <p className="text-muted-foreground">Ad-free reading experience with exclusive content</p>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center gap-4">
-              <Button 
-                variant="outline" 
-                onClick={skipAd}
-                disabled={!videoWatched && adCountdown > 0}
-                className={videoWatched ? "bg-green-600 hover:bg-green-700 text-white" : ""}
-              >
-                {!videoWatched && adCountdown > 0 
-                  ? `Wait ${adCountdown}s` 
-                  : videoWatched 
-                    ? 'Continue Reading' 
-                    : 'Skip Ad'
-                }
-              </Button>
-              {currentAd && (
-                <Button onClick={handleAdClick}>
-                  Learn More
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div 
