@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/components/user-context';
@@ -9,10 +9,12 @@ export default function ReaderLogin() {
   const { user, loading, signInWithFirebaseGoogle } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || '/';
+  const returnTo = searchParams.get('returnTo') || '/?panel=reader&page=discover';
+  const hasNavigated = useRef(false);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !hasNavigated.current) {
+      hasNavigated.current = true;
       navigate(returnTo, { replace: true });
     }
   }, [user, loading, navigate, returnTo]);
@@ -27,11 +29,16 @@ export default function ReaderLogin() {
       // Don't navigate here - let useEffect handle it after user state updates
     } catch (error) {
       console.error('Unexpected error:', error);
-      toast.error('An unexpected error occurred');
+      const code = (error as any)?.code;
+      if (code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in was cancelled. Please try again.');
+      } else {
+        toast.error('An unexpected error occurred');
+      }
     }
   };
 
-  if (loading) {
+  if (loading && !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -39,6 +46,7 @@ export default function ReaderLogin() {
     );
   }
 
+  // If already authenticated, render nothing briefly (effect will navigate)
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <div className="w-full max-w-md">
