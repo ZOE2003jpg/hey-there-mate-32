@@ -6,7 +6,7 @@ import { BookOpen, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ReaderLogin() {
-  const { user, loading, signInWithGoogle } = useUser();
+  const { user, loading, signInWithFirebaseGoogle } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/';
@@ -19,7 +19,7 @@ export default function ReaderLogin() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const { error } = await signInWithGoogle();
+      const { error } = await signInWithFirebaseGoogle();
       if (error) {
         console.error('Google sign-in error:', error);
         toast.error('Failed to sign in with Google');

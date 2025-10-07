@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { User as SupabaseUser, Session } from '@supabase/supabase-js'
+import { auth, googleProvider } from "@/lib/firebase"
+import { signInWithPopup } from "firebase/auth"
 
 export type UserRole = "reader" | "writer" | "admin"
 
@@ -30,6 +32,7 @@ interface UserContextType {
   signUp: (email: string, password: string, role?: UserRole) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signInWithGoogle: () => Promise<{ error: any }>
+  signInWithFirebaseGoogle: () => Promise<{ error: any }>
   signOut: () => Promise<void>
   createProfile: (role: UserRole) => Promise<void>
 }
@@ -180,6 +183,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return { error }
   }
 
+  const signInWithFirebaseGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const idToken = await result.user.getIdToken()
+      
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+      })
+      
+      return { error }
+    } catch (error: any) {
+      console.error('Firebase sign-in error:', error)
+      return { error }
+    }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -221,6 +241,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       signUp, 
       signIn, 
       signInWithGoogle,
+      signInWithFirebaseGoogle,
       signOut, 
       createProfile 
     }}>
