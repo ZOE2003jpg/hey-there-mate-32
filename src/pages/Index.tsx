@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { Navigation } from "@/components/navigation"
 import { HomePage } from "@/components/home-page"
@@ -14,6 +14,7 @@ const Index = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, loading } = useUser()
+  const prevUserIdRef = useRef<string | null>(null)
   
   // Get current panel from URL
   const getCurrentPanel = (): "home" | "writer" | "reader" | "admin" => {
@@ -49,6 +50,16 @@ const Index = () => {
     localStorage.setItem('splashShown', '1')
     setShowSplash(false)
   }
+
+  // Redirect to login on logout
+  useEffect(() => {
+    const wasLoggedIn = !!prevUserIdRef.current
+    const isLoggedIn = !!user?.id
+    if (wasLoggedIn && !isLoggedIn && location.pathname !== '/reader/login') {
+      navigate('/reader/login', { replace: true })
+    }
+    prevUserIdRef.current = user?.id ?? null
+  }, [user, navigate, location.pathname])
 
   // Handle panel access with optional login
   useEffect(() => {
