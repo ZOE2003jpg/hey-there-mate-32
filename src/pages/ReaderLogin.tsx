@@ -22,12 +22,9 @@ export default function ReaderLogin() {
       const { error } = await signInWithFirebaseGoogle();
       if (error) {
         console.error('Google sign-in error:', error);
-        toast.error('Failed to sign in with Google');
-      } else {
-        toast.success('Signed in successfully');
-        const returnTo = searchParams.get('returnTo') || '/';
-        navigate(returnTo, { replace: true });
+        toast.error('Failed to sign in with Google. Please try again.');
       }
+      // Don't navigate here - let useEffect handle it after user state updates
     } catch (error) {
       console.error('Unexpected error:', error);
       toast.error('An unexpected error occurred');

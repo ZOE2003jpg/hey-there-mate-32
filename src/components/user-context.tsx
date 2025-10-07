@@ -49,59 +49,55 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (!mounted) return
         
         console.log('Auth state changed:', event, session?.user?.id)
         setSession(session)
         
         if (session?.user) {
-          // Fetch user profile and roles asynchronously without blocking
-          setTimeout(async () => {
+          try {
+            // Fetch profile and roles
+            const [profileResult, rolesResult] = await Promise.all([
+              supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .maybeSingle(),
+              supabase
+                .from('user_roles')
+                .select('role')
+                .eq('user_id', session.user.id)
+            ])
+
             if (!mounted) return
-            
-            try {
-              // Fetch profile and roles in parallel
-              const [profileResult, rolesResult] = await Promise.all([
-                supabase
-                  .from('profiles')
-                  .select('*')
-                  .eq('user_id', session.user.id)
-                  .single(),
-                supabase
-                  .from('user_roles')
-                  .select('role')
-                  .eq('user_id', session.user.id)
-              ])
 
-              if (!mounted) return
+            const profile = profileResult.error ? null : profileResult.data
+            const roles = rolesResult.error ? [] : rolesResult.data.map(r => r.role as UserRole)
 
-              const profile = profileResult.error ? null : profileResult.data
-              const roles = rolesResult.error ? [] : rolesResult.data.map(r => r.role as UserRole)
-
+            setUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              profile,
+              roles
+            })
+          } catch (error) {
+            console.error('Profile/roles fetch failed:', error)
+            if (mounted) {
               setUser({
                 id: session.user.id,
                 email: session.user.email || '',
-                profile,
-                roles
+                profile: null,
+                roles: []
               })
-            } catch (error) {
-              console.error('Profile/roles fetch failed:', error)
-              if (mounted) {
-                setUser({
-                  id: session.user.id,
-                  email: session.user.email || '',
-                  profile: null,
-                  roles: []
-                })
-              }
             }
-          }, 0)
+          } finally {
+            if (mounted) setLoading(false)
+          }
         } else {
           setUser(null)
+          setLoading(false)
         }
-        
-        setLoading(false)
       }
     )
 
