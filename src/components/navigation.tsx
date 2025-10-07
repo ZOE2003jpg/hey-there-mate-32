@@ -19,10 +19,10 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
   // Public navigation items (always visible)
   const publicNavItems = [
     { id: "home", label: "Home", icon: Compass, path: "/" },
-    { id: "discover", label: "Discover", icon: Compass, action: () => onPanelChange("reader") },
-    { id: "featured", label: "Featured", icon: Star, action: () => onPanelChange("reader") },
-    { id: "trending", label: "Trending", icon: TrendingUp, action: () => onPanelChange("reader") },
-    { id: "library", label: "Library", icon: Library, action: () => onPanelChange("reader") },
+    { id: "discover", label: "Discover", icon: Compass, path: "/?panel=reader&page=discover" },
+    { id: "featured", label: "Featured", icon: Star, path: "/?panel=reader&page=featured" },
+    { id: "trending", label: "Trending", icon: TrendingUp, path: "/?panel=reader&page=trending" },
+    { id: "library", label: "Library", icon: Library, path: "/?panel=reader&page=library" },
   ]
 
   // User panel items (only visible when logged in)
@@ -60,29 +60,16 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
             {/* Public Navigation */}
             {publicNavItems.map((item) => {
               const Icon = item.icon
-              if (item.path) {
-                return (
-                  <Link key={item.id} to={item.path}>
-                <Button
-              variant="ghost"
-              className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10"
-            >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Button>
-                  </Link>
-                )
-              }
               return (
-              <Button
-                key={item.id}
-                variant="ghost"
-                onClick={item.action}
-                className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10"
-              >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Button>
+                <Link key={item.id} to={item.path}>
+                  <Button
+                    variant="ghost"
+                    className="h-12 px-4 flex items-center space-x-2 font-medium hover:bg-primary/10"
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </Button>
+                </Link>
               )
             })}
             
@@ -204,32 +191,16 @@ export function Navigation({ currentPanel, onPanelChange }: NavigationProps) {
               {/* Public Navigation */}
               {publicNavItems.map((item) => {
                 const Icon = item.icon
-                if (item.path) {
-                  return (
-                  <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent"
-                      >
-                        <Icon className="h-4 w-4 mr-3" />
-                        <span>{item.label}</span>
-                      </Button>
-                    </Link>
-                  )
-                }
                 return (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    onClick={() => {
-                      item.action?.()
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent"
-                  >
-                    <Icon className="h-4 w-4 mr-3" />
-                    <span>{item.label}</span>
-                  </Button>
+                  <Link key={item.id} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 text-sm font-medium mobile-nav-item hover:bg-accent"
+                    >
+                      <Icon className="h-4 w-4 mr-3" />
+                      <span>{item.label}</span>
+                    </Button>
+                  </Link>
                 )
               })}
               

@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { DiscoverPage } from "@/components/reader/discover-page"
 import { FeaturedPage } from "@/components/reader/featured-page"
 import { TrendingPage } from "@/components/reader/trending-page"
@@ -27,15 +28,30 @@ import {
 } from "lucide-react"
 
 export function ReaderPanel() {
-  const [currentPage, setCurrentPage] = useState("discover")
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [currentPage, setCurrentPage] = useState(() => searchParams.get('page') || "discover")
   const [currentStory, setCurrentStory] = useState(null)
   const isMobile = useIsMobile()
+
+  // Update page when URL changes
+  useEffect(() => {
+    const page = searchParams.get('page')
+    if (page && page !== currentPage) {
+      setCurrentPage(page)
+    }
+  }, [searchParams])
 
   const handleNavigate = (page: string, data?: any) => {
     if (data) {
       setCurrentStory(data)
     }
     setCurrentPage(page)
+    
+    // Update URL
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('panel', 'reader')
+    newParams.set('page', page)
+    setSearchParams(newParams)
   }
 
   const navigationItems = [
