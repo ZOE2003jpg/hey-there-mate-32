@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { User as SupabaseUser, Session } from '@supabase/supabase-js'
-import { auth, googleProvider } from "@/lib/firebase"
-import { signInWithPopup } from "firebase/auth"
+import { auth, googleProvider, db } from "@/lib/firebase"
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc, serverTimestamp } from "firebase/firestore"
 
 export type UserRole = "reader" | "writer" | "admin"
 
@@ -30,6 +31,8 @@ interface UserContextType {
   session: Session | null
   loading: boolean
   signUp: (email: string, password: string, role?: UserRole) => Promise<{ error: any }>
+  signUpReader: (email: string, password: string, fullName: string) => Promise<{ error: any }>
+  signInReader: (email: string, password: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signInWithGoogle: () => Promise<{ error: any }>
   signInWithFirebaseGoogle: () => Promise<{ error: any }>
@@ -207,6 +210,65 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const signUpReader = async (email: string, password: string, fullName: string) => {
+    try {
+      // Create user in Supabase (primary auth system)
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: fullName,
+            role: 'reader'
+          }
+        }
+      })
+
+      if (signUpError) throw signUpError
+      if (!data.user) throw new Error('User creation failed')
+
+      // Store user data in Firestore as requested
+      await setDoc(doc(db, 'readers', data.user.id), {
+        fullName,
+        email,
+        createdAt: serverTimestamp(),
+        role: 'reader'
+      })
+
+      // Create Supabase profile and role
+      await supabase.from('profiles').insert({
+        user_id: data.user.id,
+        display_name: fullName,
+        status: 'active'
+      })
+
+      await supabase.from('user_roles').insert({
+        user_id: data.user.id,
+        role: 'reader'
+      })
+
+      return { error: null }
+    } catch (error: any) {
+      console.error('Reader signup error:', error)
+      return { error }
+    }
+  }
+
+  const signInReader = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      
+      return { error }
+    } catch (error: any) {
+      console.error('Reader sign-in error:', error)
+      return { error }
+    }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -245,7 +307,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       user, 
       session, 
       loading, 
-      signUp, 
+      signUp,
+      signUpReader,
+      signInReader,
       signIn, 
       signInWithGoogle,
       signInWithFirebaseGoogle,

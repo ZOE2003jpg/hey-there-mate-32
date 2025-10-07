@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import { UserProvider } from "./components/user-context";
 import { Toaster } from "./components/ui/toaster";
+import { Toaster as SonnerToaster } from "./components/ui/sonner";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
@@ -12,6 +13,7 @@ import DMCA from "./pages/DMCA";
 import WriterLogin from "./pages/WriterLogin";
 import AdminLogin from "./pages/AdminLogin";
 import ReaderLogin from "./pages/ReaderLogin";
+import ReaderSignup from "./pages/ReaderSignup";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 
@@ -29,9 +31,11 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/writer/login" element={<WriterLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/reader/login" element={<ReaderLogin />} />
+          <Route path="/reader/signup" element={<ReaderSignup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
+        <SonnerToaster />
       </UserProvider>
     </ThemeProvider>
   </BrowserRouter>

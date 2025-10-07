@@ -1,16 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useUser } from '@/components/user-context';
 import { BookOpen, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ReaderLogin() {
-  const { user, loading, signInWithFirebaseGoogle } = useUser();
+  const { user, loading, signInWithFirebaseGoogle, signInReader } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/?panel=reader&page=discover';
   const hasNavigated = useRef(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user && !hasNavigated.current) {
@@ -19,6 +24,40 @@ export default function ReaderLogin() {
     }
   }, [user, loading, navigate, returnTo]);
 
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim() || !password.trim()) {
+      toast.error('Please enter your email and password');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await signInReader(email, password);
+      
+      if (error) {
+        if (error.message?.includes('Invalid login') || error.message?.includes('not found')) {
+          toast.error('Invalid email or password');
+        } else if (error.message?.includes('invalid email')) {
+          toast.error('Please enter a valid email address');
+        } else if (error.message?.includes('too many requests')) {
+          toast.error('Too many failed attempts. Please try again later.');
+        } else {
+          toast.error('Failed to sign in. Please try again.');
+        }
+        return;
+      }
+
+      // Don't navigate here - let useEffect handle it
+    } catch (error) {
+      console.error('Unexpected sign-in error:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     try {
       const { error } = await signInWithFirebaseGoogle();
@@ -26,7 +65,6 @@ export default function ReaderLogin() {
         console.error('Google sign-in error:', error);
         toast.error('Failed to sign in with Google. Please try again.');
       }
-      // Don't navigate here - let useEffect handle it after user state updates
     } catch (error) {
       console.error('Unexpected error:', error);
       const code = (error as any)?.code;
@@ -58,16 +96,71 @@ export default function ReaderLogin() {
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">Welcome to VineNovel</h1>
+            <h1 className="text-3xl font-bold">Welcome Back</h1>
             <p className="text-muted-foreground">
-              Sign in to unlock your personalized reading experience
+              Sign in to continue your reading journey
             </p>
+          </div>
+
+          <form onSubmit={handleEmailSignIn} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="vine-button-hero w-full h-12 text-base"
+              size="lg"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
           </div>
 
           <Button
             onClick={handleGoogleSignIn}
-            className="vine-button-hero w-full h-12 text-base"
+            className="w-full h-12 text-base"
+            variant="outline"
             size="lg"
+            disabled={isSubmitting}
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <path
@@ -90,9 +183,21 @@ export default function ReaderLogin() {
             Continue with Google
           </Button>
 
-          <p className="text-xs text-center text-muted-foreground">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <button
+                onClick={() => navigate('/reader/signup')}
+                className="text-primary hover:underline font-medium"
+              >
+                Sign up here
+              </button>
+            </p>
+            
+            <p className="text-xs text-muted-foreground">
+              By signing in, you agree to our Terms of Service and Privacy Policy
+            </p>
+          </div>
         </div>
       </div>
     </div>
