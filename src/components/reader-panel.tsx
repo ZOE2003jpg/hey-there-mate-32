@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom"
 import { DiscoverPage } from "@/components/reader/discover-page"
 import { FeaturedPage } from "@/components/reader/featured-page"
 import { TrendingPage } from "@/components/reader/trending-page"
@@ -26,33 +26,48 @@ import {
   ArrowLeft,
   Users
 } from "lucide-react"
+import { useUser } from "@/components/user-context"
 
 export function ReaderPanel() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentPage, setCurrentPage] = useState(() => searchParams.get('page') || "discover")
   const [currentStory, setCurrentStory] = useState(null)
   const isMobile = useIsMobile()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { user } = useUser()
+  const authRequiredPages = new Set(['library','settings','clubs','club','profile'])
 
-  // Update page when URL changes
-  useEffect(() => {
-    const page = searchParams.get('page')
-    if (page && page !== currentPage) {
-      setCurrentPage(page)
-    }
-  }, [searchParams])
-
-  const handleNavigate = (page: string, data?: any) => {
-    if (data) {
-      setCurrentStory(data)
+// Update page when URL changes
+useEffect(() => {
+  const page = searchParams.get('page')
+  if (page && page !== currentPage) {
+    if (authRequiredPages.has(page) && !user) {
+      const returnTo = location.pathname + location.search
+      navigate(`/reader/login?returnTo=${encodeURIComponent(returnTo)}`)
+      return
     }
     setCurrentPage(page)
-    
-    // Update URL
-    const newParams = new URLSearchParams(searchParams)
-    newParams.set('panel', 'reader')
-    newParams.set('page', page)
-    setSearchParams(newParams)
   }
+}, [searchParams, user, navigate, location.pathname, location.search])
+
+const handleNavigate = (page: string, data?: any) => {
+  if (authRequiredPages.has(page) && !user) {
+    const returnTo = location.pathname + location.search
+    navigate(`/reader/login?returnTo=${encodeURIComponent(returnTo)}`)
+    return
+  }
+  if (data) {
+    setCurrentStory(data)
+  }
+  setCurrentPage(page)
+  
+  // Update URL
+  const newParams = new URLSearchParams(searchParams)
+  newParams.set('panel', 'reader')
+  newParams.set('page', page)
+  setSearchParams(newParams)
+}
 
   const navigationItems = [
     { id: "discover", label: "Discover", icon: Compass },

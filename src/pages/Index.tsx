@@ -10,7 +10,7 @@ import { Footer } from "@/components/footer"
 import { useUser } from "@/components/user-context"
 
 const Index = () => {
-  const [showSplash, setShowSplash] = useState(true)
+  const [showSplash, setShowSplash] = useState(() => window.location.pathname === '/' && !localStorage.getItem('splashShown'))
   const navigate = useNavigate()
   const location = useLocation()
   const { user, loading } = useUser()
@@ -46,6 +46,7 @@ const Index = () => {
 
   // Handle splash screen completion
   const handleSplashComplete = () => {
+    localStorage.setItem('splashShown', '1')
     setShowSplash(false)
   }
 

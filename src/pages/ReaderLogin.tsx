@@ -23,6 +23,10 @@ export default function ReaderLogin() {
       if (error) {
         console.error('Google sign-in error:', error);
         toast.error('Failed to sign in with Google');
+      } else {
+        toast.success('Signed in successfully');
+        const returnTo = searchParams.get('returnTo') || '/';
+        navigate(returnTo, { replace: true });
       }
     } catch (error) {
       console.error('Unexpected error:', error);
