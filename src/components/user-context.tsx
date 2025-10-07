@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { supabase } from "@/integrations/supabase/client"
 import { User as SupabaseUser, Session } from '@supabase/supabase-js'
 import { auth, googleProvider } from "@/lib/firebase"
-import { signInWithPopup, signOut as fbSignOut } from "firebase/auth"
+import { signInWithPopup } from "firebase/auth"
 
 export type UserRole = "reader" | "writer" | "admin"
 
@@ -208,12 +208,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
-    try {
-      await supabase.auth.signOut()
-    } finally {
-      try { await fbSignOut(auth) } catch {}
-      window.location.assign('/reader/login')
-    }
+    await supabase.auth.signOut()
   }
 
   const createProfile = async (role: UserRole) => {

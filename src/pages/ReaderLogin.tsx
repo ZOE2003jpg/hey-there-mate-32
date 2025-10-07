@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/components/user-context';
 import { BookOpen, Loader2 } from 'lucide-react';
@@ -17,29 +15,9 @@ export default function ReaderLogin() {
   useEffect(() => {
     if (!loading && user && !hasNavigated.current) {
       hasNavigated.current = true;
-      // Prefer decoded returnTo if present
-      let target = '/?panel=reader&page=discover';
-      if (returnTo) {
-        try { target = decodeURIComponent(returnTo); } catch { target = returnTo; }
-      }
-      navigate(target, { replace: true });
+      navigate(returnTo, { replace: true });
     }
   }, [user, loading, navigate, returnTo]);
-
-  // Redirect as soon as Firebase auth reports a user
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser && !hasNavigated.current) {
-        hasNavigated.current = true;
-        let target = '/?panel=reader&page=discover';
-        if (returnTo) {
-          try { target = decodeURIComponent(returnTo); } catch { target = returnTo; }
-        }
-        navigate(target, { replace: true });
-      }
-    });
-    return () => unsub();
-  }, [navigate, returnTo]);
 
   const handleGoogleSignIn = async () => {
     try {
