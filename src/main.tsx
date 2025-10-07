@@ -11,6 +11,7 @@ import Cookies from "./pages/Cookies";
 import DMCA from "./pages/DMCA";
 import WriterLogin from "./pages/WriterLogin";
 import AdminLogin from "./pages/AdminLogin";
+import ReaderLogin from "./pages/ReaderLogin";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/dmca" element={<DMCA />} />
           <Route path="/writer/login" element={<WriterLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/reader/login" element={<ReaderLogin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
