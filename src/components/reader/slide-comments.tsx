@@ -4,6 +4,7 @@ import { useUser } from '@/components/user-context'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ReaderAuthModal } from '@/components/reader-auth-modal'
 import { formatDistanceToNow } from 'date-fns'
 import { MessageCircle, Send, Heart } from 'lucide-react'
 import { toast } from 'sonner'
@@ -35,6 +36,8 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
   const [newComment, setNewComment] = useState('')
   const [loading, setLoading] = useState(false)
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set())
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authFeature, setAuthFeature] = useState('comment')
 
   useEffect(() => {
     if (isOpen) {
@@ -159,7 +162,8 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
 
   const handleAddComment = async () => {
     if (!user) {
-      toast.error('Please login to comment')
+      setAuthFeature('add comments')
+      setShowAuthModal(true)
       return
     }
     
@@ -202,7 +206,8 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
 
   const handleLikeComment = async (commentId: string) => {
     if (!user) {
-      toast.error('Please login to like comments')
+      setAuthFeature('like comments')
+      setShowAuthModal(true)
       return
     }
 
@@ -240,7 +245,13 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border max-h-[60vh] flex flex-col animate-slide-in-bottom">
+    <>
+      <ReaderAuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        feature={authFeature}
+      />
+      <div className="fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border max-h-[60vh] flex flex-col animate-slide-in-bottom">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
@@ -325,6 +336,7 @@ export function SlideComments({ slideId, storyId, isOpen, onClose }: SlideCommen
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

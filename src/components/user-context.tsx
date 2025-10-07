@@ -29,6 +29,7 @@ interface UserContextType {
   loading: boolean
   signUp: (email: string, password: string, role?: UserRole) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
+  signInWithGoogle: () => Promise<{ error: any }>
   signOut: () => Promise<void>
   createProfile: (role: UserRole) => Promise<void>
 }
@@ -162,6 +163,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return { error }
   }
 
+  const signInWithGoogle = async () => {
+    const redirectUrl = `${window.location.origin}/`
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      }
+    })
+    
+    return { error }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -202,6 +220,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       loading, 
       signUp, 
       signIn, 
+      signInWithGoogle,
       signOut, 
       createProfile 
     }}>

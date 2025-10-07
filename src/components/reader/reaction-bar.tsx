@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useReactions, ReactionType } from '@/hooks/useReactions';
 import { useRealtimeReactions } from '@/hooks/useRealtimeReactions';
 import { motion } from 'framer-motion';
 import { useUser } from '@/components/user-context';
+import { ReaderAuthModal } from '@/components/reader-auth-modal';
 import { toast } from 'sonner';
 
 interface ReactionBarProps {
@@ -22,13 +24,14 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
   const { user } = useUser();
   const { reactionCounts, userReactions, toggleReaction } = useReactions(slideId, user?.id);
   const { broadcastReaction } = useRealtimeReactions(slideId, user?.id);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleReactionClick = async (e: React.MouseEvent, reactionType: ReactionType) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!user) {
-      toast.error('Please login to react');
+      setShowAuthModal(true);
       return;
     }
     
@@ -45,7 +48,13 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
   };
 
   return (
-    <div className="flex items-center gap-1 md:gap-2 py-2 md:py-3 px-2 md:px-4 bg-muted/50 rounded-lg overflow-x-auto">
+    <>
+      <ReaderAuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        feature="react to stories"
+      />
+      <div className="flex items-center gap-1 md:gap-2 py-2 md:py-3 px-2 md:px-4 bg-muted/50 rounded-lg overflow-x-auto">
       {(Object.keys(reactionEmojis) as ReactionType[]).map((reactionType) => {
         const count = reactionCounts[reactionType];
         const isActive = userReactions.has(reactionType);
@@ -81,6 +90,7 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
           </motion.div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }

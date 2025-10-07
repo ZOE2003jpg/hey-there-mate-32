@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ReaderAuthModal } from '@/components/reader-auth-modal';
 import { Users, Plus, UserPlus, UserCheck } from 'lucide-react';
 
 interface ClubsPageProps {
@@ -18,8 +19,17 @@ export function ClubsPage({ onNavigate }: ClubsPageProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newClubName, setNewClubName] = useState('');
   const [newClubDescription, setNewClubDescription] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authFeature, setAuthFeature] = useState('join clubs');
 
   const handleCreateClub = async () => {
+    if (!user) {
+      setAuthFeature('create clubs');
+      setShowAuthModal(true);
+      setIsCreateOpen(false);
+      return;
+    }
+    
     if (!newClubName.trim()) return;
     
     const club = await createClub(newClubName, newClubDescription);
@@ -28,6 +38,20 @@ export function ClubsPage({ onNavigate }: ClubsPageProps) {
       setNewClubName('');
       setNewClubDescription('');
       onNavigate('club', { clubId: club.id });
+    }
+  };
+
+  const handleJoinLeave = (clubId: string, isMember: boolean) => {
+    if (!user) {
+      setAuthFeature(isMember ? 'leave clubs' : 'join clubs');
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (isMember) {
+      leaveClub(clubId);
+    } else {
+      joinClub(clubId);
     }
   };
 
@@ -40,8 +64,14 @@ export function ClubsPage({ onNavigate }: ClubsPageProps) {
   }
 
   return (
-    <div className="container-system py-8">
-      <div className="content-container">
+    <>
+      <ReaderAuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        feature={authFeature}
+      />
+      <div className="container-system py-8">
+        <div className="content-container">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="typography-h1">Reader Clubs</h1>
@@ -112,11 +142,7 @@ export function ClubsPage({ onNavigate }: ClubsPageProps) {
                       variant={club.is_member ? 'outline' : 'default'}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (club.is_member) {
-                          leaveClub(club.id);
-                        } else {
-                          joinClub(club.id);
-                        }
+                        handleJoinLeave(club.id, club.is_member);
                       }}
                     >
                       {club.is_member ? (
@@ -147,7 +173,8 @@ export function ClubsPage({ onNavigate }: ClubsPageProps) {
             </p>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

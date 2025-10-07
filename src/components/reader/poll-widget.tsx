@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { usePollVotes } from '@/hooks/usePollVotes';
 import { useUser } from '@/components/user-context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { ReaderAuthModal } from '@/components/reader-auth-modal';
 import { CheckCircle2 } from 'lucide-react';
 
 interface PollOption {
@@ -23,6 +25,7 @@ interface PollWidgetProps {
 export function PollWidget({ poll }: PollWidgetProps) {
   const { user } = useUser();
   const { votes, userVote, loading, vote } = usePollVotes(poll.id, user?.id);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const totalVotes = Object.values(votes).reduce((sum, count) => sum + count, 0);
 
@@ -31,9 +34,23 @@ export function PollWidget({ poll }: PollWidgetProps) {
     return Math.round(((votes[optionKey] || 0) / totalVotes) * 100);
   };
 
+  const handleVote = (optionKey: string) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    vote(optionKey);
+  };
+
   return (
-    <Card className="p-6">
-      <h3 className="typography-h3 mb-4">{poll.question}</h3>
+    <>
+      <ReaderAuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        feature="vote in polls"
+      />
+      <Card className="p-6">
+        <h3 className="typography-h3 mb-4">{poll.question}</h3>
       
       <div className="space-y-3">
         {poll.options.map((option) => {
@@ -62,7 +79,7 @@ export function PollWidget({ poll }: PollWidgetProps) {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => vote(option.key)}
+                  onClick={() => handleVote(option.key)}
                   disabled={loading}
                 >
                   {option.label}
@@ -73,11 +90,12 @@ export function PollWidget({ poll }: PollWidgetProps) {
         })}
       </div>
 
-      {totalVotes > 0 && (
-        <p className="typography-caption text-muted-foreground mt-4 text-center">
-          {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
-        </p>
-      )}
-    </Card>
+        {totalVotes > 0 && (
+          <p className="typography-caption text-muted-foreground mt-4 text-center">
+            {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
+          </p>
+        )}
+      </Card>
+    </>
   );
 }

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StoryCard } from "@/components/ui/story-card"
-import { SignupPromptDialog } from "@/components/signup-prompt-dialog"
+import { ReaderAuthModal } from "@/components/reader-auth-modal"
 import { StreakDisplay } from "@/components/reader/streak-display"
 import { 
   BookOpen, 
@@ -38,7 +38,8 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
   const handleLike = async (storyId: string, e: React.MouseEvent) => {
     e.stopPropagation()
     if (!user) {
-      toast.error("Please login to like stories")
+      setSignupFeature("like stories")
+      setShowSignupPrompt(true)
       return
     }
     try {
@@ -71,8 +72,6 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
 
   const handleSignup = () => {
     setShowSignupPrompt(false)
-    // Navigate to home which will trigger the login modal
-    window.location.href = "/"
   }
 
   const filteredStories = stories.filter(story => 
@@ -88,10 +87,9 @@ export function DiscoverPage({ onNavigate }: DiscoverPageProps) {
 
   return (
     <>
-      <SignupPromptDialog
+      <ReaderAuthModal
         open={showSignupPrompt}
         onOpenChange={setShowSignupPrompt}
-        onSignup={handleSignup}
         feature={signupFeature}
       />
       <div className="space-y-8">
