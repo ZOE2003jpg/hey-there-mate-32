@@ -18,8 +18,13 @@ const reactionEmojis: Record<string, string> = {
 export function EngagementBadge({ slideId }: EngagementBadgeProps) {
   const { stats, loading } = useReactionStats(slideId)
 
+  // Don't show anything while loading
+  if (loading) {
+    return null
+  }
+
   // Only show if there are 50+ reactions
-  if (loading || stats.totalReactions < 50 || !stats.topReaction) {
+  if (stats.totalReactions < 50 || !stats.topReaction) {
     return null
   }
 

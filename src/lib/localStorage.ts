@@ -1,5 +1,8 @@
 // LocalStorage utility functions for VineNovel
 
+// Cache expiration time: 5 minutes
+const CACHE_EXPIRATION_MS = 5 * 60 * 1000
+
 export interface StoredProgress {
   storyId: string
   chapterId: string
@@ -16,14 +19,52 @@ export interface StoredStory {
   cached_at: string
 }
 
+// Helper to check if cache is expired
+const isCacheExpired = (cachedAt: string): boolean => {
+  const cacheTime = new Date(cachedAt).getTime()
+  const now = Date.now()
+  return now - cacheTime > CACHE_EXPIRATION_MS
+}
+
 // Story list management
 export const getStoredStories = (): StoredStory[] => {
   try {
     const stored = localStorage.getItem('vinenovel_stories')
-    return stored ? JSON.parse(stored) : []
+    if (!stored) return []
+    
+    const stories: StoredStory[] = JSON.parse(stored)
+    // Filter out expired cache entries
+    const validStories = stories.filter(s => !isCacheExpired(s.cached_at))
+    
+    // Update storage if we filtered any
+    if (validStories.length !== stories.length) {
+      localStorage.setItem('vinenovel_stories', JSON.stringify(validStories))
+    }
+    
+    return validStories
   } catch (error) {
     console.error('Failed to load stories from localStorage:', error)
     return []
+  }
+}
+
+// Clear expired cache
+export const clearExpiredCache = (): void => {
+  try {
+    getStoredStories() // This will automatically filter and update
+  } catch (error) {
+    console.error('Failed to clear expired cache:', error)
+  }
+}
+
+// Invalidate cache for a specific story
+export const invalidateStoryCache = (storyId: string): void => {
+  try {
+    const stories = getStoredStories()
+    const filtered = stories.filter(s => s.id !== storyId)
+    localStorage.setItem('vinenovel_stories', JSON.stringify(filtered))
+  } catch (error) {
+    console.error('Failed to invalidate story cache:', error)
   }
 }
 

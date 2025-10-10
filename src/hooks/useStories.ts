@@ -30,6 +30,25 @@ interface Chapter {
   chapter_number: number
 }
 
+// Helper function to verify story ownership
+const verifyStoryOwnership = async (storyId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return false
+
+    const { data: story, error } = await supabase
+      .from('stories')
+      .select('author_id')
+      .eq('id', storyId)
+      .single()
+
+    if (error || !story) return false
+    return story.author_id === user.id
+  } catch {
+    return false
+  }
+}
+
 export function useStories() {
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
@@ -176,9 +195,18 @@ export function useStories() {
       setLoading(true)
       setError(null)
       
-      const { data: storiesData, error: storiesError } = await supabase
-        .from('stories')
-        .select('*')
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      // Only fetch user's own stories and published stories from others
+      let query = supabase.from('stories').select('*')
+      
+      if (user) {
+        query = query.or(`author_id.eq.${user.id},status.eq.published`)
+      } else {
+        query = query.eq('status', 'published')
+      }
+      
+      const { data: storiesData, error: storiesError } = await query
         .order('created_at', { ascending: false })
 
       if (storiesError) throw storiesError
@@ -228,6 +256,12 @@ export function useStories() {
 
   const updateStory = async (id: string, updates: Partial<Story>, refetchAll = false) => {
     try {
+      // Verify ownership before updating
+      const isOwner = await verifyStoryOwnership(id)
+      if (!isOwner) {
+        throw new Error('You do not have permission to update this story')
+      }
+
       const { error } = await supabase
         .from('stories')
         .update(updates)
@@ -248,6 +282,12 @@ export function useStories() {
 
   const deleteStory = async (id: string, refetchAll = false) => {
     try {
+      // Verify ownership before deleting
+      const isOwner = await verifyStoryOwnership(id)
+      if (!isOwner) {
+        throw new Error('You do not have permission to delete this story')
+      }
+
       const { error } = await supabase
         .from('stories')
         .delete()

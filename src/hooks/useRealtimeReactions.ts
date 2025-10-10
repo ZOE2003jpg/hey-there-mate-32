@@ -12,7 +12,7 @@ interface RealtimeReaction {
 export function useRealtimeReactions(slideId: string, userId?: string) {
   const [floatingReactions, setFloatingReactions] = useState<RealtimeReaction[]>([])
   const [lastReactionTime, setLastReactionTime] = useState(0)
-  const COOLDOWN_MS = 2000 // 2 seconds between reactions
+  const COOLDOWN_MS = 500 // 500ms between reactions for better UX
 
   useEffect(() => {
     if (!slideId) return
@@ -50,39 +50,48 @@ export function useRealtimeReactions(slideId: string, userId?: string) {
   }, [slideId, userId])
 
   const broadcastReaction = useCallback(async (reactionType: ReactionType) => {
-    if (!userId) return
+    if (!userId) {
+      console.log('[Reactions] No userId, skipping broadcast')
+      return
+    }
 
     const now = Date.now()
     if (now - lastReactionTime < COOLDOWN_MS) {
-      return // Cooldown active
+      console.log('[Reactions] Cooldown active, skipping')
+      return
     }
 
+    console.log('[Reactions] Broadcasting reaction:', reactionType, 'for slide:', slideId)
     setLastReactionTime(now)
 
-    const channel = supabase.channel(`slide-reactions:${slideId}`)
-    
-    // Track own reaction locally
-    const reactionId = `${userId}-${now}`
-    const emoji = getEmojiForType(reactionType)
-    
-    setFloatingReactions(prev => [...prev, {
-      id: reactionId,
-      emoji,
-      userId,
-      timestamp: now
-    }])
+    try {
+      const channel = supabase.channel(`slide-reactions:${slideId}`)
+      
+      // Track own reaction locally
+      const reactionId = `${userId}-${now}`
+      const emoji = getEmojiForType(reactionType)
+      
+      setFloatingReactions(prev => [...prev, {
+        id: reactionId,
+        emoji,
+        userId,
+        timestamp: now
+      }])
 
-    // Broadcast to others via presence
-    await channel.track({
-      userId,
-      reaction: reactionType,
-      timestamp: now
-    })
+      // Broadcast to others via presence
+      await channel.track({
+        userId,
+        reaction: reactionType,
+        timestamp: now
+      })
 
-    // Untrack after a short delay so it doesn't persist
-    setTimeout(() => {
-      channel.untrack()
-    }, 100)
+      // Untrack after a short delay so it doesn't persist
+      setTimeout(() => {
+        channel.untrack()
+      }, 100)
+    } catch (error) {
+      console.error('[Reactions] Error broadcasting:', error)
+    }
   }, [slideId, userId, lastReactionTime])
 
   const removeReaction = useCallback((reactionId: string) => {

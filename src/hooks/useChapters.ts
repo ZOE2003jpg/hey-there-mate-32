@@ -15,6 +15,33 @@ export interface Chapter {
   updated_at: string
 }
 
+// Helper function to verify chapter ownership
+const verifyChapterOwnership = async (chapterId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return false
+
+    const { data: chapter, error: chapterError } = await supabase
+      .from('chapters')
+      .select('story_id')
+      .eq('id', chapterId)
+      .single()
+
+    if (chapterError || !chapter) return false
+
+    const { data: story, error: storyError } = await supabase
+      .from('stories')
+      .select('author_id')
+      .eq('id', chapter.story_id)
+      .single()
+
+    if (storyError || !story) return false
+    return story.author_id === user.id
+  } catch {
+    return false
+  }
+}
+
 export function useChapters(storyId?: string) {
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [loading, setLoading] = useState(true)
@@ -74,6 +101,12 @@ export function useChapters(storyId?: string) {
 
   const updateChapter = async (id: string, updates: Partial<Chapter>) => {
     try {
+      // Verify ownership before updating
+      const isOwner = await verifyChapterOwnership(id)
+      if (!isOwner) {
+        throw new Error('You do not have permission to update this chapter')
+      }
+
       const { error } = await supabase
         .from('chapters')
         .update(updates)
@@ -89,6 +122,12 @@ export function useChapters(storyId?: string) {
 
   const deleteChapter = async (id: string) => {
     try {
+      // Verify ownership before deleting
+      const isOwner = await verifyChapterOwnership(id)
+      if (!isOwner) {
+        throw new Error('You do not have permission to delete this chapter')
+      }
+
       const { error } = await supabase
         .from('chapters')
         .delete()

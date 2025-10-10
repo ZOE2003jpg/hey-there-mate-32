@@ -27,25 +27,43 @@ export function useFollowers(userId?: string) {
   const setupRealtimeSubscription = () => {
     if (!userId) return;
 
-    const channel = supabase
-      .channel('followers-changes')
+    // Subscribe to changes where user is being followed (followers)
+    const followersChannel = supabase
+      .channel('followers-list')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'followers',
-          filter: `follower_id=eq.${userId},following_id=eq.${userId}`
+          filter: `following_id=eq.${userId}`
         },
         () => {
           fetchFollowers();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to changes where user is following others (following)
+    const followingChannel = supabase
+      .channel('following-list')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'followers',
+          filter: `follower_id=eq.${userId}`
+        },
+        () => {
           fetchFollowing();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(followersChannel);
+      supabase.removeChannel(followingChannel);
     };
   };
 

@@ -54,7 +54,11 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
         onOpenChange={setShowAuthModal}
         feature="react to stories"
       />
-      <div className="flex items-center gap-1 md:gap-2 py-2 md:py-3 px-2 md:px-4 bg-muted/50 rounded-lg overflow-x-auto">
+      <div 
+        className="flex items-center gap-1 md:gap-2 py-2 md:py-3 px-2 md:px-4 bg-muted/50 rounded-lg overflow-x-auto"
+        role="toolbar"
+        aria-label="Story reactions"
+      >
       {(Object.keys(reactionEmojis) as ReactionType[]).map((reactionType) => {
         const count = reactionCounts[reactionType];
         const isActive = userReactions.has(reactionType);
@@ -77,6 +81,8 @@ export function ReactionBar({ slideId }: ReactionBarProps) {
               `}
               style={{ zIndex: 50 }}
               type="button"
+              aria-label={`React with ${reactionType}. ${count > 0 ? `${count} reactions` : 'No reactions yet'}`}
+              aria-pressed={isActive}
             >
               <span className={`text-base md:text-lg transition-transform ${isActive ? 'animate-bounce' : ''}`}>
                 {reactionEmojis[reactionType]}
